@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="0.0.1" provider-name="drinfernoo">
+	<requires>
+		<import addon="script.module.requests"/>
+		<import addon="script.module.unidecode"/>
+	</requires>
+	<extension point="xbmc.python.script" library="default.py">
+		<provides>executable</provides>
+	</extension>
+	<extension point="xbmc.addon.metadata">
+		<language/>
+		<summary lang="en">Ease of access for Devs and Testers</summary>
+		<description lang="en">Provides ease of access tools for Devs and Testers</description>
+		<platform>all</platform>
+		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
+		<assets>
+		</assets>
+	</extension>
+</addon>

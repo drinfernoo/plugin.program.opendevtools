@@ -1,0 +1,328 @@
+# -*- coding: utf-8 -*-
+import os
+import re
+import shutil
+import sys
+import time
+import zipfile
+
+import xbmcgui
+import xbmcvfs
+
+from resources.lib import repository
+from resources.lib import settings
+from resources.lib import tools
+from resources.lib.github_api import GithubAPI
+from resources.lib.thread_pool import ThreadPool
+
+API = GithubAPI()
+
+_addon_name = settings.get_addon_info('name')
+_color = settings.get_setting_string('general.color')
+
+_home = tools.translate_path('special://home')
+_addons = os.path.join(_home, 'addons')
+_temp = tools.translate_path('special://temp')
+_addon_data = tools.translate_path(settings.get_addon_info('profile'))
+
+
+def _get_branch_zip_file(github_user, github_repo, github_branch):
+    return _store_zip_file(API.get_zipball(github_user, github_repo, github_branch))
+
+
+def _store_zip_file(zip_contents):
+    zip_location = os.path.join(_addon_data, "{}.zip".format(int(time.time())))
+    tools.write_all_text(zip_location, zip_contents)
+
+    return zip_location
+
+
+def _remove_folder(path):
+    if xbmcvfs.exists(tools.ensure_path_is_dir(path)):
+        tools.log("Removing {}".format(path))
+        try:
+            shutil.rmtree(path)
+        except Exception as e:
+            tools.log("Error removing {}: {}".format(path, e))
+
+
+def _remove_file(path):
+    if xbmcvfs.exists(path):
+        tools.log("Removing {}".format(path))
+        try:
+            os.remove(path)
+        except Exception as e:
+            tools.log("Error removing {}: {}".format(path, e))
+
+
+def _extract_addon(zip_location, addon):
+    tools.log("Opening {}".format(zip_location))
+    with zipfile.ZipFile(zip_location) as file:
+        base_directory = file.namelist()[0]
+        file.extractall(
+            _temp,
+            [
+                i
+                for i in file.namelist()
+                if all(e not in i for e in addon.get("exclude_items", []))
+            ],
+        )
+    tools.log("Extracting to: {}".format(os.path.join(_temp, base_directory)))
+    install_path = os.path.join(_addons, addon['plugin_id'])
+    shutil.copytree(os.path.join(_temp, base_directory), install_path)
+    _remove_folder(os.path.join(install_path, base_directory))
+
+
+def _update_addon_version(addon, default_branch_name, branch, gitsha):
+    addon_xml = os.path.join(_addons, addon['plugin_id'], "addon.xml")
+    tools.log('Rewriting addon version: {}'.format(addon_xml))
+
+    branch = re.sub(r'[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.+_@~]', '_', branch)
+
+    if default_branch_name != branch:
+        replace_regex = r'<\1"\2.\3.\4-{}~{}"\7>'.format(gitsha[0:8], branch)
+    else:
+        replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[0:8])
+
+    with open(addon_xml, "r+") as f:
+        content = f.read()
+        content = re.sub(
+            r'<(addon id.*version=)\"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(-.*?)?\"(.*)>',
+            replace_regex, content)
+
+        f.seek(0)
+        f.write(content)
+
+
+def _rewrite_addon_xml_dependency_versions(addon):
+    kodi_version = tools.kodi_version()
+    tools.log("KODI_VERSION: {}".format(kodi_version))
+    kodi_dep_versions = {
+        18: {"xbmc.python": "2.26.0", "xbmc.gui": "5.14.0"},
+        19: {"xbmc.python": "3.0.0", "xbmc.gui": "5.15.0"},
+    }
+
+    if kodi_version in kodi_dep_versions:
+        kodi_deps = kodi_dep_versions[kodi_version]
+    else:
+        # Take latest version if we don't have version specific
+        kodi_deps = kodi_dep_versions[max(kodi_dep_versions)]
+    tools.log("KODI DEPENDENCY VERSIONS: {}".format(kodi_deps))
+
+    addon_xml = os.path.join(_addons, addon['plugin_id'], "addon.xml")
+    tools.log('Rewriting {}'.format(addon_xml))
+
+    with open(addon_xml, "r+") as f:
+        content = f.read()
+        for dep in kodi_deps:
+            content = re.sub('<import addon="' + dep + r'" version=".*?"\s?/>',
+                             '<import addon="' + dep + '" version="' + kodi_deps[dep] + '" />', content)
+        f.seek(0)
+        f.write(content)
+    pass
+
+
+def _cleanup_old_files():
+    tools.log("Cleaning up old files...")
+    for i in [
+        i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")
+    ]:
+        _remove_file(os.path.join(_addon_data, i))
+
+
+def _clear_temp():
+    try:
+        for item in os.listdir(_temp):
+            path = os.path.join(_temp, item)
+            if os.path.isdir(path):
+                os.remove(path)
+            elif os.path.isfile(path) and path not in ["kodi.log", ]:
+                shutil.rmtree(path)
+    except (OSError, IOError) as e:
+        tools.log("Failed to cleanup temporary storage: {}".format(repr(e)))
+
+
+def _get_selected_commit(user, repo, branch):
+    dialog = xbmcgui.Dialog()
+    
+    tags = []
+    commits = []
+    commit_items = []
+    with tools.busy_dialog():
+        for tag in API.get_tags(user, repo):
+            if 'message' in tag:
+                break
+            tags.append((os.path.split(tag['ref'])[1], tag['object']['sha']))
+            commits.append(API.get_commit(user, repo, tag['object']['sha']))
+        for branch_commit in API.get_branch_commits(user, repo, branch):
+            commits.append(branch_commit)
+        
+        sorted_commits = sorted(commits,
+                                key=lambda b: b['commit']['author']["date"]
+                                              if 'commit' in b else
+                                              b['author']["date"],
+                                reverse=True)
+        for commit in sorted_commits:
+            if commit['sha'] in [i[1] for i in tags]:
+                tag = [i[0] for i in tags if i[1] == commit['sha']][0]
+                label = 'TAG > {}'.format(tag)
+                if label not in commit_items:
+                    commit_items.append(label)
+            else:
+                commit_items.append(
+                    "[COLOR {}]{}[/COLOR] - {}".format(
+                        _color,
+                        commit["sha"][:8],
+                        commit["commit"]["message"].replace("\n", "; "),
+                    )
+                )
+
+    selection = dialog.select(_addon_name, commit_items)
+    del dialog
+    if selection > -1:
+        sha = sorted_commits[selection]['sha']
+        if sha in [i[1] for i in tags]:
+            return [i[0] for i in tags if i[1] == sha][0], [i[1] for i in tags if i[1] == sha][0]
+        else:
+            return sha[:8], sha
+    
+    return None, None
+
+
+def _get_commit_zip_file(user, repo, commit_sha):
+    return _store_zip_file(API.get_commit_zip(user, repo, commit_sha))
+
+
+def _get_branch_info(addon, branch):
+    branch = API.get_repo_branch(addon["user"], addon["repo_name"], branch["name"])
+    updated_at = branch["commit"]["commit"]["author"]["date"]
+    sha = branch["commit"]["sha"]
+    protected = branch["protected"]
+    return [
+        {
+            "name": branch["name"],
+            "sha": sha,
+            "branch": branch,
+            "updated_at": updated_at,
+            "protected": protected,
+        }
+    ]
+
+
+def update_addon():
+    dialog = xbmcgui.Dialog()
+    pool = ThreadPool()
+    repos, files = repository.get_repos()
+    addon_names = [i for i in [i["name"] for i in repos.values()]]
+    selection = dialog.select(
+        _addon_name, ["Update {}".format(i) for i in addon_names]
+    )
+    if selection == -1:
+        dialog.notification(_addon_name, "Download Cancelled.")
+        del dialog
+        sys.exit(0)
+
+    addon = [
+        i for i in repos.values() if i["name"] == addon_names[selection]
+    ][0]
+
+    with tools.busy_dialog():
+        for b in API.get_repo_branches(addon["user"], addon["repo_name"]):
+            if 'message' in b:
+                dialog.ok(_addon_name, b['message'])
+                return
+            pool.put(_get_branch_info, addon, b)
+        branch_items = pool.wait_completion()
+
+        _default = API.get_default_branch(addon['user'], addon['repo_name'])
+        
+        default_branch = [
+            i for i in branch_items if i["name"] == _default
+        ]
+        protected_branches = sorted(
+            [
+                i
+                for i in branch_items
+                if i["protected"] and i["name"] != _default
+            ],
+            key=lambda b: b["updated_at"],
+            reverse=True,
+        )
+        normal_branches = sorted(
+            [
+                i
+                for i in branch_items
+                if not i["protected"] and i["name"] != _default
+            ],
+            key=lambda b: b["updated_at"],
+            reverse=True,
+        )
+        sorted_branches = default_branch + protected_branches + normal_branches
+
+    selection = dialog.select(
+        _addon_name,
+        [
+            "[COLOR {}]{} - Updated {} ({})[/COLOR]".format(
+                _color, i["branch"]["name"], i["updated_at"], i["sha"][:8]
+            )
+            for i in sorted_branches
+        ]
+    )
+    if selection > -1:
+        branch = sorted_branches[selection]
+    else:
+        del dialog
+        return
+
+    _cleanup_old_files()
+
+    commit_sha = None
+    selection = dialog.yesno(
+        "Update from [COLOR {}]{}[/COLOR]".format(_color, branch["name"]),
+        "Would you like to update from a previous commit or latest?",
+        yeslabel="Previous Commit",
+        nolabel="Latest",
+    )
+    if selection:
+        commit_label, commit_sha = _get_selected_commit(
+            addon["user"], addon["repo_name"], branch["sha"]
+        )
+        if not commit_sha:
+            dialog.notification(_addon_name, "Update Cancelled.")
+            del dialog
+            return
+
+    if not dialog.yesno(
+            _addon_name,
+            "This will attempt to update [COLOR {}]{}[/COLOR] from the "
+            "[COLOR {}]{}[/COLOR] branch,"
+            " are you sure?".format(
+                _color, addon["name"], _color, branch["branch"]["name"] if not commit_sha else commit_label
+            ),
+    ):
+        dialog.notification(_addon_name, "Update Cancelled.")
+        del dialog
+        return
+    _remove_folder(os.path.join(_addons, addon["plugin_id"]))
+    progress = xbmcgui.DialogProgress()
+    progress.create(
+        _addon_name, "Downloading [COLOR {}]{}[/COLOR]".format(_color, addon["name"])
+    )
+    progress.update(-1)
+    location = _get_branch_zip_file(
+        addon["user"],
+        addon["repo_name"],
+        branch["branch"]["name"] if not commit_sha else commit_sha,
+    )
+
+    progress.update(-1, "Extracting....")
+    _extract_addon(location, addon)
+    _rewrite_addon_xml_dependency_versions(addon)
+    _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
+    _clear_temp()
+
+    progress.update(-1, "Reloading profile....")
+    progress.close()
+    del progress
+    del dialog
+    tools.reload_profile()

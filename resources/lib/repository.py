@@ -54,6 +54,15 @@ def add_repository():
         dialog.notification(_addon_name, 'Cancelled')
         del dialog
         return
+    
+    
+    can_get = API.get('repos/{}/{}'.format(user, repo))
+    if not can_get.ok:
+        dialog.ok(_addon_name, 'This repository either does not exist, '
+                               'or you do not have access to it. Please verify '
+                               'the repository owner and name, and that you have access.')
+        del dialog
+        return
 
     def_name = ''
     def_id = ''

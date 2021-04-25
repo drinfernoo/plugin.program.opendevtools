@@ -28,6 +28,7 @@ def get_repos():
     repos = {}
     files = []
     
+    tools.create_folder(_json_path)
     for j in os.listdir(_json_path):
         file_path = os.path.join(_json_path, j)
         content = json.loads(tools.read_all_text(file_path))
@@ -187,7 +188,6 @@ def oauth():
             dialogProgress.close()
             _save_oauth(token)
             dialog.notification(_addon_name, 'GitHub Authorized Successfully')
-                                          
             break
             
     del dialog

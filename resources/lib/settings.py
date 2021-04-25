@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, unicode_literals
+
 import xbmcaddon
 
 def get_localized_string(_id, addon=None):

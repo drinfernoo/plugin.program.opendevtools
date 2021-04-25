@@ -14,6 +14,8 @@
 		<platform>all</platform>
 		<license>GNU GENERAL PUBLIC LICENSE Version 2, June 1991</license>
 		<assets>
+			<icon>icon.png</icon>
+			<fanart>fanart.png</fanart>
 		</assets>
 	</extension>
 </addon>

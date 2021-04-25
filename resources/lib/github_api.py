@@ -70,8 +70,16 @@ class GithubAPI(Session):
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get('{}/{}/archive/{}.zip'.format(user, repo, commit_sha)).content
 
-    def get_file(self, user, repo, path):
-        return self.get_json('/repos/{}/{}/contents/{}'.format(user, repo, path))
+    def get_file(self, user, repo, path, text=False):
+        if text:
+            headers = self.headers.copy()
+            headers.update({"Accept": "application/vnd.github.v3.raw"})
+            response = super(GithubAPI, self).get(tools.urljoin(self.base_url, '/repos/{}/{}/contents/{}'.format(user, repo, path)),
+                                headers=headers)
+            if response.ok:
+                return response.text
+        else:
+            return self.get_json('/repos/{}/{}/contents/{}'.format(user, repo, path))
 
     def get_tags(self, user, repo):
         return self.get_all_pages_json('/repos/{}/{}/git/refs/tags'.format(user, repo))

@@ -3,7 +3,6 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
-import base64
 import json
 import os
 import re
@@ -68,11 +67,10 @@ def add_repository():
     def_id = ''
     input_name = '{} the name of this addon'
     input_id = '{} the plugin ID of this addon'
-    addon_xml = API.get_file(user, repo, 'addon.xml')
+    addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
     
-    if 'content' in addon_xml:
-        full_xml = base64.b64decode(addon_xml['content'])
-        addon = ElementTree.fromstring(full_xml)
+    if addon_xml:
+        addon = ElementTree.fromstring(addon_xml)
 
         def_name = addon.get('name')
         def_id = addon.get('id')
@@ -148,11 +146,10 @@ def remove_repository():
     
 def get_icon(user, repo):
     icon = ''
-    addon_xml = API.get_file(user, repo, 'addon.xml')
-            
-    if 'content' in addon_xml:
-        full_xml = base64.b64decode(addon_xml['content'])
-        addon = ElementTree.fromstring(full_xml)
+    addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
+    
+    if addon_xml:
+        addon = ElementTree.fromstring(addon_xml)
         
         try:
             def_icon = [i for i in addon.findall('extension') if i.get('point') == 'xbmc.addon.metadata'][0]

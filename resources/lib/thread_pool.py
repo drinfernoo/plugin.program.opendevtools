@@ -176,7 +176,7 @@ class ThreadPool:
 
         while not self.tasks.empty():
             self._worker_maintenance()
-            time.sleep(0.001)
+            time.sleep(0.01)
 
         [i.join() for i in self.worker_pool]
         self._try_raise()

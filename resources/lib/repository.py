@@ -164,7 +164,7 @@ def get_icon(user, repo):
     return icon
     
 
-def oauth():
+def oauth(in_addon=False):
     init = API.authorize()
     dialog = xbmcgui.Dialog()
     dialogProgress = xbmcgui.DialogProgress()
@@ -204,7 +204,8 @@ def oauth():
             
     del dialog
     del dialogProgress
-    settings.open_settings()
+    if not in_addon:
+        settings.open_settings()
 
 
 def revoke():

@@ -38,7 +38,7 @@ def _do_action():
         dialog = xbmcgui.Dialog()
         if not _access_token:
             if dialog.yesno(_addon_name, "GitHub has not been authorized. Would you like to authorize now?"):
-                oauth()
+                oauth(True)
 
         actions = [('Log Issue', raise_issue), ('Update Addon', update_addon),
                    ('Add Repository', add_repository), ('Remove Repository', remove_repository)]

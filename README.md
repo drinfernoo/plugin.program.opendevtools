@@ -2,7 +2,7 @@
 
 ### About
 This add-on allows you to download add-ons directly from GitHub, from any branch or any commit, including tags.
-It is an advanced tool for developers, and it is highly recommended that the add-on be installed properly from a zip or repository first.
+This is an advanced tool for developers and testers, and it is highly recommended that the add-on be installed properly from a zip or repository first.
 
 
 ### Authorizing GitHub

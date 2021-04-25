@@ -71,6 +71,7 @@ class GithubAPI(Session):
         return self.get('{}/{}/archive/{}.zip'.format(user, repo, commit_sha)).content
 
     def get_file(self, user, repo, path):
+        self.headers.update({"Accept": "application/vnd.github.v3.raw"})
         return self.get_json('/repos/{}/{}/contents/{}'.format(user, repo, path))
 
     def get_tags(self, user, repo):

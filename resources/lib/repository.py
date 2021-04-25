@@ -4,6 +4,7 @@ import base64
 import json
 import os
 import re
+import requests
 import time
 import unidecode
 from xml.etree import ElementTree
@@ -20,6 +21,8 @@ _addon_data = tools.translate_path(settings.get_addon_info('profile'))
 _json_path = os.path.join(_addon_data, 'json')
 
 _addon_name = settings.get_addon_info('name')
+
+_compact = settings.get_setting_boolean('general.compact')
 
 def get_repos():
     repos = {}
@@ -99,9 +102,21 @@ def remove_repository():
     
     repos, files = get_repos()
     addon_names = [i for i in [i["name"] for i in repos.values()]]
-    selection = dialog.select(
-        _addon_name, ["Remove {}".format(i) for i in addon_names]
-    )
+    
+    addon_items = []
+    for name in addon_names:
+        li = xbmcgui.ListItem("Remove {}".format(name))
+        
+        if not _compact:
+            repo_def = [repos[i] for i in repos if repos[i]['name'] == name][0]
+            user = repo_def['user']
+            repo = repo_def['repo_name']
+            icon = get_icon(user, repo)
+            li.setArt({'thumb': icon})
+
+        addon_items.append(li)
+    
+    selection = dialog.select(_addon_name, addon_items, useDetails=not _compact)
 
     if selection > -1:
         # import web_pdb; web_pdb.set_trace()
@@ -116,6 +131,24 @@ def remove_repository():
             os.remove(files[selection])
             dialog.notification(_addon_name, 'Repositor{} Removed'.format('y' if len(indices) == 1 else 'ies'))
     del dialog
+    
+    
+def get_icon(user, repo):
+    icon = ''
+    addon_xml = API.get_file(user, repo, 'addon.xml')
+            
+    if 'content' in addon_xml:
+        full_xml = base64.b64decode(addon_xml['content'])
+        addon = ElementTree.fromstring(full_xml)
+        
+        try:
+            def_icon = [i for i in addon.findall('extension') if i.get('point') == 'xbmc.addon.metadata'][0]
+            icon_path = def_icon.find('assets').find('icon').text
+            icon_url = API.get_file(user, repo, icon_path)['download_url']
+            icon = requests.head(icon_url, allow_redirects=True).url
+        except Exception as e:
+            pass
+    return icon
     
 
 def oauth():

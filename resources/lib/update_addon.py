@@ -18,12 +18,17 @@ from resources.lib.thread_pool import ThreadPool
 API = GithubAPI()
 
 _addon_name = settings.get_addon_info('name')
+
 _color = settings.get_setting_string('general.color')
+_compact = settings.get_setting_boolean('general.compact')
 
 _home = tools.translate_path('special://home')
 _addons = os.path.join(_home, 'addons')
 _temp = tools.translate_path('special://temp')
+_addon_path = tools.translate_path(settings.get_addon_info('path'))
 _addon_data = tools.translate_path(settings.get_addon_info('profile'))
+
+_media_path = os.path.join(_addon_path, 'resources', 'media')
 
 
 def _get_branch_zip_file(github_user, github_repo, github_branch):
@@ -162,22 +167,32 @@ def _get_selected_commit(user, repo, branch):
                                               if 'commit' in b else
                                               b['author']["date"],
                                 reverse=True)
+
         for commit in sorted_commits:
             if commit['sha'] in [i[1] for i in tags]:
                 tag = [i[0] for i in tags if i[1] == commit['sha']][0]
-                label = 'TAG > {}'.format(tag)
-                if label not in commit_items:
-                    commit_items.append(label)
+                label = '[COLOR {}]{}[/COLOR]'.format(_color, tag)
+                if label not in [i.getLabel() for i in commit_items]:
+                    li = xbmcgui.ListItem(label)
+                    li.setArt({'thumb': os.path.join(_media_path, 'tag.png')})
+                    commit_items.append(li)
             else:
-                commit_items.append(
+                li = xbmcgui.ListItem(
                     "[COLOR {}]{}[/COLOR] - {}".format(
                         _color,
                         commit["sha"][:8],
                         commit["commit"]["message"].replace("\n", "; "),
-                    )
-                )
+                    ), label2='by {} @ {}'.format(commit['commit']['author']['name'], commit['commit']['author']['date']))
+                art = os.path.join(_media_path, 'commit.png')
+                if 'pull' in commit["commit"]["message"]:
+                    art = os.path.join(_media_path, 'pull.png')
+                elif 'merge' in commit["commit"]["message"]:
+                    art = os.path.join(_media_path, 'merge.png')
+                    
+                li.setArt({'thumb': art})
+                commit_items.append(li)
 
-    selection = dialog.select(_addon_name, commit_items)
+    selection = dialog.select(_addon_name, commit_items, useDetails=not _compact)
     del dialog
     if selection > -1:
         sha = sorted_commits[selection]['sha']
@@ -214,9 +229,20 @@ def update_addon():
     pool = ThreadPool()
     repos, files = repository.get_repos()
     addon_names = [i for i in [i["name"] for i in repos.values()]]
-    selection = dialog.select(
-        _addon_name, ["Update {}".format(i) for i in addon_names]
-    )
+    addon_items = []
+    for addon_name in addon_names:
+        li = xbmcgui.ListItem("Update {}".format(addon_name))
+        
+        if not _compact:
+            repo_def = [repos[i] for i in repos if repos[i]['name'] == addon_name][0]
+            user = repo_def['user']
+            repo = repo_def['repo_name']
+            icon = repository.get_icon(user, repo)
+            li.setArt({'thumb': icon})
+
+        addon_items.append(li)
+            
+    selection = dialog.select(_addon_name, addon_items, useDetails=not _compact)
     if selection == -1:
         dialog.notification(_addon_name, "Download Cancelled.")
         del dialog
@@ -259,15 +285,18 @@ def update_addon():
         )
         sorted_branches = default_branch + protected_branches + normal_branches
 
-    selection = dialog.select(
-        _addon_name,
-        [
-            "[COLOR {}]{} - Updated {} ({})[/COLOR]".format(
-                _color, i["branch"]["name"], i["updated_at"], i["sha"][:8]
-            )
-            for i in sorted_branches
-        ]
-    )
+    branch_items = []
+    for i in sorted_branches:
+        art = os.path.join(_media_path, 'branch.png')
+        if i in default_branch:
+            art = os.path.join(_media_path, 'default-branch.png')
+        elif i in protected_branches:
+            art = os.path.join(_media_path, 'protected-branch.png')
+        li = xbmcgui.ListItem("[COLOR {}]{}[/COLOR] - Updated {} ([COLOR {}]{}[/COLOR])"
+                              .format(_color, i["branch"]["name"], i["updated_at"], _color, i["sha"][:8]))
+        li.setArt({'thumb': art})
+        branch_items.append(li)
+    selection = dialog.select(_addon_name, branch_items, useDetails=not _compact)
     if selection > -1:
         branch = sorted_branches[selection]
     else:

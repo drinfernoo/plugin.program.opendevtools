@@ -6,6 +6,7 @@
                  action="RunScript(plugin.program.opendevtools,action=color_picker)"
                  default="[COLOR forestgreen]forestgreen[/COLOR]"/>
 		<setting id="general.color" type="text" label="Color Scheme" visible="false" default="forestgreen"/>
+		<setting id="general.compact" type="bool" label="Use Compact List" default="false"/>
 		
 		<setting label="GitHub" type="lsep"/>
 		

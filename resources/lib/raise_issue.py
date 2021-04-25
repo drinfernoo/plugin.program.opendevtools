@@ -18,7 +18,9 @@ _log_location = tools.translate_path('special://logpath')
 _addon_name = settings.get_addon_info('name')
 _addon_id = settings.get_addon_info('id')
 _addon_version = settings.get_addon_info('version')
+
 _color = settings.get_setting_string('general.color')
+_compact = settings.get_setting_boolean('general.compact')
 
 _paste_url = 'https://paste.kodi.tv/'
 _github_token = settings.get_setting_string('github.token')
@@ -56,8 +58,21 @@ def _get_repo_selection():
     repos, files = repository.get_repos()
     names = [i for i in [i["name"] for i in repos.values()]]
     keys = [i for i in repos]
+    
+    repo_items = []
+    for name in names:
+        li = xbmcgui.ListItem("{}".format(name))
+        
+        if not _compact:
+            repo_def = [repos[i] for i in repos if repos[i]['name'] == name][0]
+            user = repo_def['user']
+            repo = repo_def['repo_name']
+            icon = repository.get_icon(user, repo)
+            li.setArt({'thumb': icon})
 
-    selection = dialog.select('Select a repository', names)
+        repo_items.append(li)
+
+    selection = dialog.select('Select a repository', repo_items, useDetails=not _compact)
     del dialog
     if not selection == -1:
         repo = repos[keys[selection]]

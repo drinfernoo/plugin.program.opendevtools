@@ -42,12 +42,12 @@ def add_repository():
     
     user = dialog.input('Enter GitHub Username')
     if not user:
-        dialog.notification(_addon_name, 'Canceled')
+        dialog.notification(_addon_name, 'Cancelled')
         del dialog
         return
     repo = dialog.input('Enter GitHub Repo Name')
     if not repo:
-        dialog.notification(_addon_name, 'Canceled')
+        dialog.notification(_addon_name, 'Cancelled')
         del dialog
         return
 
@@ -77,12 +77,12 @@ def add_repository():
     
     name = dialog.input(input_name, defaultt=def_name)
     if not name:
-        dialog.notification(_addon_name, 'Canceled')
+        dialog.notification(_addon_name, 'Cancelled')
         del dialog
         return
     plugin_id = dialog.input(input_id, defaultt=def_id)
     if not plugin_id:
-        dialog.notification(_addon_name, 'Canceled')
+        dialog.notification(_addon_name, 'Cancelled')
         del dialog
         return
 
@@ -129,7 +129,7 @@ def remove_repository():
             remove = dialog.yesno(_addon_name, 'Are you sure you want to remove {}?'.format(addon_names[selection]))
         if remove:
             os.remove(files[selection])
-            dialog.notification(_addon_name, 'Repositor{} Removed'.format('y' if len(indices) == 1 else 'ies'))
+            dialog.notification(_addon_name, '{} Repositor{} Removed'.format(len(indices), 'y' if len(indices) == 1 else 'ies'))
     del dialog
     
     

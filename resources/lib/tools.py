@@ -9,6 +9,7 @@ import collections
 from contextlib import contextmanager
 from io import open
 import os
+import shutil
 import sys
 
 from resources.lib import settings
@@ -324,3 +325,14 @@ def color_picker():
 
 def color_string(text, color=None):
     return "[COLOR {}]{}[/COLOR]".format(color, text)
+    
+    
+def copytree(src, dst, symlinks=False, ignore=None):
+    create_folder(dst)
+    for item in os.listdir(src):
+        s = os.path.join(src, item)
+        d = os.path.join(dst, item)
+        if os.path.isdir(s):
+            copytree(s, d, symlinks, ignore)
+        else:
+            shutil.copy2(s, d)

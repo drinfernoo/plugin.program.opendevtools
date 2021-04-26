@@ -76,7 +76,7 @@ def _extract_addon(zip_location, addon):
         )
     tools.log("Extracting to: {}".format(os.path.join(_temp, base_directory)))
     install_path = os.path.join(_addons, addon['plugin_id'])
-    shutil.copytree(os.path.join(_temp, base_directory), install_path)
+    tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
     _remove_folder(os.path.join(install_path, base_directory))
 
 

@@ -179,12 +179,13 @@ def _get_selected_commit(user, repo, branch):
                     li.setArt({'thumb': os.path.join(_media_path, 'tag.png')})
                     commit_items.append(li)
             else:
+                date = tools.to_local_time(commit['commit']['author']['date'])
                 li = xbmcgui.ListItem(
                     "[COLOR {}]{}[/COLOR] - {}".format(
                         _color,
                         commit["sha"][:8],
                         commit["commit"]["message"].replace("\n", "; "),
-                    ), label2='by {} @ {}'.format(commit['commit']['author']['name'], commit['commit']['author']['date']))
+                    ), label2='by {} @ {}'.format(commit['commit']['author']['name'], date))
                 art = os.path.join(_media_path, 'commit.png')
                 if 'pull' in commit["commit"]["message"]:
                     art = os.path.join(_media_path, 'pull.png')
@@ -294,8 +295,10 @@ def update_addon():
             art = os.path.join(_media_path, 'default-branch.png')
         elif i in protected_branches:
             art = os.path.join(_media_path, 'protected-branch.png')
-        li = xbmcgui.ListItem("[COLOR {}]{}[/COLOR] - Updated {} ([COLOR {}]{}[/COLOR])"
-                              .format(_color, i["branch"]["name"], i["updated_at"], _color, i["sha"][:8]))
+        date = tools.to_local_time(i['updated_at'])
+        li = xbmcgui.ListItem("{} - ([COLOR {}]{}[/COLOR])"
+                              .format(i["branch"]["name"], _color, i["sha"][:8]),
+                              label2='Updated {}'.format(date))
         li.setArt({'thumb': art})
         branch_items.append(li)
     selection = dialog.select(_addon_name, branch_items, useDetails=not _compact)

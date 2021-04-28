@@ -5,12 +5,14 @@ import xbmc
 import xbmcgui
 import xbmcvfs
 
+import calendar
 import collections
 from contextlib import contextmanager
 from io import open
 import os
 import shutil
 import sys
+import time
 
 from resources.lib import settings
 
@@ -300,6 +302,14 @@ def ensure_path_is_dir(path):
     elif not path.endswith("/"):
         return path + "/"
     return path
+    
+    
+def to_local_time(utc_time):
+    rem = '#' if sys.platform == 'win32' else '-'
+    utc_string = '%Y-%m-%dT%H:%M:%SZ'
+    format_string = '%a, %b %{0}d, %Y at %{0}I:%M %p'.format(rem)
+    
+    return time.strftime(format_string, time.gmtime(calendar.timegm(time.strptime(utc_time, utc_string))))
 
 
 def create_folder(path):

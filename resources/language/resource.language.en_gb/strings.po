@@ -1,0 +1,332 @@
+# Kodi Media Center language file
+# Addon Name: OpenDevTools
+# Addon id: plugin.program.opendevtools
+# Addon Provider: drinfernoo
+msgid ""
+msgstr ""
+"Project-Id-Version: XBMC Addons\n"
+"Report-Msgid-Bugs-To: alanwww1@xbmc.org\n"
+"POT-Creation-Date: 2021-04-27 22:09+PST\n"
+"PO-Revision-Date: YEAR-MO-DA 22:09+PST\n"
+"Last-Translator: Kodi Translation Team\n"
+"Language-Team: English (http://www.transifex.com/projects/p/xbmc-addons/language/en/)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: en\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: /resources/lib/default.py
+msgctxt "#32000"
+msgid "Update Addon"
+msgstr ""
+
+#: /resources/lib/default.py
+msgctxt "#32001"
+msgid "Open Issue"
+msgstr ""
+
+#: /resources/lib/default.py
+msgctxt "#32002"
+msgid "Add Repository"
+msgstr ""
+
+#: /resources/lib/default.py
+msgctxt "#32003"
+msgid "Remove Repository"
+msgstr ""
+
+#: /resources/lib/default.py
+msgctxt "#32004"
+msgid "Select an Action"
+msgstr ""
+
+#: /resources/lib/default.py
+msgctxt "#32005"
+msgid "GitHub has not been authorized. Would you like to authorize now?"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32006"
+msgid "Issue Title"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32007"
+msgid "Issue Description"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32008"
+msgid "Issue Opened"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32009"
+msgid "Issue successfully opened for [COLOR {}]{}[/COLOR] with log [COLOR {}]{}[/COLOR]"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32010"
+msgid "Error Opening Issue"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32011"
+msgid "An issue title is required to submit an issue."
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32012"
+msgid "Select a Repository"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32013"
+msgid "Issue Opened via {}"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32014"
+msgid "by {} on {}"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32015"
+msgid "Update {}"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32016"
+msgid "Select a Commit"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32017"
+msgid "Update Cancelled."
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32018"
+msgid "Updated on {}"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32019"
+msgid "Select a Branch"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32020"
+msgid "Update from [COLOR {}]{}[/COLOR]"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32021"
+msgid "Would you like to update from a previous commit or latest?"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32022"
+msgid "Previous Commit"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32023"
+msgid "Latest"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32024"
+msgid "This will attempt to update [COLOR {}]{}[/COLOR] from the [COLOR {}]{}[/COLOR] branch, are you sure?"
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32025"
+msgid "Downloading [COLOR {}]{}[/COLOR]..."
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32026"
+msgid "Extracting [COLOR {}]{}[/COLOR]..."
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32027"
+msgid "Reloading profile..."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32028"
+msgid "Enter GitHub Username"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32029"
+msgid "Cancelled"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32030"
+msgid "Enter GitHub Repo Name"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32031"
+msgid "This repository either does not exist, or you do not have access to it. Please verify the repository owner and name, and that you have access."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32032"
+msgid "{} the name of this addon"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32033"
+msgid "{} the plugin ID of this addon"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32034"
+msgid "Confirm"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32035"
+msgid "Enter"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32036"
+msgid "This repository seems to not contain an addon in its root folder. Do you still want to add it?"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32037"
+msgid "Repository Added"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32038"
+msgid "Remove {}"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32039"
+msgid "Removing this repository will remove the following repositories: {}. Are you sure you want to remove them?"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32040"
+msgid "Are you sure you want to remove {}?"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32041"
+msgid "{} Repository Removed"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32042"
+msgid "{} Repositories Removed"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32043"
+msgid "Visit the following site from any device: [COLOR {}][B]{}[/B][/COLOR]\nAnd enter the code: [COLOR {}][B]{}[/B][/COLOR]"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32044"
+msgid "GitHub Authorization Failed"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32045"
+msgid "GitHub Authorization Cancelled"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32046"
+msgid "GitHub Authorized Successfully"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32047"
+msgid "Are you sure you want to clear your authorization? To fully revoke your OAuth key, please visit {}."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32048"
+msgid "GitHub Authorization Cleared"
+msgstr ""
+
+#: /resources/lib/tools.py
+msgctxt "#32049"
+msgid "%a, %b %{0}d, %Y at %{0}I:%M %p"
+msgstr ""
+
+#: /resources/lib/tools.py
+msgctxt "#32050"
+msgid "Choose a Color"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32051"
+msgid "General"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32052"
+msgid "Interface"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32053"
+msgid "Choose Color Scheme"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32054"
+msgid "Color Scheme"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32055"
+msgid "Use Compact List"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32056"
+msgid "GitHub"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32057"
+msgid "Authorize GitHub"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32058"
+msgid "Reauthorize GitHub"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32059"
+msgid "Clear GitHub Authorization"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32060"
+msgid "Github Username"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32061"
+msgid "Github Access Token"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32062"
+msgid "Github Client ID"
+msgstr ""

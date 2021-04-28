@@ -143,7 +143,7 @@ def _clear_temp():
             path = os.path.join(_temp, item)
             if os.path.isdir(path):
                 os.remove(path)
-            elif os.path.isfile(path) and path not in ["kodi.log", ]:
+            elif os.path.isfile(path) and path not in ["kodi.log"]:
                 shutil.rmtree(path)
     except (OSError, IOError) as e:
         tools.log("Failed to cleanup temporary storage: {}".format(repr(e)))
@@ -185,7 +185,7 @@ def _get_selected_commit(user, repo, branch):
                         _color,
                         commit["sha"][:8],
                         commit["commit"]["message"].replace("\n", "; "),
-                    ), label2='by {} on {}'.format(commit['commit']['author']['name'], date))
+                    ), label2=settings.get_localized_string(32014).format(commit['commit']['author']['name'], date))
                 art = os.path.join(_media_path, 'commit.png')
                 if 'pull' in commit["commit"]["message"]:
                     art = os.path.join(_media_path, 'pull.png')
@@ -195,7 +195,7 @@ def _get_selected_commit(user, repo, branch):
                 li.setArt({'thumb': art})
                 commit_items.append(li)
 
-    selection = dialog.select(_addon_name, commit_items, useDetails=not _compact)
+    selection = dialog.select(settings.get_localized_string(32016), commit_items, useDetails=not _compact)
     del dialog
     if selection > -1:
         sha = sorted_commits[selection]['sha']
@@ -230,11 +230,11 @@ def _get_branch_info(addon, branch):
 def update_addon():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
-    repos, files = repository.get_repos()
+    repos, _ = repository.get_repos()
     addon_names = [i for i in [i["name"] for i in repos.values()]]
     addon_items = []
     for addon_name in addon_names:
-        li = xbmcgui.ListItem("Update {}".format(addon_name))
+        li = xbmcgui.ListItem(settings.get_localized_string(32015).format(addon_name))
         
         if not _compact:
             repo_def = [repos[i] for i in repos if repos[i]['name'] == addon_name][0]
@@ -245,9 +245,9 @@ def update_addon():
 
         addon_items.append(li)
             
-    selection = dialog.select(_addon_name, addon_items, useDetails=not _compact)
+    selection = dialog.select(settings.get_localized_string(32012), addon_items, useDetails=not _compact)
     if selection == -1:
-        dialog.notification(_addon_name, "Download Cancelled.")
+        dialog.notification(_addon_name, settings.get_localized_string(32017))
         del dialog
         sys.exit(0)
 
@@ -298,10 +298,10 @@ def update_addon():
         date = tools.to_local_time(i['updated_at'])
         li = xbmcgui.ListItem("{} - ([COLOR {}]{}[/COLOR])"
                               .format(i["branch"]["name"], _color, i["sha"][:8]),
-                              label2='Updated {}'.format(date))
+                              label2=settings.get_localized_string(32018).format(date))
         li.setArt({'thumb': art})
         branch_items.append(li)
-    selection = dialog.select(_addon_name, branch_items, useDetails=not _compact)
+    selection = dialog.select(settings.get_localized_string(32019), branch_items, useDetails=not _compact)
     if selection > -1:
         branch = sorted_branches[selection]
     else:
@@ -312,35 +312,33 @@ def update_addon():
 
     commit_sha = None
     selection = dialog.yesno(
-        "Update from [COLOR {}]{}[/COLOR]".format(_color, branch["name"]),
-        "Would you like to update from a previous commit or latest?",
-        yeslabel="Previous Commit",
-        nolabel="Latest",
+        settings.get_localized_string(32020).format(_color, branch["name"]),
+        settings.get_localized_string(32021),
+        yeslabel=settings.get_localized_string(32022),
+        nolabel=settings.get_localized_string(32023),
     )
     if selection:
         commit_label, commit_sha = _get_selected_commit(
             addon["user"], addon["repo_name"], branch["sha"]
         )
         if not commit_sha:
-            dialog.notification(_addon_name, "Update Cancelled.")
+            dialog.notification(_addon_name, settings.get_localized_string(32017))
             del dialog
             return
 
     if not dialog.yesno(
-            _addon_name,
-            "This will attempt to update [COLOR {}]{}[/COLOR] from the "
-            "[COLOR {}]{}[/COLOR] branch,"
-            " are you sure?".format(
+            settings.get_localized_string(32000),
+            settings.get_localized_string(32024).format(
                 _color, addon["name"], _color, branch["branch"]["name"] if not commit_sha else commit_label
             ),
     ):
-        dialog.notification(_addon_name, "Update Cancelled.")
+        dialog.notification(_addon_name, settings.get_localized_string(32017))
         del dialog
         return
     _remove_folder(os.path.join(_addons, addon["plugin_id"]))
     progress = xbmcgui.DialogProgress()
     progress.create(
-        _addon_name, "Downloading [COLOR {}]{}[/COLOR]".format(_color, addon["name"])
+        _addon_name, settings.get_localized_string(32025).format(_color, addon["name"])
     )
     progress.update(-1)
     location = _get_branch_zip_file(
@@ -349,13 +347,13 @@ def update_addon():
         branch["branch"]["name"] if not commit_sha else commit_sha,
     )
 
-    progress.update(-1, "Extracting....")
+    progress.update(-1, settings.get_localized_string(32026).format(_color, addon["name"]))
     _extract_addon(location, addon)
     _rewrite_addon_xml_dependency_versions(addon)
     _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
     _clear_temp()
 
-    progress.update(-1, "Reloading profile....")
+    progress.update(-1, settings.get_localized_string(32027))
     progress.close()
     del progress
     del dialog

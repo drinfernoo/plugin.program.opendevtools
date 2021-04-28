@@ -32,9 +32,9 @@ def raise_issue():
     user, repo = _get_repo_selection()
     if user and repo:
         dialog = xbmcgui.Dialog()
-        title = dialog.input('Issue Title')
+        title = dialog.input(settings.get_localized_string(32006))
         if title:
-            description = dialog.input('Issue Description')
+            description = dialog.input(settings.get_localized_string(32007))
             log_key = None
             response, log_key = _upload_log()
 
@@ -42,16 +42,15 @@ def raise_issue():
                 try:
                     resp = _post_issue(_format_issue(title, description, log_key), user, repo)
                     if 'message' not in resp:
-                        dialog.notification('Issue created',
-                                            'Issue successfully created for [COLOR {}]{}[/COLOR] '
-                                            'with log [COLOR {}]{}[/COLOR]'.format(_color, repo, _color, log_key))
+                        dialog.notification(_addon_name,
+                                            settings.get_localized_string(32009).format(_color, repo, _color, log_key))
                     else:
                         dialog.ok(_addon_name, resp['message'])
                 except requests.exceptions.RequestException as e:
-                    dialog.notification(_addon_name, 'Error creating issue')
-                    tools.log('Error creating issue: {}'.format(e), 'error')
+                    dialog.notification(_addon_name, settings.get_localized_string(32010))
+                    tools.log('Error opening issue: {}'.format(e), 'error')
         else:
-            dialog.ok(_addon_name, 'An issue title is required to submit an issue.')
+            dialog.ok(_addon_name, settings.get_localized_string(32011))
         del dialog
 
 
@@ -74,7 +73,7 @@ def _get_repo_selection():
 
         repo_items.append(li)
 
-    selection = dialog.select('Select a repository', repo_items, useDetails=not _compact)
+    selection = dialog.select(settings.get_localized_string(32012), repo_items, useDetails=not _compact)
     del dialog
     if not selection == -1:
         repo = repos[keys[selection]]
@@ -123,11 +122,11 @@ def _upload_log():
 
 
 def _format_issue(title, description, log_key):
-    log_desc = """Issue Raised via OpenDevTools
+    log_desc = """{}
     
     {}
     
-    Log File - {}""".format(description, _paste_url + 'raw/' + log_key)
+    Log File - {}""".format(settings.get_localized_string(32013).format(_addon_name), description, _paste_url + 'raw/' + log_key)
 
     return {
         "title": title,

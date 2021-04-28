@@ -43,30 +43,28 @@ def get_repos():
 def add_repository():
     dialog = xbmcgui.Dialog()
     
-    user = dialog.input('Enter GitHub Username')
+    user = dialog.input(settings.get_localized_string(32028))
     if not user:
-        dialog.notification(_addon_name, 'Cancelled')
+        dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
         return
-    repo = dialog.input('Enter GitHub Repo Name')
+    repo = dialog.input(settings.get_localized_string(32030))
     if not repo:
-        dialog.notification(_addon_name, 'Cancelled')
+        dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
         return
     
     
     can_get = API.get('repos/{}/{}'.format(user, repo))
     if not can_get.ok:
-        dialog.ok(_addon_name, 'This repository either does not exist, '
-                               'or you do not have access to it. Please verify '
-                               'the repository owner and name, and that you have access.')
+        dialog.ok(_addon_name, settings.get_localized_string(32031))
         del dialog
         return
 
     def_name = ''
     def_id = ''
-    input_name = '{} the name of this addon'
-    input_id = '{} the plugin ID of this addon'
+    input_name = settings.get_localized_string(32032)
+    input_id = settings.get_localized_string(32033)
     addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
     
     if addon_xml:
@@ -75,25 +73,25 @@ def add_repository():
         def_name = addon.get('name')
         def_id = addon.get('id')
     
-        input_name = input_name.format('Confirm')
-        input_id = input_id.format('Confirm')
+        input_name = input_name.format(settings.get_localized_string(32034))
+        input_id = input_id.format(settings.get_localized_string(32034))
     else:
-        input_name = input_name.format('Enter')
-        input_id = input_id.format('Enter')
+        input_name = input_name.format(settings.get_localized_string(32035))
+        input_id = input_id.format(settings.get_localized_string(32035))
     
     if '' in [def_name, def_id]:
-        if not dialog.yesno(_addon_name, 'This repository seems to not contain an addon in its root folder. Do you still want to add it?'):
+        if not dialog.yesno(_addon_name, settings.get_localized_string(32036)):
             del dialog
             return
     
     name = dialog.input(input_name, defaultt=def_name)
     if not name:
-        dialog.notification(_addon_name, 'Cancelled')
+        dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
         return
     plugin_id = dialog.input(input_id, defaultt=def_id)
     if not plugin_id:
-        dialog.notification(_addon_name, 'Cancelled')
+        dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
         return
 
@@ -104,7 +102,7 @@ def add_repository():
     
     tools.create_folder(_json_path)
     tools.write_all_text(os.path.join(_json_path, key + '.json'), json.dumps(addon_def))
-    dialog.notification(_addon_name, 'Repository Added')
+    dialog.notification(_addon_name, settings.get_localized_string(32037))
     del dialog
 
 
@@ -116,7 +114,7 @@ def remove_repository():
     
     addon_items = []
     for name in addon_names:
-        li = xbmcgui.ListItem("Remove {}".format(name))
+        li = xbmcgui.ListItem(settings.get_localized_string(32038).format(name))
         
         if not _compact:
             repo_def = [repos[i] for i in repos if repos[i]['name'] == name][0]
@@ -127,20 +125,18 @@ def remove_repository():
 
         addon_items.append(li)
     
-    selection = dialog.select(_addon_name, addon_items, useDetails=not _compact)
+    selection = dialog.select(settings.get_localized_string(32012), addon_items, useDetails=not _compact)
 
     if selection > -1:
-        # import web_pdb; web_pdb.set_trace()
         file_path = files[selection]
         indices = [i for i, x in enumerate(files) if x == file_path]
         if len(indices) > 1:
-            remove = dialog.yesno(_addon_name, 'Removing this repository will remove the following repositories: {}.'
-                                             ' Are you sure you want to remove them?'.format(', '.join([addon_names[i] for i in indices])))
+            remove = dialog.yesno(_addon_name, settings.get_localized_string(32039).format(', '.join([addon_names[i] for i in indices])))
         else:
-            remove = dialog.yesno(_addon_name, 'Are you sure you want to remove {}?'.format(addon_names[selection]))
+            remove = dialog.yesno(_addon_name, settings.get_localized_string(32040).format(addon_names[selection]))
         if remove:
             os.remove(files[selection])
-            dialog.notification(_addon_name, '{} Repositor{} Removed'.format(len(indices), 'y' if len(indices) == 1 else 'ies'))
+            dialog.notification(_addon_name, settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(len(indices)))
     del dialog
     
     
@@ -166,10 +162,10 @@ def oauth(in_addon=False):
     dialog = xbmcgui.Dialog()
     dialogProgress = xbmcgui.DialogProgress()
     dialogProgress.create(_addon_name,
-                          ('Visit the following site from any device: '
-                           '[COLOR skyblue][B]{}[/B][/COLOR]\nAnd enter the code: '
-                           '[COLOR skyblue][B]{}[/B][/COLOR]').format(
+                          settings.get_localized_string(32043).format(
+                                           _color,
                                            init['verification_uri'],
+                                           _color,
                                            init['user_code']))
                                     
     expires = time.time() + init['expires_in']
@@ -184,11 +180,11 @@ def oauth(in_addon=False):
         
         if pct_timeout >= 100:
             dialogProgress.close()
-            dialog.notification(_addon_name, 'GitHub Authorization Failed')
+            dialog.notification(_addon_name, settings.get_localized_string(32044))
             break
         if dialogProgress.iscanceled():
             dialogProgress.close()
-            dialog.notification(_addon_name, 'GitHub Authorization Cancelled')
+            dialog.notification(_addon_name, settings.get_localized_string(32045))
             break
             
         dialogProgress.update(int(pct_timeout))
@@ -196,7 +192,7 @@ def oauth(in_addon=False):
         if 'access_token' in token:
             dialogProgress.close()
             _save_oauth(token)
-            dialog.notification(_addon_name, 'GitHub Authorized Successfully')
+            dialog.notification(_addon_name, settings.get_localized_string(32046))
             break
             
     del dialog
@@ -207,9 +203,9 @@ def oauth(in_addon=False):
 
 def revoke():
     dialog = xbmcgui.Dialog()
-    if dialog.yesno(_addon_name, 'Are you sure you want to clear your authorization? To fully revoke your OAuth key, please visit https://github.com/settings/connections/applications/.'):
+    if dialog.yesno(_addon_name, settings.get_localized_string(32047).format('https://github.com/settings/connections/applications/')):
         _clear_oauth()
-        dialog.notification(_addon_name, 'GitHub Authorization Cleared')
+        dialog.notification(_addon_name, settings.get_localized_string(32048))
         settings.open_settings()
 
 

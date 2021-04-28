@@ -185,7 +185,7 @@ def _get_selected_commit(user, repo, branch):
                         _color,
                         commit["sha"][:8],
                         commit["commit"]["message"].replace("\n", "; "),
-                    ), label2='by {} @ {}'.format(commit['commit']['author']['name'], date))
+                    ), label2='by {} on {}'.format(commit['commit']['author']['name'], date))
                 art = os.path.join(_media_path, 'commit.png')
                 if 'pull' in commit["commit"]["message"]:
                     art = os.path.join(_media_path, 'pull.png')

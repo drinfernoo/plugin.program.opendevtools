@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.0.2" provider-name="drinfernoo">
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.0.3" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.requests"/>
 		<import addon="script.module.unidecode"/>
@@ -17,6 +17,6 @@
 			<icon>icon.png</icon>
 			<fanart>fanart.png</fanart>
 		</assets>
-		<news>1.0.0 - Initial Release[CR]1.0.1 - Some performance fixes[CR]1.0.2 - Fix for existing folders</news>
+		<news>1.0.0 - Initial Release[CR]1.0.1 - Some performance fixes[CR]1.0.2 - Fix for existing folders[CR]1.0.3 - Better formatting for timestamps</news>
 	</extension>
 </addon>

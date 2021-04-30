@@ -227,10 +227,11 @@ def _get_branch_info(addon, branch):
     ]
 
 
-def update_addon():
+def update_addon(addon=None):
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
-    addon = repository.get_repo_selection('update_addon')
+    if not addon:
+        addon = repository.get_repo_selection('update_addon')
     if not addon:
         return
 

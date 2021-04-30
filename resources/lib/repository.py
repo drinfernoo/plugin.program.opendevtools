@@ -12,6 +12,7 @@ import unidecode
 from xml.etree import ElementTree
 
 from resources.lib import settings
+from resources.lib.update_addon import update_addon
 from resources.lib import tools
 from resources.lib.github_api import GithubAPI
 
@@ -104,6 +105,9 @@ def add_repository():
     tools.create_folder(_json_path)
     tools.write_all_text(os.path.join(_json_path, filename), json.dumps(addon_def))
     dialog.notification(_addon_name, settings.get_localized_string(32037))
+    
+    if dialog.yesno(_addon_name, 'Would you like to update this add-on now?'):
+        update_addon(addon_def[key])
     del dialog
 
 

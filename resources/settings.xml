@@ -1,37 +1,37 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="General">
-		<setting label="Interface" type="lsep"/>
-		<setting id="general.display_color" type="action" label="Choose Color Scheme"
+    <category label="$ADDON[plugin.program.opendevtools 32051]">
+		<setting label="$ADDON[plugin.program.opendevtools 32052]" type="lsep"/>
+		<setting id="general.display_color" type="action" label="$ADDON[plugin.program.opendevtools 32053]"
                  action="RunScript(plugin.program.opendevtools,action=color_picker)"
                  default="[COLOR forestgreen]forestgreen[/COLOR]"/>
-		<setting id="general.color" type="text" label="Color Scheme" visible="false" default="forestgreen"/>
-		<setting id="general.compact" type="bool" label="Use Compact List" default="false"/>
+		<setting id="general.color" type="text" label="$ADDON[plugin.program.opendevtools 32054]" visible="false" default="forestgreen"/>
+		<setting id="general.compact" type="bool" label="$ADDON[plugin.program.opendevtools 32055]" default="false"/>
 		
-		<setting label="GitHub" type="lsep"/>
+		<setting label="$ADDON[plugin.program.opendevtools 32056]" type="lsep"/>
 		
-		<setting type="action" label="Authorize GitHub"
+		<setting type="action" label="$ADDON[plugin.program.opendevtools 32057]"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
 				 visible="eq(3,) | eq(4,)"/>
-		<setting type="action" label="Reauthorize GitHub"
+		<setting type="action" label="$ADDON[plugin.program.opendevtools 32058]"
 				 id="github.username"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
 				 visible="!eq(2,) + !eq(3,)"/>
-        <setting type="action" label="Clear GitHub Authorization"
+        <setting type="action" label="$ADDON[plugin.program.opendevtools 32059]"
                  action="RunScript(plugin.program.opendevtools,action=revoke)"
 				 option="close"
 				 visible="!eq(1,) + !eq(2,)"/>
 		
-		<setting id="github.username" type="text" label="Github Username"
+		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 32060]"
 				 enable="false"
 				 visible="false"/>		 
-		<setting id="github.token" type="text" label="Github Access Token"
+		<setting id="github.token" type="text" label="$ADDON[plugin.program.opendevtools 32061]"
 				 option="hidden"
 				 enable="false"
 				 visible="false"/>
-		<setting id="github.client_id" type="text" label="Github Client ID"
+		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 32062]"
 				 default="7281fc95af8c0e322b96"
 				 visible="false"/>
     </category>

@@ -29,57 +29,29 @@ _github_token = settings.get_setting_string('github.token')
 
 
 def raise_issue():
-    user, repo = _get_repo_selection()
-    if user and repo:
+    selection = repository.get_repo_selection('open_issue')
+    if selection:
         dialog = xbmcgui.Dialog()
-        title = dialog.input('Issue Title')
+        title = dialog.input(settings.get_localized_string(32006))
         if title:
-            description = dialog.input('Issue Description')
+            description = dialog.input(settings.get_localized_string(32007))
             log_key = None
             response, log_key = _upload_log()
 
             if response:
                 try:
-                    resp = _post_issue(_format_issue(title, description, log_key), user, repo)
+                    resp = _post_issue(_format_issue(title, description, log_key), selection['user'], selection['repo'])
                     if 'message' not in resp:
-                        dialog.notification('Issue created',
-                                            'Issue successfully created for [COLOR {}]{}[/COLOR] '
-                                            'with log [COLOR {}]{}[/COLOR]'.format(_color, repo, _color, log_key))
+                        dialog.notification(_addon_name,
+                                            settings.get_localized_string(32009).format(_color, selection['repo'], _color, log_key))
                     else:
                         dialog.ok(_addon_name, resp['message'])
                 except requests.exceptions.RequestException as e:
-                    dialog.notification(_addon_name, 'Error creating issue')
-                    tools.log('Error creating issue: {}'.format(e), 'error')
+                    dialog.notification(_addon_name, settings.get_localized_string(32010))
+                    tools.log('Error opening issue: {}'.format(e), 'error')
         else:
-            dialog.ok(_addon_name, 'An issue title is required to submit an issue.')
+            dialog.ok(_addon_name, settings.get_localized_string(32011))
         del dialog
-
-
-def _get_repo_selection():
-    dialog = xbmcgui.Dialog()
-    repos, files = repository.get_repos()
-    names = [i for i in [i["name"] for i in repos.values()]]
-    keys = [i for i in repos]
-    
-    repo_items = []
-    for name in names:
-        li = xbmcgui.ListItem("{}".format(name))
-        
-        if not _compact:
-            repo_def = [repos[i] for i in repos if repos[i]['name'] == name][0]
-            user = repo_def['user']
-            repo = repo_def['repo_name']
-            icon = repository.get_icon(user, repo)
-            li.setArt({'thumb': icon})
-
-        repo_items.append(li)
-
-    selection = dialog.select('Select a repository', repo_items, useDetails=not _compact)
-    del dialog
-    if not selection == -1:
-        repo = repos[keys[selection]]
-        return repo['user'], repo['repo_name']
-    return '', ''
 
 
 def _post_issue(post_data, user, repo):
@@ -123,11 +95,11 @@ def _upload_log():
 
 
 def _format_issue(title, description, log_key):
-    log_desc = """Issue Raised via OpenDevTools
+    log_desc = """{}
     
     {}
     
-    Log File - {}""".format(description, _paste_url + 'raw/' + log_key)
+    Log File - {}""".format(settings.get_localized_string(32013).format(_addon_name), description, _paste_url + 'raw/' + log_key)
 
     return {
         "title": title,

@@ -307,7 +307,7 @@ def ensure_path_is_dir(path):
 def to_local_time(utc_time):
     rem = '#' if sys.platform == 'win32' else '-'
     utc_string = '%Y-%m-%dT%H:%M:%SZ'
-    format_string = '%a, %b %{0}d, %Y at %{0}I:%M %p'.format(rem)
+    format_string = settings.get_localized_string(32049).format(rem)
     
     return time.strftime(format_string, time.gmtime(calendar.timegm(time.strptime(utc_time, utc_string))))
 
@@ -325,7 +325,7 @@ def color_picker():
     for i in _color_chart:
         select_list.append(color_string(i, i))
     color = dialog.select(
-        "{}: {}".format(_addon_name, 'Choose a Color'), select_list,
+        "{}: {}".format(_addon_name, settings.get_localized_string(32050)), select_list,
         preselect=_color_chart.index(current_color)
     )
     if color > -1:

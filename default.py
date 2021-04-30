@@ -37,12 +37,12 @@ def _do_action():
     else:
         dialog = xbmcgui.Dialog()
         if not _access_token:
-            if dialog.yesno(_addon_name, "GitHub has not been authorized. Would you like to authorize now?"):
+            if dialog.yesno(_addon_name, settings.get_localized_string(32005)):
                 oauth(True)
 
-        actions = [('Log Issue', raise_issue), ('Update Addon', update_addon),
-                   ('Add Repository', add_repository), ('Remove Repository', remove_repository)]
-        selection = dialog.select('Select an action...', [i[0] for i in actions])
+        actions = [(settings.get_localized_string(32000), update_addon), (settings.get_localized_string(32001), raise_issue),
+                   (settings.get_localized_string(32002), add_repository), (settings.get_localized_string(32003), remove_repository)]
+        selection = dialog.select(settings.get_localized_string(32004), [i[0] for i in actions])
         if selection > -1:
             actions[selection][1]()
         del dialog

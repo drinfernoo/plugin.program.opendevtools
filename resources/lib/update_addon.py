@@ -140,7 +140,7 @@ def _install_deps(addon):
     root = addon_xml.getroot()
     deps = root.find('requires').findall('import')
 
-    for dep in [d for d in deps if not d.get('addon').startswith('xbmc')]:
+    for dep in [d for d in deps if not d.get('addon').startswith('xbmc') and not d.get('optional') == "true"]:
         plugin_id = dep.get('addon')
         installed_cond = 'System.HasAddon({0})'.format(plugin_id)
         if tools.get_condition(installed_cond):

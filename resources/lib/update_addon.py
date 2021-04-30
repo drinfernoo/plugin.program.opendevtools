@@ -6,6 +6,7 @@ import re
 import shutil
 import sys
 import time
+from xml.etree import ElementTree
 import zipfile
 
 import xbmcgui
@@ -127,6 +128,43 @@ def _rewrite_addon_xml_dependency_versions(addon):
         f.seek(0)
         f.write(content)
     pass
+
+
+def _install_deps(addon):
+    plugin = addon['plugin_id']
+    
+    visible_cond = 'Window.IsTopMost(yesnodialog)'
+    
+    xml_path = os.path.join(_addons, plugin, "addon.xml")
+    addon_xml = ElementTree.parse(xml_path)
+    root = addon_xml.getroot()
+    deps = root.find('requires').findall('import')
+
+    for dep in [d for d in deps if not d.get('addon').startswith('xbmc')]:
+        plugin_id = dep.get('addon')
+        installed_cond = 'System.HasAddon({0})'.format(plugin_id)
+        if tools.get_condition(installed_cond):
+            continue
+
+        tools.log('Installing ' + plugin_id, 'debug')
+        tools.execute_builtin('InstallAddon({0})'.format(plugin_id))
+
+        clicked = False
+        start = time.time()
+        timeout = 10
+        while not tools.get_condition(installed_cond):
+            if time.time() >= start + timeout:
+                tools.log('Timed out installing')
+                continue
+
+            tools.sleep(500)
+
+            if tools.get_condition(visible_cond) and not clicked:
+                tools.log('Dialog to click open')
+                tools.execute_builtin('SendClick(yesnodialog, 11)')
+                clicked = True
+            else:
+                tools.log('...waiting')
 
 
 def _cleanup_old_files():
@@ -331,6 +369,7 @@ def update_addon(addon=None):
     _extract_addon(location, addon)
     _rewrite_addon_xml_dependency_versions(addon)
     _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
+    _install_deps(addon)
     _clear_temp()
 
     progress.update(-1, settings.get_localized_string(32027))

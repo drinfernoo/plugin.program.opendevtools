@@ -178,22 +178,26 @@ _color_chart = [
 ]
 
 
+def sleep(ms):
+    xbmc.sleep(ms)
+    
+
 def kodi_version():
     return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
 
 
 @contextmanager
 def busy_dialog():
-    xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+    execute_builtin("ActivateWindow(busydialognocancel)")
     try:
         yield
     finally:
-        xbmc.executebuiltin("Dialog.Close(busydialog)")
-        xbmc.executebuiltin("Dialog.Close(busydialognocancel)")    
+        execute_builtin("Dialog.Close(busydialog)")
+        execute_builtin("Dialog.Close(busydialognocancel)")    
 
 
 def reload_profile():
-        xbmc.executebuiltin('LoadProfile({})'.format(xbmc.getInfoLabel("system.profilename")))
+        execute_builtin('LoadProfile({})'.format(xbmc.getInfoLabel("system.profilename")))
 
 
 def read_all_text(file_path):
@@ -346,3 +350,11 @@ def copytree(src, dst, symlinks=False, ignore=None):
             copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
+
+
+def get_condition(condition):
+    return xbmc.getCondVisibility(condition)
+
+
+def execute_builtin(bi):
+    xbmc.executebuiltin(bi)

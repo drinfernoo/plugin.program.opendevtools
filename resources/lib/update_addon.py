@@ -230,30 +230,9 @@ def _get_branch_info(addon, branch):
 def update_addon():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
-    repos, _ = repository.get_repos()
-    addon_names = [i for i in [i["name"] for i in repos.values()]]
-    addon_items = []
-    for addon_name in addon_names:
-        li = xbmcgui.ListItem(settings.get_localized_string(32015).format(addon_name))
-        
-        if not _compact:
-            repo_def = [repos[i] for i in repos if repos[i]['name'] == addon_name][0]
-            user = repo_def['user']
-            repo = repo_def['repo_name']
-            icon = repository.get_icon(user, repo)
-            li.setArt({'thumb': icon})
-
-        addon_items.append(li)
-            
-    selection = dialog.select(settings.get_localized_string(32012), addon_items, useDetails=not _compact)
-    if selection == -1:
-        dialog.notification(_addon_name, settings.get_localized_string(32017))
-        del dialog
-        sys.exit(0)
-
-    addon = [
-        i for i in repos.values() if i["name"] == addon_names[selection]
-    ][0]
+    addon = repository.get_repo_selection('update_addon')
+    if not addon:
+        return
 
     with tools.busy_dialog():
         for b in API.get_repo_branches(addon["user"], addon["repo_name"]):

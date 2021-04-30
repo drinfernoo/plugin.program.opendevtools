@@ -330,3 +330,8 @@ msgstr ""
 msgctxt "#32062"
 msgid "Github Client ID"
 msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32063"
+msgid "by {}"
+msgstr ""

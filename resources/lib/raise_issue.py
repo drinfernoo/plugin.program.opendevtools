@@ -29,8 +29,8 @@ _github_token = settings.get_setting_string('github.token')
 
 
 def raise_issue():
-    user, repo = _get_repo_selection()
-    if user and repo:
+    selection = repository.get_repo_selection('open_issue')
+    if selection:
         dialog = xbmcgui.Dialog()
         title = dialog.input(settings.get_localized_string(32006))
         if title:
@@ -40,10 +40,10 @@ def raise_issue():
 
             if response:
                 try:
-                    resp = _post_issue(_format_issue(title, description, log_key), user, repo)
+                    resp = _post_issue(_format_issue(title, description, log_key), selection['user'], selection['repo'])
                     if 'message' not in resp:
                         dialog.notification(_addon_name,
-                                            settings.get_localized_string(32009).format(_color, repo, _color, log_key))
+                                            settings.get_localized_string(32009).format(_color, selection['repo'], _color, log_key))
                     else:
                         dialog.ok(_addon_name, resp['message'])
                 except requests.exceptions.RequestException as e:
@@ -52,33 +52,6 @@ def raise_issue():
         else:
             dialog.ok(_addon_name, settings.get_localized_string(32011))
         del dialog
-
-
-def _get_repo_selection():
-    dialog = xbmcgui.Dialog()
-    repos, files = repository.get_repos()
-    names = [i for i in [i["name"] for i in repos.values()]]
-    keys = [i for i in repos]
-    
-    repo_items = []
-    for name in names:
-        li = xbmcgui.ListItem("{}".format(name))
-        
-        if not _compact:
-            repo_def = [repos[i] for i in repos if repos[i]['name'] == name][0]
-            user = repo_def['user']
-            repo = repo_def['repo_name']
-            icon = repository.get_icon(user, repo)
-            li.setArt({'thumb': icon})
-
-        repo_items.append(li)
-
-    selection = dialog.select(settings.get_localized_string(32012), repo_items, useDetails=not _compact)
-    del dialog
-    if not selection == -1:
-        repo = repos[keys[selection]]
-        return repo['user'], repo['repo_name']
-    return '', ''
 
 
 def _post_issue(post_data, user, repo):

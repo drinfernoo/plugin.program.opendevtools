@@ -13,20 +13,19 @@
 		<setting type="action" label="$ADDON[plugin.program.opendevtools 32057]"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
-				 visible="eq(3,) | eq(4,)"/>
+				 visible="eq(4,)"/>
 		<setting type="action" label="$ADDON[plugin.program.opendevtools 32058]"
-				 id="github.username"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
-				 visible="!eq(2,) + !eq(3,)"/>
+				 visible="!eq(3,)"/>
         <setting type="action" label="$ADDON[plugin.program.opendevtools 32059]"
                  action="RunScript(plugin.program.opendevtools,action=revoke)"
 				 option="close"
-				 visible="!eq(1,) + !eq(2,)"/>
+				 visible="!eq(2,)"/>
 
 		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 32060]"
 				 enable="false"
-				 visible="false"/>		 
+				 visible="!eq(0,)"/>		 
 		<setting id="github.token" type="text" label="$ADDON[plugin.program.opendevtools 32061]"
 				 option="hidden"
 				 enable="false"

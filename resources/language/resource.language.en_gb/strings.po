@@ -345,3 +345,8 @@ msgstr ""
 msgctxt "#32065"
 msgid "Install Dependencies"
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32066"
+msgid "Always installs latest version available"
+msgstr ""

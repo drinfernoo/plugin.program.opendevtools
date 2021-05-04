@@ -110,7 +110,7 @@ def add_repository():
     dialog.notification(_addon_name, settings.get_localized_string(32037))
     
     if dialog.yesno(_addon_name, 'Would you like to update this add-on now?'):
-        tools.execute_builtin('RunScript({},action=update_addon,id=key)'.format(_addon_id))
+        tools.execute_builtin('RunScript({},action=update_addon,id={})'.format(_addon_id, key))
     del dialog
 
 

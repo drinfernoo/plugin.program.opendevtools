@@ -23,7 +23,7 @@
                  action="RunScript(plugin.program.opendevtools,action=revoke)"
 				 option="close"
 				 visible="!eq(1,) + !eq(2,)"/>
-		
+
 		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 32060]"
 				 enable="false"
 				 visible="false"/>		 
@@ -34,5 +34,10 @@
 		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 32062]"
 				 default="7281fc95af8c0e322b96"
 				 visible="false"/>
+
+		<setting label="$ADDON[plugin.program.opendevtools 32064]" type="lsep"/>
+		
+		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 32065]" default="true"/>
+			
     </category>
 </settings>

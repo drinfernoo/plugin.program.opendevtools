@@ -24,6 +24,7 @@ _addon_name = settings.get_addon_info('name')
 
 _color = settings.get_setting_string('general.color')
 _compact = settings.get_setting_boolean('general.compact')
+_dependencies = settings.get_setting_boolean('general.dependencies')
 
 _home = tools.translate_path('special://home')
 _addons = os.path.join(_home, 'addons')
@@ -369,7 +370,8 @@ def update_addon(addon=None):
     _extract_addon(location, addon)
     _rewrite_addon_xml_dependency_versions(addon)
     _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
-    _install_deps(addon)
+    if _dependencies:
+        _install_deps(addon)
     _clear_temp()
 
     progress.update(-1, settings.get_localized_string(32027))

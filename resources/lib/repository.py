@@ -12,7 +12,6 @@ import unidecode
 from xml.etree import ElementTree
 
 from resources.lib import settings
-from resources.lib.update_addon import update_addon
 from resources.lib import tools
 from resources.lib.github_api import GithubAPI
 
@@ -23,12 +22,13 @@ _addons = os.path.join(_home, 'addons')
 _addon_data = tools.translate_path(settings.get_addon_info('profile'))
 _json_path = os.path.join(_addon_data, 'json')
 
+_addon_id = settings.get_addon_info('id')
 _addon_name = settings.get_addon_info('name')
 
 _compact = settings.get_setting_boolean('general.compact')
 _color = settings.get_setting_string('general.color')
 
-def get_repos():
+def get_repos(key=None):
     repos = {}
     files = []
     
@@ -39,6 +39,9 @@ def get_repos():
         for r in content:
             repos[r] = content[r]
             files.append(file_path)
+    if key:
+        return repos.get(key, {})
+
     return repos, files
 
 
@@ -107,7 +110,7 @@ def add_repository():
     dialog.notification(_addon_name, settings.get_localized_string(32037))
     
     if dialog.yesno(_addon_name, 'Would you like to update this add-on now?'):
-        update_addon(addon_def[key])
+        tools.execute_builtin('RunScript({},action=update_addon,id=key)'.format(_addon_id))
     del dialog
 
 

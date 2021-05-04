@@ -28,12 +28,15 @@ def _do_action():
         _params = sys.argv[1:]
         params = {i[0]: i[1] for i in [j.split('=') for j in _params]}
         action = params.get('action', None)
+        key = params.get('key', None)
         if action == 'color_picker':
             color_picker()
         elif action == 'authorize':
             oauth()
         elif action == 'revoke':
             revoke()
+        elif action == 'update_addon' and key:
+            update_addon(key)
     else:
         dialog = xbmcgui.Dialog()
         if not _access_token:

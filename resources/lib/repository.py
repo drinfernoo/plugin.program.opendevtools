@@ -62,7 +62,7 @@ def add_repository():
     
     repo_names = [i['name'] for i in user_repos]
     addon_repos = ['custom']
-    repo_items = [xbmcgui.ListItem('Add by name')]
+    repo_items = [xbmcgui.ListItem(settings.get_localized_string(32067))]
     
     with tools.busy_dialog():
         for user_repo in user_repos:
@@ -73,7 +73,7 @@ def add_repository():
             addon = ElementTree.fromstring(addon_xml)
 
             def_name = addon.get('name')
-            li = xbmcgui.ListItem(def_name, 'Updated {}'.format(tools.to_local_time(user_repo['updated_at'])))
+            li = xbmcgui.ListItem(def_name, settings.get_localized_string(32018).format(tools.to_local_time(user_repo['updated_at'])))
             
             if not _compact:
                 icon = get_icon(user, name)
@@ -185,7 +185,7 @@ def _check_repo(user, repo):
 def _prompt_for_update(key):
     dialog = xbmcgui.Dialog()
     
-    if dialog.yesno(_addon_name, 'Would you like to update this add-on now?'):
+    if dialog.yesno(_addon_name, settings.get_localized_string(32068)):
         tools.execute_builtin('RunScript({},action=update_addon,id={})'.format(_addon_id, key))
     del dialog
 

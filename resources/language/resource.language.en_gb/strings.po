@@ -350,3 +350,14 @@ msgstr ""
 msgctxt "#32066"
 msgid "Always installs latest version available"
 msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32067"
+msgid "Add by Name"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32068"
+msgid "Would you like to update this add-on now?"
+msgstr ""
+

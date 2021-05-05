@@ -43,20 +43,20 @@ def _do_action():
         oauth.check_auth()
         dialog = xbmcgui.Dialog()
 
-        actions = [(settings.get_localized_string(32000), update_addon.update_addon, 'update.png'),
-                   (settings.get_localized_string(32001), raise_issue.raise_issue, 'issue.png'),
-                   (settings.get_localized_string(32002), repository.add_repository, 'plus.png'),
-                   (settings.get_localized_string(32003), repository.remove_repository, 'minus.png')]
+        actions = [(32000, 32069, update_addon.update_addon, 'update.png'),
+                   (32001, 32070, raise_issue.raise_issue, 'issue.png'),
+                   (32002, 32071, repository.add_repository, 'plus.png'),
+                   (32003, 32072, repository.remove_repository, 'minus.png')]
 
         action_items = []
         for action in actions:
-            li = xbmcgui.ListItem(action[0])
-            li.setArt({'thumb': os.path.join(_media_path, action[2])})
+            li = xbmcgui.ListItem(settings.get_localized_string(action[0]), label2=settings.get_localized_string(action[1]))
+            li.setArt({'thumb': os.path.join(_media_path, action[3])})
             action_items.append(li)
 
         selection = dialog.select(settings.get_localized_string(32004), action_items, useDetails=not _compact)
         if selection > -1:
-            actions[selection][1]()
+            actions[selection][2]()
         del dialog
 
 _do_action()

@@ -361,3 +361,22 @@ msgctxt "#32068"
 msgid "Would you like to update this add-on now?"
 msgstr ""
 
+#: default.py
+msgctxt "#32069"
+msgid "Update an addon from one of your added repositories"
+msgstr ""
+
+#: default.py
+msgctxt "#32070"
+msgid "Open an issue for one of your added repositories"
+msgstr ""
+
+#: default.py
+msgctxt "#32071"
+msgid "Add a repository from GitHub"
+msgstr ""
+
+#: default.py
+msgctxt "#32072"
+msgid "Remove an added repository"
+msgstr ""

@@ -156,7 +156,7 @@ def _install_deps(addon):
         while not tools.get_condition(installed_cond):
             if time.time() >= start + timeout:
                 tools.log('Timed out installing')
-                continue
+                break
 
             tools.sleep(500)
 

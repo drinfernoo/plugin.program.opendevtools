@@ -90,6 +90,9 @@ class GithubAPI(Session):
 
     def get_user_repos(self, user):
         return self.get_json('/users/{}/repos'.format(user))
+        
+    def get_repos(self):
+        return self.get_json('/user/repos')
 
     def authorize(self, code=None):
         if not code:

@@ -26,6 +26,7 @@ _json_path = os.path.join(_addon_data, 'json')
 _addon_id = settings.get_addon_info('id')
 _addon_name = settings.get_addon_info('name')
 
+_user = settings.get_setting_string('github.username')
 _compact = settings.get_setting_boolean('general.compact')
 
 def get_repos(key=None):
@@ -53,16 +54,84 @@ def add_repository():
         dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
         return
+    
+    if user == _user:
+        user_repos = sorted(API.get_repos(), key=lambda b: b['updated_at'], reverse=True)
+    else:
+        user_repos = sorted(API.get_user_repos(user), key=lambda b: b['updated_at'], reverse=True)
+    
+    repo_names = [i['name'] for i in user_repos]
+    addon_repos = ['custom']
+    repo_items = [xbmcgui.ListItem('Add by name')]
+    
+    with tools.busy_dialog():
+        for user_repo in user_repos:
+            name = user_repo['name']
+            addon_xml = API.get_file(user, name, 'addon.xml', text=True)
+            if not addon_xml:
+                continue
+            addon = ElementTree.fromstring(addon_xml)
+
+            def_name = addon.get('name')
+            li = xbmcgui.ListItem(def_name, 'Updated {}'.format(tools.to_local_time(user_repo['updated_at'])))
+            
+            if not _compact:
+                icon = get_icon(user, name)
+                li.setArt({'thumb': icon})
+
+            repo_items.append(li)
+            addon_repos.append(name)
+    
+    selection = dialog.select(settings.get_localized_string(32012), repo_items, useDetails=not _compact)
+    if selection < 0:
+        del dialog
+        return
+    repo = addon_repos[selection]
+    
+    if repo == 'custom':
+        _add_custom(user)
+        del dialog
+    else:    
+        if not _check_repo(user, repo):
+            del dialog
+            return
+        
+        addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
+        if not addon_xml:
+            del dialog
+            return
+            
+        addon = ElementTree.fromstring(addon_xml)
+
+        name = addon.get('name')
+        plugin_id = addon.get('id')
+        
+        _add_repo(user, repo, name, plugin_id)
+        del dialog
+    
+    
+def _add_repo(user, repo, name, plugin_id):
+    dialog = xbmcgui.Dialog()
+    
+    key = user + '-' + plugin_id
+    addon_def = {key: {'user': user, 'repo_name': repo, 'name': name, 'plugin_id': plugin_id,
+                 'exclude_items': []}}
+    filename = key + '.json'
+    
+    tools.create_folder(_json_path)
+    tools.write_all_text(os.path.join(_json_path, filename), json.dumps(addon_def))
+    dialog.notification(_addon_name, settings.get_localized_string(32037))
+    
+    _prompt_for_update(key)
+    del dialog
+    
+    
+def _add_custom(user):
+    dialog = xbmcgui.Dialog()
+    
     repo = dialog.input(settings.get_localized_string(32030))
     if not repo:
         dialog.notification(_addon_name, settings.get_localized_string(32029))
-        del dialog
-        return
-    
-    
-    can_get = API.get('repos/{}/{}'.format(user, repo))
-    if not can_get.ok:
-        dialog.ok(_addon_name, settings.get_localized_string(32031))
         del dialog
         return
 
@@ -100,14 +169,21 @@ def add_repository():
         del dialog
         return
 
-    key = user + '-' + plugin_id
-    addon_def = {key: {'user': user, 'repo_name': repo, 'name': name, 'plugin_id': plugin_id,
-                 'exclude_items': []}}
-    filename = key + '.json'
+    _add_repo(user, repo, name, plugin_id)
+    del dialog
     
-    tools.create_folder(_json_path)
-    tools.write_all_text(os.path.join(_json_path, filename), json.dumps(addon_def))
-    dialog.notification(_addon_name, settings.get_localized_string(32037))
+    
+def _check_repo(user, repo):
+    dialog = xbmcgui.Dialog()
+    
+    can_get = API.get('repos/{}/{}'.format(user, repo))
+    if not can_get.ok:
+        dialog.ok(_addon_name, settings.get_localized_string(32031))
+        del dialog
+    
+    
+def _prompt_for_update(key):
+    dialog = xbmcgui.Dialog()
     
     if dialog.yesno(_addon_name, 'Would you like to update this add-on now?'):
         tools.execute_builtin('RunScript({},action=update_addon,id={})'.format(_addon_id, key))
@@ -177,7 +253,7 @@ def get_repo_selection(ret):
         user = repo['user']
         repo_name = repo['repo_name']
         name = repo['name']
-        li = xbmcgui.ListItem("{}".format(name), label2=settings.get_localized_string(32063).format(user))
+        li = xbmcgui.ListItem(name, label2=settings.get_localized_string(32063).format(user))
         
         if not _compact:
             icon = get_icon(user, repo_name)

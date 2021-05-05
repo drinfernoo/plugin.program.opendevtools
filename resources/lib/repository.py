@@ -11,9 +11,9 @@ import time
 import unidecode
 from xml.etree import ElementTree
 
+from resources.lib.github_api import GithubAPI
 from resources.lib import settings
 from resources.lib import tools
-from resources.lib.github_api import GithubAPI
 
 API = GithubAPI()
 
@@ -131,6 +131,23 @@ def remove_repository():
             dialog.notification(_addon_name, settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(len(indices)))
     del dialog
     
+
+def get_branch_info(addon, branch):
+    branch = API.get_repo_branch(addon["user"], addon["repo_name"], branch["name"])
+    updated_at = branch["commit"]["commit"]["author"]["date"]
+    sha = branch["commit"]["sha"]
+    protected = branch["protected"]
+
+    return [
+        {
+            "name": branch["name"],
+            "sha": sha,
+            "branch": branch,
+            "updated_at": updated_at,
+            "protected": protected,
+        }
+    ]
+
     
 def get_icon(user, repo):
     icon = ''

@@ -7,8 +7,6 @@ from requests import Session
 from resources.lib import settings
 from resources.lib import tools
 
-_addon_name = settings.get_addon_info('name')
-
 
 class GithubAPI(Session):
 
@@ -50,7 +48,7 @@ class GithubAPI(Session):
         return self.get(endpoint, **params).json()
 
     def get_default_branch(self, user, repo):
-        return self.get_json('repos/{}/{}'.format(user, repo)).get('default_branch', 'master')
+        return self.get_json('repos/{}/{}'.format(user, repo)).get('default_branch')
 
     def get_repo_branch(self, user, repo, branch):
         return self.get_json('repos/{}/{}/branches/{}'.format(user, repo, branch))
@@ -65,7 +63,7 @@ class GithubAPI(Session):
         return self.post_json('/repos/{}/{}/issues'.format(user, repo), formatted_issue)
 
     def get_zipball(self, user, repo, branch):
-        return self.get('/repos/{}/{}/zipball/{}'.format(user, repo, branch if branch != 'main' else '')).content
+        return self.get('/repos/{}/{}/zipball/{}'.format(user, repo, branch)).content
 
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get('{}/{}/archive/{}.zip'.format(user, repo, commit_sha)).content

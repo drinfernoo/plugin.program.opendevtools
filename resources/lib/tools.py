@@ -22,6 +22,8 @@ except AttributeError:
     translate_path = xbmc.translatePath
 
 _addon_name = settings.get_addon_info('name')
+_addon_data = translate_path(settings.get_addon_info('profile'))
+_temp = translate_path('special://temp')
 
 
 try:
@@ -198,6 +200,44 @@ def busy_dialog():
 
 def reload_profile():
         execute_builtin('LoadProfile({})'.format(xbmc.getInfoLabel("system.profilename")))
+
+
+def remove_folder(path):
+    if xbmcvfs.exists(ensure_path_is_dir(path)):
+        log("Removing {}".format(path))
+        try:
+            shutil.rmtree(path)
+        except Exception as e:
+            log("Error removing {}: {}".format(path, e))
+
+
+def remove_file(path):
+    if xbmcvfs.exists(path):
+        log("Removing {}".format(path))
+        try:
+            os.remove(path)
+        except Exception as e:
+            log("Error removing {}: {}".format(path, e))
+
+
+def cleanup_old_files():
+    log("Cleaning up old files...")
+    for i in [
+        i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")
+    ]:
+        remove_file(os.path.join(_addon_data, i))
+
+
+def clear_temp():
+    try:
+        for item in os.listdir(_temp):
+            path = os.path.join(_temp, item)
+            if os.path.isdir(path):
+                os.remove(path)
+            elif os.path.isfile(path) and path not in ["kodi.log"]:
+                shutil.rmtree(path)
+    except (OSError, IOError) as e:
+        log("Failed to cleanup temporary storage: {}".format(repr(e)))
 
 
 def read_all_text(file_path):

@@ -27,16 +27,21 @@ _compact = settings.get_setting_boolean('general.compact')
 _dependencies = settings.get_setting_boolean('general.dependencies')
 
 _home = tools.translate_path('special://home')
-_addons = os.path.join(_home, 'addons')
 _temp = tools.translate_path('special://temp')
+_addons = os.path.join(_home, 'addons')
 _addon_path = tools.translate_path(settings.get_addon_info('path'))
 _addon_data = tools.translate_path(settings.get_addon_info('profile'))
 
 _media_path = os.path.join(_addon_path, 'resources', 'media')
 
 
-def _get_branch_zip_file(github_user, github_repo, github_branch):
-    return _store_zip_file(API.get_zipball(github_user, github_repo, github_branch))
+def _get_zip_file(user, repo, branch=None, sha=None):
+    if (sha and branch) or not (sha or branch):
+        raise ValueError('Cannot specify both branch and sha')
+    elif sha:
+        return _store_zip_file(API.get_commit_zip(user, repo, sha))
+    elif branch:
+        return _store_zip_file(API.get_zipball(user, repo, branch))
 
 
 def _store_zip_file(zip_contents):
@@ -44,24 +49,6 @@ def _store_zip_file(zip_contents):
     tools.write_all_text(zip_location, zip_contents)
 
     return zip_location
-
-
-def _remove_folder(path):
-    if xbmcvfs.exists(tools.ensure_path_is_dir(path)):
-        tools.log("Removing {}".format(path))
-        try:
-            shutil.rmtree(path)
-        except Exception as e:
-            tools.log("Error removing {}: {}".format(path, e))
-
-
-def _remove_file(path):
-    if xbmcvfs.exists(path):
-        tools.log("Removing {}".format(path))
-        try:
-            os.remove(path)
-        except Exception as e:
-            tools.log("Error removing {}: {}".format(path, e))
 
 
 def _extract_addon(zip_location, addon):
@@ -79,7 +66,7 @@ def _extract_addon(zip_location, addon):
     tools.log("Extracting to: {}".format(os.path.join(_temp, base_directory)))
     install_path = os.path.join(_addons, addon['plugin_id'])
     tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
-    _remove_folder(os.path.join(install_path, base_directory))
+    tools.remove_folder(os.path.join(install_path, base_directory))
 
 
 def _update_addon_version(addon, default_branch_name, branch, gitsha):
@@ -103,7 +90,7 @@ def _update_addon_version(addon, default_branch_name, branch, gitsha):
         f.write(content)
 
 
-def _rewrite_addon_xml_dependency_versions(addon):
+def _rewrite_kodi_dependency_versions(addon):
     kodi_version = tools.kodi_version()
     tools.log("KODI_VERSION: {}".format(kodi_version))
     kodi_dep_versions = {
@@ -147,7 +134,7 @@ def _install_deps(addon):
         if tools.get_condition(installed_cond):
             continue
 
-        tools.log('Installing ' + plugin_id, 'debug')
+        tools.log('Installing ' + plugin_id)
         tools.execute_builtin('InstallAddon({0})'.format(plugin_id))
 
         clicked = False
@@ -155,7 +142,7 @@ def _install_deps(addon):
         timeout = 10
         while not tools.get_condition(installed_cond):
             if time.time() >= start + timeout:
-                tools.log('Timed out installing')
+                tools.log('Timed out installing {}'.format(plugin_id), 'warning')
                 break
 
             tools.sleep(500)
@@ -166,26 +153,6 @@ def _install_deps(addon):
                 clicked = True
             else:
                 tools.log('...waiting')
-
-
-def _cleanup_old_files():
-    tools.log("Cleaning up old files...")
-    for i in [
-        i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")
-    ]:
-        _remove_file(os.path.join(_addon_data, i))
-
-
-def _clear_temp():
-    try:
-        for item in os.listdir(_temp):
-            path = os.path.join(_temp, item)
-            if os.path.isdir(path):
-                os.remove(path)
-            elif os.path.isfile(path) and path not in ["kodi.log"]:
-                shutil.rmtree(path)
-    except (OSError, IOError) as e:
-        tools.log("Failed to cleanup temporary storage: {}".format(repr(e)))
 
 
 def _get_selected_commit(user, repo, branch):
@@ -246,26 +213,6 @@ def _get_selected_commit(user, repo, branch):
     return None, None
 
 
-def _get_commit_zip_file(user, repo, commit_sha):
-    return _store_zip_file(API.get_commit_zip(user, repo, commit_sha))
-
-
-def _get_branch_info(addon, branch):
-    branch = API.get_repo_branch(addon["user"], addon["repo_name"], branch["name"])
-    updated_at = branch["commit"]["commit"]["author"]["date"]
-    sha = branch["commit"]["sha"]
-    protected = branch["protected"]
-    return [
-        {
-            "name": branch["name"],
-            "sha": sha,
-            "branch": branch,
-            "updated_at": updated_at,
-            "protected": protected,
-        }
-    ]
-
-
 def update_addon(addon=None):
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
@@ -282,7 +229,7 @@ def update_addon(addon=None):
             if 'message' in b:
                 dialog.ok(_addon_name, b['message'])
                 return
-            pool.put(_get_branch_info, addon, b)
+            pool.put(repository.get_branch_info, addon, b)
         branch_items = pool.wait_completion()
 
         _default = API.get_default_branch(addon['user'], addon['repo_name'])
@@ -330,7 +277,7 @@ def update_addon(addon=None):
         del dialog
         return
 
-    _cleanup_old_files()
+    tools.cleanup_old_files()
 
     commit_sha = None
     selection = dialog.yesno(
@@ -357,27 +304,33 @@ def update_addon(addon=None):
         dialog.notification(_addon_name, settings.get_localized_string(32017))
         del dialog
         return
-    _remove_folder(os.path.join(_addons, addon["plugin_id"]))
+    tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
     progress = xbmcgui.DialogProgress()
     progress.create(
         _addon_name, settings.get_localized_string(32025).format(_color, addon["name"])
     )
     progress.update(-1)
-    location = _get_branch_zip_file(
+    location = _get_zip_file(
         addon["user"],
         addon["repo_name"],
-        branch["branch"]["name"] if not commit_sha else commit_sha,
+        branch=branch["branch"]["name"]
+    ) if not commit_sha else _get_zip_file(
+        addon["user"],
+        addon["repo_name"],
+        sha=commit_sha
     )
 
-    progress.update(-1, settings.get_localized_string(32026).format(_color, addon["name"]))
-    _extract_addon(location, addon)
-    _rewrite_addon_xml_dependency_versions(addon)
-    _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
-    if _dependencies:
-        _install_deps(addon)
-    _clear_temp()
+    if location:
+        progress.update(-1, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        _extract_addon(location, addon)
+        _rewrite_kodi_dependency_versions(addon)
+        _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
+        if _dependencies:
+            _install_deps(addon)
+        tools.clear_temp()
 
-    progress.update(-1, settings.get_localized_string(32027))
+        progress.update(-1, settings.get_localized_string(32027))
+
     progress.close()
     del progress
     del dialog

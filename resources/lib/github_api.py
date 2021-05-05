@@ -88,6 +88,9 @@ class GithubAPI(Session):
     def get_username(self):
         return self.get_json('/user').get('login', '')
 
+    def get_user_repos(self, user):
+        return self.get_json('/users/{}/repos'.format(user))
+
     def authorize(self, code=None):
         if not code:
             result = super(GithubAPI, self).post(tools.urljoin(self.auth_url, 'device/code'),

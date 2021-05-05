@@ -60,7 +60,6 @@ def add_repository():
     else:
         user_repos = sorted(API.get_user_repos(user), key=lambda b: b['updated_at'], reverse=True)
     
-    repo_names = [i['name'] for i in user_repos]
     addon_repos = ['custom']
     repo_items = [xbmcgui.ListItem(settings.get_localized_string(32067))]
     

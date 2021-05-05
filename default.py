@@ -10,17 +10,12 @@ try:
 except ImportError:
     from urlparse import parse_qsl
 
+from resources.lib import oauth
 from resources.lib.raise_issue import raise_issue
 from resources.lib.repository import add_repository
-from resources.lib.repository import oauth
 from resources.lib.repository import remove_repository
-from resources.lib.repository import revoke
-from resources.lib.update_addon import update_addon
 from resources.lib import settings
 from resources.lib.update_addon import update_addon
-
-_addon_name = settings.get_addon_info('name')
-_access_token = settings.get_setting_string('github.token')
 
 
 def _do_action():
@@ -33,16 +28,14 @@ def _do_action():
             from resources.lib.color import color_picker
             color_picker()
         elif action == 'authorize':
-            oauth()
+            oauth.authorize()
         elif action == 'revoke':
-            revoke()
+            oauth.revoke()
         elif action == 'update_addon' and id:
             update_addon(id)
     else:
+        oauth.check_auth()
         dialog = xbmcgui.Dialog()
-        if not _access_token:
-            if dialog.yesno(_addon_name, settings.get_localized_string(32005)):
-                oauth(True)
 
         actions = [(settings.get_localized_string(32000), update_addon), (settings.get_localized_string(32001), raise_issue),
                    (settings.get_localized_string(32002), add_repository), (settings.get_localized_string(32003), remove_repository)]

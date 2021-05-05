@@ -12,6 +12,7 @@ import zipfile
 import xbmcgui
 import xbmcvfs
 
+from resources.lib.color import color_string
 from resources.lib import repository
 from resources.lib import settings
 from resources.lib import tools
@@ -22,7 +23,6 @@ API = GithubAPI()
 
 _addon_name = settings.get_addon_info('name')
 
-_color = settings.get_setting_string('general.color')
 _compact = settings.get_setting_boolean('general.compact')
 _dependencies = settings.get_setting_boolean('general.dependencies')
 
@@ -179,7 +179,7 @@ def _get_selected_commit(user, repo, branch):
         for commit in sorted_commits:
             if commit['sha'] in [i[1] for i in tags]:
                 tag = [i[0] for i in tags if i[1] == commit['sha']][0]
-                label = '[COLOR {}]{}[/COLOR]'.format(_color, tag)
+                label = color_string(tag)
                 if label not in [i.getLabel() for i in commit_items]:
                     li = xbmcgui.ListItem(label)
                     li.setArt({'thumb': os.path.join(_media_path, 'tag.png')})
@@ -187,9 +187,8 @@ def _get_selected_commit(user, repo, branch):
             else:
                 date = tools.to_local_time(commit['commit']['author']['date'])
                 li = xbmcgui.ListItem(
-                    "[COLOR {}]{}[/COLOR] - {}".format(
-                        _color,
-                        commit["sha"][:8],
+                    "{} - {}".format(
+                        color_string(commit["sha"][:8]),
                         commit["commit"]["message"].replace("\n", "; "),
                     ), label2=settings.get_localized_string(32014).format(commit['commit']['author']['name'], date))
                 art = os.path.join(_media_path, 'commit.png')
@@ -265,8 +264,8 @@ def update_addon(addon=None):
         elif i in protected_branches:
             art = os.path.join(_media_path, 'protected-branch.png')
         date = tools.to_local_time(i['updated_at'])
-        li = xbmcgui.ListItem("{} - ([COLOR {}]{}[/COLOR])"
-                              .format(i["branch"]["name"], _color, i["sha"][:8]),
+        li = xbmcgui.ListItem("{} - ({})"
+                              .format(i["branch"]["name"], color_string(i["sha"][:8])),
                               label2=settings.get_localized_string(32018).format(date))
         li.setArt({'thumb': art})
         branch_items.append(li)
@@ -281,7 +280,7 @@ def update_addon(addon=None):
 
     commit_sha = None
     selection = dialog.yesno(
-        settings.get_localized_string(32020).format(_color, branch["name"]),
+        settings.get_localized_string(32020).format(color_string(branch["name"])),
         settings.get_localized_string(32021),
         yeslabel=settings.get_localized_string(32022),
         nolabel=settings.get_localized_string(32023),
@@ -298,7 +297,7 @@ def update_addon(addon=None):
     if not dialog.yesno(
             settings.get_localized_string(32000),
             settings.get_localized_string(32024).format(
-                _color, addon["name"], _color, branch["branch"]["name"] if not commit_sha else commit_label
+                color_string(addon["name"]), color_string(branch["branch"]["name"]) if not commit_sha else commit_label
             ),
     ):
         dialog.notification(_addon_name, settings.get_localized_string(32017))
@@ -307,7 +306,7 @@ def update_addon(addon=None):
     tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
     progress = xbmcgui.DialogProgress()
     progress.create(
-        _addon_name, settings.get_localized_string(32025).format(_color, addon["name"])
+        _addon_name, settings.get_localized_string(32025).format(color_string(addon["name"]))
     )
     progress.update(-1)
     location = _get_zip_file(

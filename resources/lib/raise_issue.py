@@ -7,6 +7,7 @@ import getpass
 import os
 import requests
 
+from resources.lib.color import color_string
 from resources.lib import repository
 from resources.lib import settings
 from resources.lib import tools
@@ -21,7 +22,6 @@ _addon_name = settings.get_addon_info('name')
 _addon_id = settings.get_addon_info('id')
 _addon_version = settings.get_addon_info('version')
 
-_color = settings.get_setting_string('general.color')
 _compact = settings.get_setting_boolean('general.compact')
 
 _paste_url = 'https://paste.kodi.tv/'
@@ -43,7 +43,7 @@ def raise_issue():
                     resp = _post_issue(_format_issue(title, description, log_key), selection['user'], selection['repo'])
                     if 'message' not in resp:
                         dialog.notification(_addon_name,
-                                            settings.get_localized_string(32009).format(_color, selection['repo'], _color, log_key))
+                                            settings.get_localized_string(32009).format(color_string(selection['repo']), color_string(log_key)))
                     else:
                         dialog.ok(_addon_name, resp['message'])
                 except requests.exceptions.RequestException as e:

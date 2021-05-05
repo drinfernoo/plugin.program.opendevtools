@@ -63,7 +63,7 @@ msgstr ""
 
 #: /resources/lib/raise_issue.py
 msgctxt "#32009"
-msgid "Issue successfully opened for [COLOR {}]{}[/COLOR] with log [COLOR {}]{}[/COLOR]"
+msgid "Issue successfully opened for {} with log {}"
 msgstr ""
 
 #: /resources/lib/raise_issue.py
@@ -118,7 +118,7 @@ msgstr ""
 
 #: /resources/lib/update_addon.py
 msgctxt "#32020"
-msgid "Update from [COLOR {}]{}[/COLOR]"
+msgid "Update from {}"
 msgstr ""
 
 #: /resources/lib/update_addon.py
@@ -138,17 +138,17 @@ msgstr ""
 
 #: /resources/lib/update_addon.py
 msgctxt "#32024"
-msgid "This will attempt to update [COLOR {}]{}[/COLOR] from the [COLOR {}]{}[/COLOR] branch, are you sure?"
+msgid "This will attempt to update {} from the {} branch, are you sure?"
 msgstr ""
 
 #: /resources/lib/update_addon.py
 msgctxt "#32025"
-msgid "Downloading [COLOR {}]{}[/COLOR]..."
+msgid "Downloading {}..."
 msgstr ""
 
 #: /resources/lib/update_addon.py
 msgctxt "#32026"
-msgid "Extracting [COLOR {}]{}[/COLOR]..."
+msgid "Extracting {}..."
 msgstr ""
 
 #: /resources/lib/update_addon.py
@@ -233,7 +233,7 @@ msgstr ""
 
 #: /resources/lib/repository.py
 msgctxt "#32043"
-msgid "Visit the following site from any device: [COLOR {}][B]{}[/B][/COLOR]\nAnd enter the code: [COLOR {}][B]{}[/B][/COLOR]"
+msgid "Visit the following site from any device: {}\nAnd enter the code: {}"
 msgstr ""
 
 #: /resources/lib/repository.py

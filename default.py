@@ -17,7 +17,7 @@ from resources.lib.repository import remove_repository
 from resources.lib.repository import revoke
 from resources.lib.update_addon import update_addon
 from resources.lib import settings
-from resources.lib.tools import color_picker
+from resources.lib.update_addon import update_addon
 
 _addon_name = settings.get_addon_info('name')
 _access_token = settings.get_setting_string('github.token')
@@ -30,6 +30,7 @@ def _do_action():
         action = params.get('action', None)
         id = params.get('id', None)
         if action == 'color_picker':
+            from resources.lib.color import color_picker
             color_picker()
         elif action == 'authorize':
             oauth()

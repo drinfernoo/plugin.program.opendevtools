@@ -11,6 +11,7 @@ import time
 import unidecode
 from xml.etree import ElementTree
 
+from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI
 from resources.lib import settings
 from resources.lib import tools
@@ -26,7 +27,6 @@ _addon_id = settings.get_addon_info('id')
 _addon_name = settings.get_addon_info('name')
 
 _compact = settings.get_setting_boolean('general.compact')
-_color = settings.get_setting_string('general.color')
 
 def get_repos(key=None):
     repos = {}

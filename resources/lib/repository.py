@@ -55,7 +55,9 @@ def add_repository():
         del dialog
         return
     
-    if user == _user:
+    if API.get_user(user).get('type', 'User') == 'Organization':
+        user_repos = sorted(API.get_org_repos(user), key=lambda b: b['updated_at'], reverse=True)
+    elif user == _user:
         user_repos = sorted(API.get_repos(), key=lambda b: b['updated_at'], reverse=True)
     else:
         user_repos = sorted(API.get_user_repos(user), key=lambda b: b['updated_at'], reverse=True)
@@ -179,6 +181,8 @@ def _check_repo(user, repo):
     if not can_get.ok:
         dialog.ok(_addon_name, settings.get_localized_string(32031))
         del dialog
+        return False
+    return True
     
     
 def _prompt_for_update(key):

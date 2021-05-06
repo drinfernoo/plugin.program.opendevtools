@@ -25,7 +25,6 @@ class GithubAPI(Session):
         self.headers.update({"Authorization": "Bearer {}".format(self.access_token)})
 
     def get(self, endpoint, **params):
-        self._update_token()
         return super(GithubAPI, self).get(tools.urljoin(self.base_url, endpoint), params=params)
 
     def get_all_pages(self, endpoint, **params):
@@ -36,7 +35,6 @@ class GithubAPI(Session):
             yield response
 
     def post(self, endpoint, *args, **params):
-        self._update_token()
         return super(GithubAPI, self).post(tools.urljoin(self.base_url, endpoint), *args, **params)
 
     def post_json(self, endpoint, data):
@@ -76,7 +74,6 @@ class GithubAPI(Session):
         return self.get('{}/{}/archive/{}.zip'.format(user, repo, commit_sha)).content
 
     def get_file(self, user, repo, path, text=False):
-        self._update_token()
         if text:
             headers = self.headers.copy()
             headers.update({"Accept": "application/vnd.github.v3.raw"})
@@ -97,6 +94,7 @@ class GithubAPI(Session):
         return self.get_json('/users/{}'.format(user))
     
     def get_username(self):
+        self._update_token()
         return self.get_json('/user').get('login', '')
 
     def get_org_repos(self, org):

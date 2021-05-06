@@ -37,6 +37,7 @@
 		<setting label="$ADDON[plugin.program.opendevtools 32064]" type="lsep"/>
 		
 		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 32065] ($ADDON[plugin.program.opendevtools 32066])" default="true"/>
-			
+		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32075]" default="false"/>
+		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32076]" default="false"/>
     </category>
 </settings>

@@ -385,3 +385,13 @@ msgstr ""
 msgctxt "#32073"
 msgid "No repositories found that contain a valid Kodi addon."
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32075"
+msgid "Show repos with current user as collaborator"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32076"
+msgid "Show organization repos for current user"
+msgstr ""

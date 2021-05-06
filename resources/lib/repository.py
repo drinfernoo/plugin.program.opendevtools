@@ -14,6 +14,7 @@ from xml.etree import ElementTree
 from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI
 from resources.lib import settings
+from resources.lib.thread_pool import ThreadPool
 from resources.lib import tools
 
 API = GithubAPI()
@@ -48,6 +49,7 @@ def get_repos(key=None):
 
 def add_repository():
     dialog = xbmcgui.Dialog()
+    pool = ThreadPool()
     
     user = dialog.input(settings.get_localized_string(32028))
     if not user:
@@ -56,33 +58,28 @@ def add_repository():
         return
     
     if API.get_user(user).get('type', 'User') == 'Organization':
-        user_repos = sorted(API.get_org_repos(user), key=lambda b: b['updated_at'], reverse=True)
+        user_repos = API.get_org_repos(user)
     elif user == _user:
-        user_repos = sorted(API.get_repos(), key=lambda b: b['updated_at'], reverse=True)
+        user_repos = API.get_repos()
     else:
-        user_repos = sorted(API.get_user_repos(user), key=lambda b: b['updated_at'], reverse=True)
+        user_repos = API.get_user_repos(user)
 
     addon_repos = []
     repo_items = []
     
     with tools.busy_dialog():
         for user_repo in user_repos:
-            name = user_repo['name']
-            addon_xml = API.get_file(user, name, 'addon.xml', text=True)
-            if not addon_xml:
-                continue
-            
-            addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
-
-            def_name = addon.get('name')
-            li = xbmcgui.ListItem(def_name, settings.get_localized_string(32018).format(tools.to_local_time(user_repo['updated_at'])))
+            pool.put(get_repo_info, user_repo)
+        repos = pool.wait_completion()
+        repos.sort(key=lambda b: b['updated_at'], reverse=True)
+        addon_repos = [i['repo_name'] for i in repos]
+        for i in repos:        
+            li = xbmcgui.ListItem(i['name'], settings.get_localized_string(32018).format(tools.to_local_time(i['updated_at'])))
             
             if not _compact:
-                icon = get_icon(user, name)
-                li.setArt({'thumb': icon})
+                li.setArt({'thumb': i['icon']})
 
             repo_items.append(li)
-            addon_repos.append(name)
 
     if len(addon_repos) == 0:
         dialog.ok(_addon_name, settings.get_localized_string(32073))
@@ -94,27 +91,23 @@ def add_repository():
         del dialog
         return
     repo = addon_repos[selection]
+      
+    if not _check_repo(user, repo):
+        del dialog
+        return
     
-    if repo == 'custom':
-        _add_custom(user)
+    addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
+    if not addon_xml:
         del dialog
-    else:    
-        if not _check_repo(user, repo):
-            del dialog
-            return
+        return
         
-        addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
-        if not addon_xml:
-            del dialog
-            return
-            
-        addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
+    addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
 
-        name = addon.get('name')
-        plugin_id = addon.get('id')
-        
-        _add_repo(user, repo, name, plugin_id)
-        del dialog
+    name = addon.get('name')
+    plugin_id = addon.get('id')
+    
+    _add_repo(user, repo, name, plugin_id)
+    del dialog
     
     
 def _add_repo(user, repo, name, plugin_id):
@@ -215,6 +208,20 @@ def remove_repository():
             os.remove(file_path)
             dialog.notification(_addon_name, settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(len(indices)))
     del dialog
+
+
+def get_repo_info(repo_def):
+    user = repo_def['owner']['login']
+    name = repo_def['name']
+    addon_xml = API.get_file(user, name, 'addon.xml', text=True)
+    if not addon_xml:
+        return
+    
+    addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
+
+    def_name = addon.get('name')
+    icon = get_icon(user, name, addon_xml)
+    return [{"name": def_name, "user": user, "repo_name": name, "updated_at": repo_def["updated_at"], "icon": icon}]
     
 
 def get_branch_info(addon, branch):
@@ -234,9 +241,10 @@ def get_branch_info(addon, branch):
     ]
 
     
-def get_icon(user, repo):
+def get_icon(user, repo, addon_xml=None):
     icon = ''
-    addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
+    if not addon_xml:
+        addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
     
     if addon_xml:
         addon = ElementTree.fromstring(addon_xml.encode('utf-8'))

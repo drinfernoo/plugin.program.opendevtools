@@ -50,7 +50,7 @@ def add_repository():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
     
-    user = dialog.input(settings.get_localized_string(32028))
+    user = dialog.input(settings.get_localized_string(32028)).lower()
     if not user:
         dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
@@ -58,7 +58,7 @@ def add_repository():
     
     if API.get_user(user).get('type', 'User') == 'Organization':
         user_repos = API.get_org_repos(user)
-    elif user == _user:
+    elif user == _user.lower():
         access_level = ['owner', 'collaborator' if _collaborator else '', 'organization_member' if _organization else '']
         user_repos = API.get_repos(','.join(access_level))
     else:

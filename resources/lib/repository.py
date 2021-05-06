@@ -90,6 +90,7 @@ def add_repository():
     if selection < 0:
         del dialog
         return
+    user = repos[selection]['user']
     repo = addon_repos[selection]
       
     if not _check_repo(user, repo):

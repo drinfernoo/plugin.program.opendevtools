@@ -104,7 +104,8 @@ def add_repository():
     name = addon.get('name')
     plugin_id = addon.get('id')
     
-    _add_repo(user, repo, name, plugin_id)
+    if dialog.yesno(_addon_name, settings.get_localized_string(32074).format(name)):
+        _add_repo(user, repo, name, plugin_id)
     del dialog
     
     

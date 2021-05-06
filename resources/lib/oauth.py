@@ -75,10 +75,10 @@ def revoke():
 
 
 def _save_oauth(response):
-    settings.set_setting_string('github.username', API.get_username())
     settings.set_setting_string('github.token', response['access_token'])
+    settings.set_setting_string('github.username', API.get_username())
     
 
 def _clear_oauth():
-    settings.set_setting_string('github.username', '')
     settings.set_setting_string('github.token', '')
+    settings.set_setting_string('github.username', '')

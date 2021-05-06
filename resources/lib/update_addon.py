@@ -298,7 +298,6 @@ def update_addon(addon=None):
         dialog.notification(_addon_name, settings.get_localized_string(32017))
         del dialog
         return
-    tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
     progress = xbmcgui.DialogProgress()
     progress.create(
         _addon_name, settings.get_localized_string(32025).format(color_string(addon["name"]))
@@ -317,6 +316,7 @@ def update_addon(addon=None):
 
     if location:
         progress.update(-1, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         
         _extract_addon(location, addon)
         _rewrite_kodi_dependency_versions(addon)

@@ -98,7 +98,7 @@ class GithubAPI(Session):
         return self.get_json('/users/{}/repos'.format(user))
         
     def get_repos(self):
-        return self.get_all_pages_json('/user/repos?type=owner')
+        return self.get_all_pages_json('/user/repos?affiliation=owner,collaborator')
 
     def authorize(self, code=None):
         if not code:

@@ -266,17 +266,18 @@ def get_repo_selection(ret):
     keys = [i for i in repos]
     
     repo_items = []
-    for repo in repos.values():
-        user = repo['user']
-        repo_name = repo['repo_name']
-        name = repo['name']
-        li = xbmcgui.ListItem(name, label2=settings.get_localized_string(32063).format(user))
-        
-        if not _compact:
-            icon = get_icon(user, repo_name)
-            li.setArt({'thumb': icon})
+    with tools.busy_dialog():
+        for repo in repos.values():
+            user = repo['user']
+            repo_name = repo['repo_name']
+            name = repo['name']
+            li = xbmcgui.ListItem(name, label2=settings.get_localized_string(32063).format(user))
+            
+            if not _compact:
+                icon = get_icon(user, repo_name)
+                li.setArt({'thumb': icon})
 
-        repo_items.append(li)
+            repo_items.append(li)
 
     selection = dialog.select(settings.get_localized_string(32012), repo_items, useDetails=not _compact)
     if selection == -1:

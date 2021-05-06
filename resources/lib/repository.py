@@ -61,9 +61,9 @@ def add_repository():
         user_repos = sorted(API.get_repos(), key=lambda b: b['updated_at'], reverse=True)
     else:
         user_repos = sorted(API.get_user_repos(user), key=lambda b: b['updated_at'], reverse=True)
-    
-    addon_repos = ['custom']
-    repo_items = [xbmcgui.ListItem(settings.get_localized_string(32067))]
+
+    addon_repos = []
+    repo_items = []
     
     with tools.busy_dialog():
         for user_repo in user_repos:
@@ -83,6 +83,11 @@ def add_repository():
 
             repo_items.append(li)
             addon_repos.append(name)
+
+    if len(addon_repos) == 0:
+        dialog.ok(_addon_name, 'This user has no repositories that contain a valid Kodi addon.')
+        del dialog
+        return
     
     selection = dialog.select(settings.get_localized_string(32012), repo_items, useDetails=not _compact)
     if selection < 0:

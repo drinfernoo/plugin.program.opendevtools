@@ -85,8 +85,20 @@ class GithubAPI(Session):
     def get_commit(self, user, repo, commit_sha):
         return self.get_json('/repos/{}/{}/git/commits/{}'.format(user, repo, commit_sha))
 
+    def get_user(self, user):
+        return self.get_json('/users/{}'.format(user))
+    
     def get_username(self):
         return self.get_json('/user').get('login', '')
+
+    def get_org_repos(self, org):
+        return self.get_json('orgs/{}/repos'.format(org))
+
+    def get_user_repos(self, user):
+        return self.get_json('/users/{}/repos'.format(user))
+        
+    def get_repos(self):
+        return self.get_all_pages_json('/user/repos?type=owner')
 
     def authorize(self, code=None):
         if not code:

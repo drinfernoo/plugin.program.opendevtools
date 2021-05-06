@@ -97,7 +97,7 @@ def clear_temp():
         log("Failed to cleanup temporary storage: {}".format(repr(e)))
 
 
-def read_all_text(file_path):
+def read_from_file(file_path):
     try:
         f = xbmcvfs.File(file_path, "r")
         content = f.read()
@@ -114,7 +114,10 @@ def read_all_text(file_path):
             pass
 
 
-def write_all_text(file_path, content):
+def write_to_file(file_path, content, bytes=False):
+    if sys.version_info < (3, 0, 0) and not bytes:
+        content = content.encode("utf-8")
+
     try:
         f = xbmcvfs.File(file_path, "w")
         return f.write(content)

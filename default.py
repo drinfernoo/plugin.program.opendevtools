@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
+import os
 import sys
 
 try:
@@ -15,7 +16,13 @@ from resources.lib import oauth
 from resources.lib import raise_issue
 from resources.lib import repository
 from resources.lib import settings
+from resources.lib import tools
 from resources.lib import update_addon
+
+_addon_path = tools.translate_path(settings.get_addon_info('path'))
+_media_path = os.path.join(_addon_path, 'resources', 'media')
+
+_compact = settings.get_setting_boolean('general.compact')
 
 
 def _do_action():
@@ -36,14 +43,20 @@ def _do_action():
         oauth.check_auth()
         dialog = xbmcgui.Dialog()
 
-        actions = [(settings.get_localized_string(32000), update_addon.update_addon),
-                   (settings.get_localized_string(32001), raise_issue.raise_issue),
-                   (settings.get_localized_string(32002), repository.add_repository),
-                   (settings.get_localized_string(32003), repository.remove_repository)]
+        actions = [(32000, 32069, update_addon.update_addon, 'update.png'),
+                   (32001, 32070, raise_issue.raise_issue, 'issue.png'),
+                   (32002, 32071, repository.add_repository, 'plus.png'),
+                   (32003, 32072, repository.remove_repository, 'minus.png')]
 
-        selection = dialog.select(settings.get_localized_string(32004), [i[0] for i in actions])
+        action_items = []
+        for action in actions:
+            li = xbmcgui.ListItem(settings.get_localized_string(action[0]), label2=settings.get_localized_string(action[1]))
+            li.setArt({'thumb': os.path.join(_media_path, action[3])})
+            action_items.append(li)
+
+        selection = dialog.select(settings.get_localized_string(32004), action_items, useDetails=not _compact)
         if selection > -1:
-            actions[selection][1]()
+            actions[selection][2]()
         del dialog
 
 _do_action()

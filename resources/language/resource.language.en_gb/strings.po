@@ -158,7 +158,7 @@ msgstr ""
 
 #: /resources/lib/repository.py
 msgctxt "#32028"
-msgid "Enter GitHub Username"
+msgid "Enter GitHub Username or Organization Name"
 msgstr ""
 
 #: /resources/lib/repository.py
@@ -349,4 +349,39 @@ msgstr ""
 #: /resources/settings.xml
 msgctxt "#32066"
 msgid "Always installs latest version available"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32067"
+msgid "Add by Name"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32068"
+msgid "Would you like to update this add-on now?"
+msgstr ""
+
+#: default.py
+msgctxt "#32069"
+msgid "Update an addon from one of your added repositories"
+msgstr ""
+
+#: default.py
+msgctxt "#32070"
+msgid "Open an issue for one of your added repositories"
+msgstr ""
+
+#: default.py
+msgctxt "#32071"
+msgid "Add a repository from GitHub"
+msgstr ""
+
+#: default.py
+msgctxt "#32072"
+msgid "Remove an added repository"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32073"
+msgid "No repositories found that contain a valid Kodi addon."
 msgstr ""

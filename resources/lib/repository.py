@@ -32,7 +32,6 @@ _compact = settings.get_setting_boolean('general.compact')
 
 def get_repos(key=None):
     repos = {}
-    files = []
     
     tools.create_folder(_json_path)
     for j in os.listdir(_json_path):
@@ -40,11 +39,9 @@ def get_repos(key=None):
         content = json.loads(tools.read_from_file(file_path))
         for r in content:
             repos[r] = content[r]
-            files.append(file_path)
-    if key:
-        return repos.get(key, {})
-
-    return repos, files
+            repos[r]['filename'] = file_path
+    
+    return repos if not key else repos.get(key, {})
 
 
 def add_repository():
@@ -196,17 +193,20 @@ def _prompt_for_update(key):
 def remove_repository():
     dialog = xbmcgui.Dialog()
     
-    selection = get_repo_selection('remove_repository')
+    repos = get_repos()
+    repo = get_repo_selection('remove_repository')
     
-    if selection:
-        file_path = selection['files'][selection['selection']]
-        indices = [i for i, x in enumerate(selection['files']) if x == file_path]
+    if repo:
+        filename = repo['filename']
+        repo_defs = [i for i in repos.values()]
+        
+        indices = [i for i, x in enumerate(repo_defs) if x['filename'] == filename]
         if len(indices) > 1:
-            remove = dialog.yesno(_addon_name, settings.get_localized_string(32039).format(', '.join([selection['addon_names'][i] for i in indices])))
+            remove = dialog.yesno(_addon_name, settings.get_localized_string(32039).format(', '.join([repo_defs[i]['name'] for i in indices])))
         else:
-            remove = dialog.yesno(_addon_name, settings.get_localized_string(32040).format(selection['addon_names'][selection['selection']]))
+            remove = dialog.yesno(_addon_name, settings.get_localized_string(32040).format(repo['name']))
         if remove:
-            os.remove(file_path)
+            os.remove(filename)
             dialog.notification(_addon_name, settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(len(indices)))
     del dialog
 
@@ -262,13 +262,13 @@ def get_icon(user, repo, addon_xml=None):
 
 def get_repo_selection(ret):
     dialog = xbmcgui.Dialog()
-    repos, files = get_repos()
-    names = [i for i in [i["name"] for i in repos.values()]]
-    keys = [i for i in repos]
+    repos = get_repos()
+    repo_defs = sorted(repos.values(), key=lambda b: b['name'])
+    names = [i['name'] for i in repo_defs]
     
     repo_items = []
     with tools.busy_dialog():
-        for repo in repos.values():
+        for repo in repo_defs:
             user = repo['user']
             repo_name = repo['repo_name']
             name = repo['name']
@@ -286,10 +286,10 @@ def get_repo_selection(ret):
         del dialog
         return None
     else:
-        repo = repos[keys[selection]]
-        if ret == 'update_addon':
+        repo = repo_defs[selection]
+        if ret in ['update_addon', 'remove_repository']:
             return repo
-        elif ret == 'remove_repository':
-            return {'files': files, 'addon_names': names, 'selection': selection}
         elif ret == 'open_issue':
             return {'user': repo['user'], 'repo': repo['repo_name']}
+        del dialog
+        return None

@@ -400,3 +400,13 @@ msgstr ""
 msgctxt "#32076"
 msgid "Show organization repos for current user"
 msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32077"
+msgid "Updating addon.xml for {}..."
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32078"
+msgid "Installing dependencies for {}..."
+msgstr ""

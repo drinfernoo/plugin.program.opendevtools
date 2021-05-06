@@ -302,7 +302,7 @@ def update_addon(addon=None):
     progress.create(
         _addon_name, settings.get_localized_string(32025).format(color_string(addon["name"]))
     )
-    progress.update(-1)
+    progress.update(0)
     
     location = _get_zip_file(
         addon["user"],
@@ -315,17 +315,21 @@ def update_addon(addon=None):
     )
 
     if location:
-        progress.update(-1, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        progress.update(25, settings.get_localized_string(32026).format(color_string(addon["name"])))
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
-        
         _extract_addon(location, addon)
+
+        progress.update(50, settings.get_localized_string(32077).format(color_string(addon["name"])))
+
         _rewrite_kodi_dependency_versions(addon)
         _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)
+
         if _dependencies:
+            progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
             _install_deps(addon)
         tools.clear_temp()
 
-        progress.update(-1, settings.get_localized_string(32027))
+        progress.update(100, settings.get_localized_string(32027))
 
     progress.close()
     del progress

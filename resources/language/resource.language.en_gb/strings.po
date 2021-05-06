@@ -158,7 +158,7 @@ msgstr ""
 
 #: /resources/lib/repository.py
 msgctxt "#32028"
-msgid "Enter GitHub Username"
+msgid "Enter GitHub Username or Organization Name"
 msgstr ""
 
 #: /resources/lib/repository.py
@@ -379,4 +379,9 @@ msgstr ""
 #: default.py
 msgctxt "#32072"
 msgid "Remove an added repository"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32073"
+msgid "No repositories found that contain a valid Kodi addon."
 msgstr ""

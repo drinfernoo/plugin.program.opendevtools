@@ -85,7 +85,7 @@ def add_repository():
             addon_repos.append(name)
 
     if len(addon_repos) == 0:
-        dialog.ok(_addon_name, 'This user has no repositories that contain a valid Kodi addon.')
+        dialog.ok(_addon_name, settings.get_localized_string(32073))
         del dialog
         return
     

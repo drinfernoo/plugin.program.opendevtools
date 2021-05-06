@@ -38,10 +38,8 @@ _media_path = os.path.join(_addon_path, 'resources', 'media')
 def _get_zip_file(user, repo, branch=None, sha=None):
     if (sha and branch) or not (sha or branch):
         raise ValueError('Cannot specify both branch and sha')
-    elif sha:
-        return _store_zip_file(API.get_commit_zip(user, repo, sha))
-    elif branch:
-        return _store_zip_file(API.get_zipball(user, repo, branch))
+    else:
+        return _store_zip_file(API.get_zipball(user, repo, sha if sha else branch))
 
 
 def _store_zip_file(zip_contents):
@@ -306,6 +304,7 @@ def update_addon(addon=None):
         _addon_name, settings.get_localized_string(32025).format(color_string(addon["name"]))
     )
     progress.update(-1)
+    
     location = _get_zip_file(
         addon["user"],
         addon["repo_name"],
@@ -318,6 +317,7 @@ def update_addon(addon=None):
 
     if location:
         progress.update(-1, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        
         _extract_addon(location, addon)
         _rewrite_kodi_dependency_versions(addon)
         _update_addon_version(addon, sorted_branches[0]['name'], branch['name'], branch['sha'] if not commit_sha else commit_label)

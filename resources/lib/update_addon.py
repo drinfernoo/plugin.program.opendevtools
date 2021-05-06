@@ -46,7 +46,7 @@ def _get_zip_file(user, repo, branch=None, sha=None):
 
 def _store_zip_file(zip_contents):
     zip_location = os.path.join(_addon_data, "{}.zip".format(int(time.time())))
-    tools.write_all_text(zip_location, zip_contents)
+    tools.write_to_file(zip_location, zip_contents, bytes=True)
 
     return zip_location
 
@@ -108,14 +108,11 @@ def _rewrite_kodi_dependency_versions(addon):
     addon_xml = os.path.join(_addons, addon['plugin_id'], "addon.xml")
     tools.log('Rewriting {}'.format(addon_xml))
 
-    with open(addon_xml, "r+") as f:
-        content = f.read()
-        for dep in kodi_deps:
-            content = re.sub('<import addon="' + dep + r'" version=".*?"\s?/>',
-                             '<import addon="' + dep + '" version="' + kodi_deps[dep] + '" />', content)
-        f.seek(0)
-        f.write(content)
-    pass
+    content = tools.read_from_file(addon_xml)
+    for dep in kodi_deps:
+        content = re.sub('<import addon="' + dep + r'" version=".*?"\s?/>',
+                         '<import addon="' + dep + '" version="' + kodi_deps[dep] + '" />', content)
+    tools.write_to_file(addon_xml, content)
 
 
 def _install_deps(addon):

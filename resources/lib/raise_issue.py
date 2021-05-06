@@ -61,7 +61,7 @@ def _post_issue(post_data, user, repo):
 def _get_log_contents():
     log_file = os.path.join(_log_location, 'kodi.log')
     if os.path.exists(log_file):
-        return tools.read_all_text(log_file)
+        return tools.read_from_file(log_file)
     else:
         tools.log("Error finding logs!", 'error')
 

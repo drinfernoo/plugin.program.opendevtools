@@ -36,7 +36,7 @@ def get_repos(key=None):
     tools.create_folder(_json_path)
     for j in os.listdir(_json_path):
         file_path = os.path.join(_json_path, j)
-        content = json.loads(tools.read_all_text(file_path))
+        content = json.loads(tools.read_from_file(file_path))
         for r in content:
             repos[r] = content[r]
             files.append(file_path)
@@ -71,7 +71,8 @@ def add_repository():
             addon_xml = API.get_file(user, name, 'addon.xml', text=True)
             if not addon_xml:
                 continue
-            addon = ElementTree.fromstring(addon_xml)
+            
+            addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
 
             def_name = addon.get('name')
             li = xbmcgui.ListItem(def_name, settings.get_localized_string(32018).format(tools.to_local_time(user_repo['updated_at'])))
@@ -102,7 +103,7 @@ def add_repository():
             del dialog
             return
             
-        addon = ElementTree.fromstring(addon_xml)
+        addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
 
         name = addon.get('name')
         plugin_id = addon.get('id')
@@ -120,7 +121,7 @@ def _add_repo(user, repo, name, plugin_id):
     filename = key + '.json'
     
     tools.create_folder(_json_path)
-    tools.write_all_text(os.path.join(_json_path, filename), json.dumps(addon_def))
+    tools.write_to_file(os.path.join(_json_path, filename), json.dumps(addon_def))
     dialog.notification(_addon_name, settings.get_localized_string(32037))
     
     _prompt_for_update(key)
@@ -143,7 +144,7 @@ def _add_custom(user):
     addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
     
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml)
+        addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
 
         def_name = addon.get('name')
         def_id = addon.get('id')
@@ -233,7 +234,7 @@ def get_icon(user, repo):
     addon_xml = API.get_file(user, repo, 'addon.xml', text=True)
     
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml)
+        addon = ElementTree.fromstring(addon_xml.encode('utf-8'))
         
         try:
             def_icon = [i for i in addon.findall('extension') if i.get('point') == 'xbmc.addon.metadata'][0]

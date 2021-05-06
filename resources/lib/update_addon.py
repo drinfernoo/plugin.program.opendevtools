@@ -74,9 +74,9 @@ def _update_addon_version(addon, default_branch_name, branch, gitsha):
     branch = re.sub(r'[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.+_@~]', '_', branch)
 
     if default_branch_name != branch:
-        replace_regex = r'<\1"\2.\3.\4-{}~{}"\7>'.format(gitsha[0:8], branch)
+        replace_regex = r'<\1"\2.\3.\4-{}~{}"\7>'.format(gitsha[:7], branch)
     else:
-        replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[0:8])
+        replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[:7])
 
     with open(addon_xml, "r+") as f:
         content = f.read()
@@ -183,7 +183,7 @@ def _get_selected_commit(user, repo, branch):
                 date = tools.to_local_time(commit['commit']['author']['date'])
                 li = xbmcgui.ListItem(
                     "{} - {}".format(
-                        color_string(commit["sha"][:8]),
+                        color_string(commit["sha"][:7]),
                         commit["commit"]["message"].replace("\n", "; "),
                     ), label2=settings.get_localized_string(32014).format(commit['commit']['author']['name'], date))
                 art = os.path.join(_media_path, 'commit.png')
@@ -202,7 +202,7 @@ def _get_selected_commit(user, repo, branch):
         if sha in [i[1] for i in tags]:
             return [i[0] for i in tags if i[1] == sha][0], [i[1] for i in tags if i[1] == sha][0]
         else:
-            return sha[:8], sha
+            return sha[:7], sha
     
     return None, None
 
@@ -260,7 +260,7 @@ def update_addon(addon=None):
             art = os.path.join(_media_path, 'protected-branch.png')
         date = tools.to_local_time(i['updated_at'])
         li = xbmcgui.ListItem("{} - ({})"
-                              .format(i["branch"]["name"], color_string(i["sha"][:8])),
+                              .format(i["branch"]["name"], color_string(i["sha"][:7])),
                               label2=settings.get_localized_string(32018).format(date))
         li.setArt({'thumb': art})
         branch_items.append(li)
@@ -292,7 +292,7 @@ def update_addon(addon=None):
     if not dialog.yesno(
             settings.get_localized_string(32000),
             settings.get_localized_string(32024).format(
-                color_string(addon["name"]), color_string(branch["branch"]["name"]) if not commit_sha else commit_label
+                color_string(addon["name"]), color_string(branch["branch"]["name"]) if not commit_sha else color_string(commit_label)
             ),
     ):
         dialog.notification(_addon_name, settings.get_localized_string(32017))

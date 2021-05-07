@@ -29,6 +29,8 @@ _addon_name = settings.get_addon_info('name')
 
 _user = settings.get_setting_string('github.username')
 _compact = settings.get_setting_boolean('general.compact')
+_collaborator = settings.get_setting_boolean('github.collaborator_repos')
+_organization = settings.get_setting_boolean('github.organization_repos')
 
 def get_repos(key=None):
     repos = {}
@@ -48,7 +50,7 @@ def add_repository():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
     
-    user = dialog.input(settings.get_localized_string(32028))
+    user = dialog.input(settings.get_localized_string(32028)).lower()
     if not user:
         dialog.notification(_addon_name, settings.get_localized_string(32029))
         del dialog
@@ -56,8 +58,9 @@ def add_repository():
     
     if API.get_user(user).get('type', 'User') == 'Organization':
         user_repos = API.get_org_repos(user)
-    elif user == _user:
-        user_repos = API.get_repos()
+    elif user == _user.lower():
+        access_level = ['owner', 'collaborator' if _collaborator else '', 'organization_member' if _organization else '']
+        user_repos = API.get_repos(','.join(access_level))
     else:
         user_repos = API.get_user_repos(user)
 
@@ -70,8 +73,10 @@ def add_repository():
         repos = pool.wait_completion()
         repos.sort(key=lambda b: b['updated_at'], reverse=True)
         addon_repos = [i['repo_name'] for i in repos]
-        for i in repos:        
-            li = xbmcgui.ListItem(i['name'], settings.get_localized_string(32018).format(tools.to_local_time(i['updated_at'])))
+        for i in repos:
+            byline = ', '.join([settings.get_localized_string(32063).format(i['user']),
+                               settings.get_localized_string(32018).format(tools.to_local_time(i['updated_at']))]) if i['user'].lower() != user else settings.get_localized_string(32018).format(tools.to_local_time(i['updated_at']))
+            li = xbmcgui.ListItem(i['name'], label2=byline)
             
             if not _compact:
                 li.setArt({'thumb': i['icon']})
@@ -265,7 +270,6 @@ def get_repo_selection(ret):
     dialog = xbmcgui.Dialog()
     repos = get_repos()
     repo_defs = sorted(repos.values(), key=lambda b: b['name'])
-    names = [i['name'] for i in repo_defs]
     
     repo_items = []
     with tools.busy_dialog():

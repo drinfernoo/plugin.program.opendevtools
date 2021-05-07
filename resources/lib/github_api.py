@@ -18,6 +18,11 @@ class GithubAPI(Session):
                              "Accept": "application/vnd.github.v3+json"})
         self.base_url = 'https://api.github.com/'
         self.auth_url = 'https://github.com/login/'
+        
+    def _update_token(self):
+        token = settings.get_setting_string('github.token')
+        self.access_token = token
+        self.headers.update({"Authorization": "Bearer {}".format(self.access_token)})
 
     def get(self, endpoint, **params):
         return super(GithubAPI, self).get(tools.urljoin(self.base_url, endpoint), params=params)
@@ -89,6 +94,7 @@ class GithubAPI(Session):
         return self.get_json('/users/{}'.format(user))
     
     def get_username(self):
+        self._update_token()
         return self.get_json('/user').get('login', '')
 
     def get_org_repos(self, org):
@@ -97,8 +103,8 @@ class GithubAPI(Session):
     def get_user_repos(self, user):
         return self.get_json('/users/{}/repos'.format(user))
         
-    def get_repos(self):
-        return self.get_all_pages_json('/user/repos?type=owner')
+    def get_repos(self, access=''):
+        return self.get_all_pages_json('/user/repos?affiliation={}'.format(access))
 
     def authorize(self, code=None):
         if not code:

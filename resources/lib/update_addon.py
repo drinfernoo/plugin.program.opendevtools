@@ -78,14 +78,11 @@ def _update_addon_version(addon, default_branch_name, branch, gitsha):
     else:
         replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[:7])
 
-    with open(addon_xml, "r+") as f:
-        content = f.read()
-        content = re.sub(
-            r'<(addon id.*version=)\"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(-.*?)?\"(.*)>',
-            replace_regex, content)
-
-        f.seek(0)
-        f.write(content)
+    content = tools.read_from_file(addon_xml)
+    content = re.sub(
+        r'<(addon id.*version=)\"([0-9]+)\.([0-9]+)\.([0-9]+)(?:-([0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*))?(?:\+[0-9A-Za-z-]+)?(-.*?)?\"(.*)>',
+        replace_regex, content)
+    tools.write_to_file(addon_xml, content)
 
 
 def _rewrite_kodi_dependency_versions(addon):

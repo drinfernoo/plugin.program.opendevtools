@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, unicode_literals
 import os
 import re
 import shutil
+import sqlite3
 import sys
 import time
 from xml.etree import ElementTree
@@ -28,6 +29,7 @@ _dependencies = settings.get_setting_boolean('general.dependencies')
 
 _home = tools.translate_path('special://home')
 _temp = tools.translate_path('special://temp')
+_database = tools.translate_path('special://database')
 _addons = os.path.join(_home, 'addons')
 _addon_path = tools.translate_path(settings.get_addon_info('path'))
 _addon_data = tools.translate_path(settings.get_addon_info('profile'))
@@ -145,6 +147,24 @@ def _install_deps(addon):
                 clicked = True
             else:
                 tools.log('...waiting')
+
+
+def _get_addons_db():
+    for db in os.listdir(_database):
+        if db.lower().startswith('addons') and db.lower().endswith('.db'):
+            return os.path.join(_database, db)
+
+
+def _enable_addon(plugin_id):
+    db_file = _get_addons_db()
+    connection = sqlite3.connect(db_file)
+    cursor = connection.cursor()
+    date = time.strftime('%Y-%m-%d %H:%M:%S')
+    cursor.execute("DELETE FROM installed WHERE addonID = ?", (plugin_id,))
+    cursor.execute("INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)", (plugin_id, date))
+    connection.commit()
+
+    connection.close()
 
 
 def _get_selected_commit(user, repo, branch):
@@ -324,11 +344,14 @@ def update_addon(addon=None):
         if _dependencies:
             progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
             _install_deps(addon)
-        tools.clear_temp()
+        _enable_addon(addon["plugin_id"])
 
         progress.update(100, settings.get_localized_string(32027))
 
     progress.close()
     del progress
     del dialog
+
+    tools.clear_temp()
     tools.reload_profile()
+    

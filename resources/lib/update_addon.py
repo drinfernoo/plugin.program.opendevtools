@@ -120,7 +120,10 @@ def _install_deps(addon):
     xml_path = os.path.join(_addons, plugin, "addon.xml")
     addon_xml = ElementTree.parse(xml_path)
     root = addon_xml.getroot()
-    deps = root.find('requires').findall('import')
+    requires = root.find('requires')
+    if not requires:
+        return
+    deps = requires.findall('import')
 
     for dep in [d for d in deps if not d.get('addon').startswith('xbmc') and not d.get('optional') == "true"]:
         plugin_id = dep.get('addon')

@@ -411,6 +411,11 @@ msgctxt "#32078"
 msgid "Installing dependencies for {}..."
 msgstr ""
 
+#: /resources/lib/update_addon.py
+msgctxt "#32079"
+msgid "The following dependencies could not be installed: {}\nThis may cause issues with {} functioning properly."
+msgstr ""
+
 #: /resources/lib/repository.py
 msgctxt "#32080"
 msgid "The user or organization you entered could not be found."

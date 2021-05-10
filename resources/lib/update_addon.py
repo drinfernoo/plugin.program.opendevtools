@@ -4,6 +4,7 @@ from __future__ import absolute_import, division, unicode_literals
 import os
 import re
 import shutil
+import sqlite3
 import sys
 import time
 from xml.etree import ElementTree
@@ -28,6 +29,7 @@ _dependencies = settings.get_setting_boolean('general.dependencies')
 
 _home = tools.translate_path('special://home')
 _temp = tools.translate_path('special://temp')
+_database = tools.translate_path('special://database')
 _addons = os.path.join(_home, 'addons')
 _addon_path = tools.translate_path(settings.get_addon_info('path'))
 _addon_data = tools.translate_path(settings.get_addon_info('profile'))
@@ -112,13 +114,16 @@ def _rewrite_kodi_dependency_versions(addon):
 
 def _install_deps(addon):
     plugin = addon['plugin_id']
-    
+    failed_deps = []
     visible_cond = 'Window.IsTopMost(yesnodialog)'
     
     xml_path = os.path.join(_addons, plugin, "addon.xml")
     addon_xml = ElementTree.parse(xml_path)
     root = addon_xml.getroot()
-    deps = root.find('requires').findall('import')
+    requires = root.find('requires')
+    if not requires:
+        return
+    deps = requires.findall('import')
 
     for dep in [d for d in deps if not d.get('addon').startswith('xbmc') and not d.get('optional') == "true"]:
         plugin_id = dep.get('addon')
@@ -135,6 +140,7 @@ def _install_deps(addon):
         while not tools.get_condition(installed_cond):
             if time.time() >= start + timeout:
                 tools.log('Timed out installing {}'.format(plugin_id), 'warning')
+                failed_deps.append(plugin_id)
                 break
 
             tools.sleep(500)
@@ -145,7 +151,57 @@ def _install_deps(addon):
                 clicked = True
             else:
                 tools.log('...waiting')
+    return failed_deps
 
+
+def _get_addons_db():
+    for db in os.listdir(_database):
+        if db.lower().startswith('addons') and db.lower().endswith('.db'):
+            return os.path.join(_database, db)
+
+
+def _disable_addon(addon):
+    if not tools.get_condition('System.HasAddon({})'.format(addon['plugin_id'])):
+        return
+
+    params = {'jsonrpc': '2.0', 'method': 'Addons.SetAddonEnabled',
+              'params': {'addonid': addon['plugin_id'],
+                         'enabled': False},
+              'id': 1}
+
+    return tools.execute_jsonrpc(params)
+
+
+def _enable_addon(addon, exists=False):
+    if not exists:
+        db_file = _get_addons_db()
+        connection = sqlite3.connect(db_file)
+        cursor = connection.cursor()
+        date = time.strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon['plugin_id'],))
+        cursor.execute("INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)", (addon['plugin_id'], date))
+        connection.commit()
+
+        connection.close()
+    else:
+        params = {'jsonrpc': '2.0', 'method': 'Addons.SetAddonEnabled',
+                  'params': {'addonid': addon['plugin_id'],
+                             'enabled': True},
+                  'id': 1}
+
+        return tools.execute_jsonrpc(params)
+    
+    
+def _detect_service(addon):
+    addon_xml = os.path.join(_addons, addon['plugin_id'], "addon.xml")
+    tree = ElementTree.parse(addon_xml)
+    root = tree.getroot()
+    extension = root.findall('extension')
+    for ext in extension:
+        if ext.get('point', '') == 'xbmc.service':
+            return True
+    return False
+    
 
 def _get_selected_commit(user, repo, branch):
     dialog = xbmcgui.Dialog()
@@ -313,9 +369,12 @@ def update_addon(addon=None):
 
     if location:
         progress.update(25, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        disabled = _disable_addon(addon)
+        exists = os.path.exists(os.path.join(_addons, addon["plugin_id"]))
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
-
+        enabled = _enable_addon(addon, exists)
+        
         progress.update(50, settings.get_localized_string(32077).format(color_string(addon["name"])))
 
         _rewrite_kodi_dependency_versions(addon)
@@ -323,12 +382,17 @@ def update_addon(addon=None):
 
         if _dependencies:
             progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
-            _install_deps(addon)
-        tools.clear_temp()
-
+            failed_deps = _install_deps(addon)
+        
         progress.update(100, settings.get_localized_string(32027))
+        
+        if failed_deps:
+            dialog.ok(_addon_name, settings.get_localized_string(32079).format(', '.join(failed_deps), addon['name']))
+        
+        tools.clear_temp()
+        tools.reload_profile()
 
     progress.close()
     del progress
     del dialog
-    tools.reload_profile()
+    

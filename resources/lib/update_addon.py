@@ -373,7 +373,8 @@ def update_addon(addon=None):
         exists = os.path.exists(os.path.join(_addons, addon["plugin_id"]))
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
-
+        enabled = _enable_addon(addon, exists)
+        
         progress.update(50, settings.get_localized_string(32077).format(color_string(addon["name"])))
 
         _rewrite_kodi_dependency_versions(addon)
@@ -382,8 +383,6 @@ def update_addon(addon=None):
         if _dependencies:
             progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
             failed_deps = _install_deps(addon)
-        
-        enabled = _enable_addon(addon, exists)
         
         progress.update(100, settings.get_localized_string(32027))
         

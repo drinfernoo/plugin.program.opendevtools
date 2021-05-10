@@ -388,7 +388,7 @@ msgstr ""
 
 #: /resources/lib/repository.py
 msgctxt "#32074"
-msgid "Do you want to add {}?"
+msgid "Do you want to add {} repository?"
 msgstr ""
 
 #: /resources/settings.xml
@@ -409,4 +409,14 @@ msgstr ""
 #: /resources/lib/update_addon.py
 msgctxt "#32078"
 msgid "Installing dependencies for {}..."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32080"
+msgid "The user or organization you entered could not be found."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32081"
+msgid "No repositories could be found for the entered user or organization."
 msgstr ""

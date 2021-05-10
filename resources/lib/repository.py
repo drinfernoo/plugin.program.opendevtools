@@ -67,10 +67,20 @@ def add_repository():
     addon_repos = []
     repo_items = []
     
+    if 'message' in user_repos:
+        dialog.ok(_addon_name, settings.get_localized_string(32080))
+        del dialog
+        return
+    
     with tools.busy_dialog():
         for user_repo in user_repos:
             pool.put(get_repo_info, user_repo)
         repos = pool.wait_completion()
+        if not repos:
+            dialog.ok(_addon_name, settings.get_localized_string(32081))
+            del dialog
+            return
+
         repos.sort(key=lambda b: b['updated_at'], reverse=True)
         addon_repos = [i['repo_name'] for i in repos]
         for i in repos:

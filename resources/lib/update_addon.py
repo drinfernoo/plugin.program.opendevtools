@@ -114,7 +114,7 @@ def _rewrite_kodi_dependency_versions(addon):
 
 def _install_deps(addon):
     plugin = addon['plugin_id']
-    
+    failed_deps = []
     visible_cond = 'Window.IsTopMost(yesnodialog)'
     
     xml_path = os.path.join(_addons, plugin, "addon.xml")
@@ -140,6 +140,7 @@ def _install_deps(addon):
         while not tools.get_condition(installed_cond):
             if time.time() >= start + timeout:
                 tools.log('Timed out installing {}'.format(plugin_id), 'warning')
+                failed_deps.append(plugin_id)
                 break
 
             tools.sleep(500)
@@ -150,6 +151,7 @@ def _install_deps(addon):
                 clicked = True
             else:
                 tools.log('...waiting')
+    return failed_deps
 
 
 def _get_addons_db():
@@ -379,14 +381,14 @@ def update_addon(addon=None):
 
         if _dependencies:
             progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
-            _install_deps(addon)
+            failed_deps = _install_deps(addon)
         
         enabled = _enable_addon(addon, exists)
         
         progress.update(100, settings.get_localized_string(32027))
         
-        if _detect_service(addon):
-            dialog.ok(_addon_name, '{} runs a service. For proper functionality, it may be required to reboot Kodi.'.format(addon['name']))
+        if failed_deps:
+            dialog.ok(_addon_name, settings.get_localized_string(32079).format(', '.join(failed_deps), addon['name']))
         
         tools.clear_temp()
         tools.reload_profile()

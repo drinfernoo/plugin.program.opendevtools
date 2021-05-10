@@ -8,6 +8,7 @@ import calendar
 import collections
 from contextlib import contextmanager
 from io import open
+import json
 import os
 import shutil
 import sys
@@ -239,3 +240,9 @@ def get_condition(condition):
 
 def execute_builtin(bi):
     xbmc.executebuiltin(bi)
+
+
+def execute_jsonrpc(params):
+    call = json.dumps(params)
+    response = xbmc.executeJSONRPC(call)
+    return response

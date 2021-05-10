@@ -155,17 +155,48 @@ def _get_addons_db():
             return os.path.join(_database, db)
 
 
-def _enable_addon(plugin_id):
-    db_file = _get_addons_db()
-    connection = sqlite3.connect(db_file)
-    cursor = connection.cursor()
-    date = time.strftime('%Y-%m-%d %H:%M:%S')
-    cursor.execute("DELETE FROM installed WHERE addonID = ?", (plugin_id,))
-    cursor.execute("INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)", (plugin_id, date))
-    connection.commit()
+def _disable_addon(addon):
+    if not tools.get_condition('System.HasAddon({})'.format(addon['plugin_id'])):
+        return
 
-    connection.close()
+    params = {'jsonrpc': '2.0', 'method': 'Addons.SetAddonEnabled',
+              'params': {'addonid': addon['plugin_id'],
+                         'enabled': False},
+              'id': 1}
 
+    return tools.execute_jsonrpc(params)
+
+
+def _enable_addon(addon, exists=False):
+    if not exists:
+        db_file = _get_addons_db()
+        connection = sqlite3.connect(db_file)
+        cursor = connection.cursor()
+        date = time.strftime('%Y-%m-%d %H:%M:%S')
+        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon['plugin_id'],))
+        cursor.execute("INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)", (addon['plugin_id'], date))
+        connection.commit()
+
+        connection.close()
+    else:
+        params = {'jsonrpc': '2.0', 'method': 'Addons.SetAddonEnabled',
+                  'params': {'addonid': addon['plugin_id'],
+                             'enabled': True},
+                  'id': 1}
+
+        return tools.execute_jsonrpc(params)
+    
+    
+def _detect_service(addon):
+    addon_xml = os.path.join(_addons, addon['plugin_id'], "addon.xml")
+    tree = ElementTree.parse(addon_xml)
+    root = tree.getroot()
+    extension = root.findall('extension')
+    for ext in extension:
+        if ext.get('point', '') == 'xbmc.service':
+            return True
+    return False
+    
 
 def _get_selected_commit(user, repo, branch):
     dialog = xbmcgui.Dialog()
@@ -333,6 +364,8 @@ def update_addon(addon=None):
 
     if location:
         progress.update(25, settings.get_localized_string(32026).format(color_string(addon["name"])))
+        disabled = _disable_addon(addon)
+        exists = os.path.exists(os.path.join(_addons, addon["plugin_id"]))
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
 
@@ -344,14 +377,18 @@ def update_addon(addon=None):
         if _dependencies:
             progress.update(75, settings.get_localized_string(32078).format(color_string(addon["name"])))
             _install_deps(addon)
-        _enable_addon(addon["plugin_id"])
-
+        
+        enabled = _enable_addon(addon, exists)
+        
         progress.update(100, settings.get_localized_string(32027))
+        
+        if _detect_service(addon):
+            dialog.ok(_addon_name, '{} runs a service. For proper functionality, it may be required to reboot Kodi.'.format(addon['name']))
+        
+        tools.clear_temp()
+        tools.reload_profile()
 
     progress.close()
     del progress
     del dialog
-
-    tools.clear_temp()
-    tools.reload_profile()
     

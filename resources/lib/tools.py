@@ -4,9 +4,10 @@ from __future__ import absolute_import, division, unicode_literals
 import xbmc
 import xbmcvfs
 
-import calendar
 import collections
 from contextlib import contextmanager
+from dateutil import parser
+from dateutil import tz
 from io import open
 import json
 import os
@@ -211,11 +212,12 @@ def ensure_path_is_dir(path):
     
 def to_local_time(utc_time):
     rem = '#' if sys.platform == 'win32' else '-'
-    utc_string = '%Y-%m-%dT%H:%M:%SZ'
     format_string = settings.get_localized_string(32049).format(rem)
-    
-    return time.strftime(format_string, time.gmtime(calendar.timegm(time.strptime(utc_time, utc_string))))
 
+    utc_parsed = parser.parse(utc_time)
+    local_time = utc_parsed.astimezone(tz.tzlocal())
+
+    return local_time.strftime(format_string)
 
 def create_folder(path):
     path = ensure_path_is_dir(path)

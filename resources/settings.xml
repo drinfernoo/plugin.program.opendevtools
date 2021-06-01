@@ -13,20 +13,19 @@
 		<setting type="action" label="$ADDON[plugin.program.opendevtools 32057]"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
-				 visible="eq(3,) | eq(4,)"/>
+				 visible="eq(4,)"/>
 		<setting type="action" label="$ADDON[plugin.program.opendevtools 32058]"
-				 id="github.username"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
-				 visible="!eq(2,) + !eq(3,)"/>
+				 visible="!eq(3,)"/>
         <setting type="action" label="$ADDON[plugin.program.opendevtools 32059]"
                  action="RunScript(plugin.program.opendevtools,action=revoke)"
 				 option="close"
-				 visible="!eq(1,) + !eq(2,)"/>
-		
+				 visible="!eq(2,)"/>
+
 		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 32060]"
 				 enable="false"
-				 visible="false"/>		 
+				 visible="!eq(0,)"/>		 
 		<setting id="github.token" type="text" label="$ADDON[plugin.program.opendevtools 32061]"
 				 option="hidden"
 				 enable="false"
@@ -34,5 +33,11 @@
 		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 32062]"
 				 default="7281fc95af8c0e322b96"
 				 visible="false"/>
+
+		<setting label="$ADDON[plugin.program.opendevtools 32064]" type="lsep"/>
+		
+		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 32065] ($ADDON[plugin.program.opendevtools 32066])" default="true"/>
+		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32075]" default="false"/>
+		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32076]" default="false"/>
     </category>
 </settings>

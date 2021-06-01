@@ -3,6 +3,7 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
+import os
 import sys
 
 try:
@@ -10,17 +11,18 @@ try:
 except ImportError:
     from urlparse import parse_qsl
 
-from resources.lib.raise_issue import raise_issue
-from resources.lib.repository import add_repository
-from resources.lib.repository import oauth
-from resources.lib.repository import remove_repository
-from resources.lib.repository import revoke
-from resources.lib.update_addon import update_addon
+from resources.lib import color
+from resources.lib import oauth
+from resources.lib import raise_issue
+from resources.lib import repository
 from resources.lib import settings
-from resources.lib.tools import color_picker
+from resources.lib import tools
+from resources.lib import update_addon
 
-_addon_name = settings.get_addon_info('name')
-_access_token = settings.get_setting_string('github.token')
+_addon_path = tools.translate_path(settings.get_addon_info('path'))
+_media_path = os.path.join(_addon_path, 'resources', 'media')
+
+_compact = settings.get_setting_boolean('general.compact')
 
 
 def _do_action():
@@ -28,23 +30,33 @@ def _do_action():
         _params = sys.argv[1:]
         params = {i[0]: i[1] for i in [j.split('=') for j in _params]}
         action = params.get('action', None)
+        id = params.get('id', None)
         if action == 'color_picker':
-            color_picker()
+            color.color_picker()
         elif action == 'authorize':
-            oauth()
+            oauth.authorize()
         elif action == 'revoke':
-            revoke()
+            oauth.revoke()
+        elif action == 'update_addon' and id:
+            update_addon.update_addon(id)
     else:
+        oauth.check_auth()
         dialog = xbmcgui.Dialog()
-        if not _access_token:
-            if dialog.yesno(_addon_name, settings.get_localized_string(32005)):
-                oauth(True)
 
-        actions = [(settings.get_localized_string(32000), update_addon), (settings.get_localized_string(32001), raise_issue),
-                   (settings.get_localized_string(32002), add_repository), (settings.get_localized_string(32003), remove_repository)]
-        selection = dialog.select(settings.get_localized_string(32004), [i[0] for i in actions])
+        actions = [(32000, 32069, update_addon.update_addon, 'update.png'),
+                   (32001, 32070, raise_issue.raise_issue, 'issue.png'),
+                   (32002, 32071, repository.add_repository, 'plus.png'),
+                   (32003, 32072, repository.remove_repository, 'minus.png')]
+
+        action_items = []
+        for action in actions:
+            li = xbmcgui.ListItem(settings.get_localized_string(action[0]), label2=settings.get_localized_string(action[1]))
+            li.setArt({'thumb': os.path.join(_media_path, action[3])})
+            action_items.append(li)
+
+        selection = dialog.select(settings.get_localized_string(32004), action_items, useDetails=not _compact)
         if selection > -1:
-            actions[selection][1]()
+            actions[selection][2]()
         del dialog
 
 _do_action()

@@ -2,13 +2,14 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import xbmc
-import xbmcgui
 import xbmcvfs
 
-import calendar
 import collections
 from contextlib import contextmanager
+from dateutil import parser
+from dateutil import tz
 from io import open
+import json
 import os
 import shutil
 import sys
@@ -21,7 +22,9 @@ try:
 except AttributeError:
     translate_path = xbmc.translatePath
 
-_addon_name = settings.get_addon_info('name')
+_addon_name = settings.get_addon_info("name")
+_addon_data = translate_path(settings.get_addon_info("profile"))
+_temp = translate_path("special://temp")
 
 
 try:
@@ -29,153 +32,17 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
-_log_levels = {'debug'  : xbmc.LOGDEBUG,
-               'info'   : xbmc.LOGINFO,
-               'warning': xbmc.LOGWARNING,
-               'error'  : xbmc.LOGERROR,
-               'fatal'  : xbmc.LOGFATAL}
+_log_levels = {
+    "debug": xbmc.LOGDEBUG,
+    "info": xbmc.LOGINFO,
+    "warning": xbmc.LOGWARNING,
+    "error": xbmc.LOGERROR,
+    "fatal": xbmc.LOGFATAL,
+}
 
-_color_chart = [
-    "black",
-    "white",
-    "whitesmoke",
-    "gainsboro",
-    "lightgray",
-    "silver",
-    "darkgray",
-    "gray",
-    "dimgray",
-    "snow",
-    "floralwhite",
-    "ivory",
-    "beige",
-    "cornsilk",
-    "antiquewhite",
-    "bisque",
-    "blanchedalmond",
-    "burlywood",
-    "darkgoldenrod",
-    "ghostwhite",
-    "azure",
-    "aliveblue",
-    "lightsaltegray",
-    "lightsteelblue",
-    "powderblue",
-    "lightblue",
-    "skyblue",
-    "lightskyblue",
-    "deepskyblue",
-    "dodgerblue",
-    "royalblue",
-    "blue",
-    "mediumblue",
-    "midnightblue",
-    "navy",
-    "darkblue",
-    "cornflowerblue",
-    "slateblue",
-    "slategray",
-    "yellowgreen",
-    "springgreen",
-    "seagreen",
-    "steelblue",
-    "teal",
-    "fuchsia",
-    "deeppink",
-    "darkmagenta",
-    "blueviolet",
-    "darkviolet",
-    "darkorchid",
-    "darkslateblue",
-    "darkslategray",
-    "indigo",
-    "cadetblue",
-    "darkcyan",
-    "darkturquoise",
-    "turquoise",
-    "cyan",
-    "paleturquoise",
-    "lightcyan",
-    "mintcream",
-    "honeydew",
-    "aqua",
-    "aquamarine",
-    "chartreuse",
-    "greenyellow",
-    "palegreen",
-    "lawngreen",
-    "lightgreen",
-    "lime",
-    "mediumspringgreen",
-    "mediumturquoise",
-    "lightseagreen",
-    "mediumaquamarine",
-    "mediumseagreen",
-    "limegreen",
-    "darkseagreen",
-    "forestgreen",
-    "green",
-    "darkgreen",
-    "darkolivegreen",
-    "olive",
-    "olivedab",
-    "darkkhaki",
-    "khaki",
-    "gold",
-    "goldenrod",
-    "lightyellow",
-    "lightgoldenrodyellow",
-    "lemonchiffon",
-    "yellow",
-    "seashell",
-    "lavenderblush",
-    "lavender",
-    "lightcoral",
-    "indianred",
-    "darksalmon",
-    "lightsalmon",
-    "pink",
-    "lightpink",
-    "hotpink",
-    "magenta",
-    "plum",
-    "violet",
-    "orchid",
-    "palevioletred",
-    "mediumvioletred",
-    "purple",
-    "marron",
-    "mediumorchid",
-    "mediumpurple",
-    "mediumslateblue",
-    "thistle",
-    "linen",
-    "mistyrose",
-    "palegoldenrod",
-    "oldlace",
-    "papayawhip",
-    "moccasin",
-    "navajowhite",
-    "peachpuff",
-    "sandybrown",
-    "peru",
-    "chocolate",
-    "orange",
-    "darkorange",
-    "tomato",
-    "orangered",
-    "red",
-    "crimson",
-    "salmon",
-    "coral",
-    "firebrick",
-    "brown",
-    "darkred",
-    "tan",
-    "rosybrown",
-    "sienna",
-    "saddlebrown",
-]
+
+def sleep(ms):
+    xbmc.sleep(ms)
 
 
 def kodi_version():
@@ -184,19 +51,55 @@ def kodi_version():
 
 @contextmanager
 def busy_dialog():
-    xbmc.executebuiltin("ActivateWindow(busydialognocancel)")
+    execute_builtin("ActivateWindow(busydialognocancel)")
     try:
         yield
     finally:
-        xbmc.executebuiltin("Dialog.Close(busydialog)")
-        xbmc.executebuiltin("Dialog.Close(busydialognocancel)")    
+        execute_builtin("Dialog.Close(busydialog)")
+        execute_builtin("Dialog.Close(busydialognocancel)")
 
 
 def reload_profile():
-        xbmc.executebuiltin('LoadProfile({})'.format(xbmc.getInfoLabel("system.profilename")))
+    execute_builtin("LoadProfile({})".format(xbmc.getInfoLabel("system.profilename")))
 
 
-def read_all_text(file_path):
+def remove_folder(path):
+    if xbmcvfs.exists(ensure_path_is_dir(path)):
+        log("Removing {}".format(path))
+        try:
+            shutil.rmtree(path)
+        except Exception as e:
+            log("Error removing {}: {}".format(path, e))
+
+
+def remove_file(path):
+    if xbmcvfs.exists(path):
+        log("Removing {}".format(path))
+        try:
+            os.remove(path)
+        except Exception as e:
+            log("Error removing {}: {}".format(path, e))
+
+
+def cleanup_old_files():
+    log("Cleaning up old files...")
+    for i in [i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")]:
+        remove_file(os.path.join(_addon_data, i))
+
+
+def clear_temp():
+    try:
+        for item in os.listdir(_temp):
+            path = os.path.join(_temp, item)
+            if os.path.isdir(path):
+                os.remove(path)
+            elif os.path.isfile(path) and path not in ["kodi.log"]:
+                shutil.rmtree(path)
+    except (OSError, IOError) as e:
+        log("Failed to cleanup temporary storage: {}".format(repr(e)))
+
+
+def read_from_file(file_path):
     try:
         f = xbmcvfs.File(file_path, "r")
         content = f.read()
@@ -213,7 +116,10 @@ def read_all_text(file_path):
             pass
 
 
-def write_all_text(file_path, content):
+def write_to_file(file_path, content, bytes=False):
+    if sys.version_info < (3, 0, 0) and not bytes:
+        content = content.encode("utf-8")
+
     try:
         f = xbmcvfs.File(file_path, "w")
         return f.write(content)
@@ -244,7 +150,9 @@ def extend_array(array1, array2):
     return result
 
 
-def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_array=True):
+def smart_merge_dictionary(
+    dictionary, merge_dict, keep_original=False, extend_array=True
+):
     """Method for merging large multi typed dictionaries, it has support for handling arrays.
 
     :param dictionary:Original dictionary to merge the second on into.
@@ -269,8 +177,10 @@ def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_a
         else:
             if original_value and keep_original:
                 continue
-            if extend_array and isinstance(original_value, (list, set)) and isinstance(
-                    new_value, (list, set)
+            if (
+                extend_array
+                and isinstance(original_value, (list, set))
+                and isinstance(new_value, (list, set))
             ):
                 original_value.extend(x for x in new_value if x not in original_value)
                 try:
@@ -283,8 +193,8 @@ def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_a
     return dictionary
 
 
-def log(msg, level='debug'):
-    xbmc.log(_addon_name + ': ' + msg, level=_log_levels[level])
+def log(msg, level="debug"):
+    xbmc.log(_addon_name + ": " + msg, level=_log_levels[level])
 
 
 def ensure_path_is_dir(path):
@@ -302,14 +212,16 @@ def ensure_path_is_dir(path):
     elif not path.endswith("/"):
         return path + "/"
     return path
-    
-    
+
+
 def to_local_time(utc_time):
-    rem = '#' if sys.platform == 'win32' else '-'
-    utc_string = '%Y-%m-%dT%H:%M:%SZ'
+    rem = "#" if sys.platform == "win32" else "-"
     format_string = settings.get_localized_string(32049).format(rem)
-    
-    return time.strftime(format_string, time.gmtime(calendar.timegm(time.strptime(utc_time, utc_string))))
+
+    utc_parsed = parser.parse(utc_time)
+    local_time = utc_parsed.astimezone(tz.tzlocal())
+
+    return local_time.strftime(format_string)
 
 
 def create_folder(path):
@@ -318,25 +230,6 @@ def create_folder(path):
         xbmcvfs.mkdir(path)
 
 
-def color_picker():
-    select_list = []
-    dialog = xbmcgui.Dialog()
-    current_color = settings.get_setting_string('general.color')
-    for i in _color_chart:
-        select_list.append(color_string(i, i))
-    color = dialog.select(
-        "{}: {}".format(_addon_name, settings.get_localized_string(32050)), select_list,
-        preselect=_color_chart.index(current_color)
-    )
-    if color > -1:
-        settings.set_setting_string("general.display_color", color_string(_color_chart[color], _color_chart[color]))
-        settings.set_setting_string("general.color", _color_chart[color])
-
-
-def color_string(text, color=None):
-    return "[COLOR {}]{}[/COLOR]".format(color, text)
-    
-    
 def copytree(src, dst, symlinks=False, ignore=None):
     create_folder(dst)
     for item in os.listdir(src):
@@ -346,3 +239,17 @@ def copytree(src, dst, symlinks=False, ignore=None):
             copytree(s, d, symlinks, ignore)
         else:
             shutil.copy2(s, d)
+
+
+def get_condition(condition):
+    return xbmc.getCondVisibility(condition)
+
+
+def execute_builtin(bi):
+    xbmc.executebuiltin(bi)
+
+
+def execute_jsonrpc(params):
+    call = json.dumps(params)
+    response = xbmc.executeJSONRPC(call)
+    return response

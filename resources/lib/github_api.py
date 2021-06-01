@@ -7,8 +7,6 @@ from requests import Session
 from resources.lib import settings
 from resources.lib import tools
 
-_addon_name = settings.get_addon_info('name')
-
 
 class GithubAPI(Session):
 
@@ -20,6 +18,11 @@ class GithubAPI(Session):
                              "Accept": "application/vnd.github.v3+json"})
         self.base_url = 'https://api.github.com/'
         self.auth_url = 'https://github.com/login/'
+        
+    def _update_token(self):
+        token = settings.get_setting_string('github.token')
+        self.access_token = token
+        self.headers.update({"Authorization": "Bearer {}".format(self.access_token)})
 
     def get(self, endpoint, **params):
         return super(GithubAPI, self).get(tools.urljoin(self.base_url, endpoint), params=params)
@@ -50,7 +53,7 @@ class GithubAPI(Session):
         return self.get(endpoint, **params).json()
 
     def get_default_branch(self, user, repo):
-        return self.get_json('repos/{}/{}'.format(user, repo)).get('default_branch', 'master')
+        return self.get_json('repos/{}/{}'.format(user, repo)).get('default_branch')
 
     def get_repo_branch(self, user, repo, branch):
         return self.get_json('repos/{}/{}/branches/{}'.format(user, repo, branch))
@@ -65,7 +68,7 @@ class GithubAPI(Session):
         return self.post_json('/repos/{}/{}/issues'.format(user, repo), formatted_issue)
 
     def get_zipball(self, user, repo, branch):
-        return self.get('/repos/{}/{}/zipball/{}'.format(user, repo, branch if branch != 'main' else '')).content
+        return self.get('/repos/{}/{}/zipball/{}'.format(user, repo, branch)).content
 
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get('{}/{}/archive/{}.zip'.format(user, repo, commit_sha)).content
@@ -87,8 +90,21 @@ class GithubAPI(Session):
     def get_commit(self, user, repo, commit_sha):
         return self.get_json('/repos/{}/{}/git/commits/{}'.format(user, repo, commit_sha))
 
+    def get_user(self, user):
+        return self.get_json('/users/{}'.format(user))
+    
     def get_username(self):
+        self._update_token()
         return self.get_json('/user').get('login', '')
+
+    def get_org_repos(self, org):
+        return self.get_json('orgs/{}/repos'.format(org))
+
+    def get_user_repos(self, user):
+        return self.get_json('/users/{}/repos'.format(user))
+        
+    def get_repos(self, access=''):
+        return self.get_all_pages_json('/user/repos?affiliation={}'.format(access))
 
     def authorize(self, code=None):
         if not code:

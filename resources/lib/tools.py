@@ -4,9 +4,10 @@ from __future__ import absolute_import, division, unicode_literals
 import xbmc
 import xbmcvfs
 
-import calendar
 import collections
 from contextlib import contextmanager
+from dateutil import parser
+from dateutil import tz
 from io import open
 import json
 import os
@@ -21,9 +22,9 @@ try:
 except AttributeError:
     translate_path = xbmc.translatePath
 
-_addon_name = settings.get_addon_info('name')
-_addon_data = translate_path(settings.get_addon_info('profile'))
-_temp = translate_path('special://temp')
+_addon_name = settings.get_addon_info("name")
+_addon_data = translate_path(settings.get_addon_info("profile"))
+_temp = translate_path("special://temp")
 
 
 try:
@@ -31,16 +32,18 @@ try:
 except ImportError:
     from urllib.parse import urljoin
 
-_log_levels = {'debug'  : xbmc.LOGDEBUG,
-               'info'   : xbmc.LOGINFO,
-               'warning': xbmc.LOGWARNING,
-               'error'  : xbmc.LOGERROR,
-               'fatal'  : xbmc.LOGFATAL}
+_log_levels = {
+    "debug": xbmc.LOGDEBUG,
+    "info": xbmc.LOGINFO,
+    "warning": xbmc.LOGWARNING,
+    "error": xbmc.LOGERROR,
+    "fatal": xbmc.LOGFATAL,
+}
 
 
 def sleep(ms):
     xbmc.sleep(ms)
-    
+
 
 def kodi_version():
     return int(xbmc.getInfoLabel("System.BuildVersion")[:2])
@@ -53,11 +56,11 @@ def busy_dialog():
         yield
     finally:
         execute_builtin("Dialog.Close(busydialog)")
-        execute_builtin("Dialog.Close(busydialognocancel)")    
+        execute_builtin("Dialog.Close(busydialognocancel)")
 
 
 def reload_profile():
-        execute_builtin('LoadProfile({})'.format(xbmc.getInfoLabel("system.profilename")))
+    execute_builtin("LoadProfile({})".format(xbmc.getInfoLabel("system.profilename")))
 
 
 def remove_folder(path):
@@ -80,9 +83,7 @@ def remove_file(path):
 
 def cleanup_old_files():
     log("Cleaning up old files...")
-    for i in [
-        i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")
-    ]:
+    for i in [i for i in xbmcvfs.listdir(_addon_data)[1] if not i.endswith(".xml")]:
         remove_file(os.path.join(_addon_data, i))
 
 
@@ -149,7 +150,9 @@ def extend_array(array1, array2):
     return result
 
 
-def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_array=True):
+def smart_merge_dictionary(
+    dictionary, merge_dict, keep_original=False, extend_array=True
+):
     """Method for merging large multi typed dictionaries, it has support for handling arrays.
 
     :param dictionary:Original dictionary to merge the second on into.
@@ -174,8 +177,10 @@ def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_a
         else:
             if original_value and keep_original:
                 continue
-            if extend_array and isinstance(original_value, (list, set)) and isinstance(
-                    new_value, (list, set)
+            if (
+                extend_array
+                and isinstance(original_value, (list, set))
+                and isinstance(new_value, (list, set))
             ):
                 original_value.extend(x for x in new_value if x not in original_value)
                 try:
@@ -188,8 +193,8 @@ def smart_merge_dictionary(dictionary, merge_dict, keep_original=False, extend_a
     return dictionary
 
 
-def log(msg, level='debug'):
-    xbmc.log(_addon_name + ': ' + msg, level=_log_levels[level])
+def log(msg, level="debug"):
+    xbmc.log(_addon_name + ": " + msg, level=_log_levels[level])
 
 
 def ensure_path_is_dir(path):
@@ -207,22 +212,24 @@ def ensure_path_is_dir(path):
     elif not path.endswith("/"):
         return path + "/"
     return path
-    
-    
+
+
 def to_local_time(utc_time):
-    rem = '#' if sys.platform == 'win32' else '-'
-    utc_string = '%Y-%m-%dT%H:%M:%SZ'
+    rem = "#" if sys.platform == "win32" else "-"
     format_string = settings.get_localized_string(32049).format(rem)
-    
-    return time.strftime(format_string, time.gmtime(calendar.timegm(time.strptime(utc_time, utc_string))))
+
+    utc_parsed = parser.parse(utc_time)
+    local_time = utc_parsed.astimezone(tz.tzlocal())
+
+    return local_time.strftime(format_string)
 
 
 def create_folder(path):
     path = ensure_path_is_dir(path)
     if not xbmcvfs.exists(path):
         xbmcvfs.mkdir(path)
-    
-    
+
+
 def copytree(src, dst, symlinks=False, ignore=None):
     create_folder(dst)
     for item in os.listdir(src):

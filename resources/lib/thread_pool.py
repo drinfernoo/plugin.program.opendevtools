@@ -59,7 +59,7 @@ class ThreadPoolWorker(threading.Thread):
             except Empty:
                 break
             except BaseException as ex:
-                tools.log(traceback.format_exc(), 'error')
+                tools.log(traceback.format_exc(), "error")
                 self.exception_handler(ex)
                 break
             finally:
@@ -141,7 +141,9 @@ class ThreadPool:
             # Expand worker pool
             if len(self.worker_pool) < self.max_workers:
                 self.worker_pool.append(
-                    ThreadPoolWorker(self.tasks, self._exception_handler, self.stop_event)
+                    ThreadPoolWorker(
+                        self.tasks, self._exception_handler, self.stop_event
+                    )
                 )
         finally:
             self.workers_threading_lock.release()
@@ -188,5 +190,5 @@ class ThreadPool:
 
     def _try_raise(self):
         if self.exception:
-            tools.log(traceback.format_exc(), 'error')
+            tools.log(traceback.format_exc(), "error")
             raise self.exception

@@ -12,8 +12,8 @@ from resources.lib import tools
 
 API = GithubAPI()
 
-_addon_name = settings.get_addon_info('name')
-_access_token = settings.get_setting_string('github.token')
+_addon_name = settings.get_addon_info("name")
+_access_token = settings.get_setting_string("github.token")
 
 
 def check_auth():
@@ -28,21 +28,23 @@ def authorize(in_addon=False):
     init = API.authorize()
     dialog = xbmcgui.Dialog()
     dialogProgress = xbmcgui.DialogProgress()
-    dialogProgress.create(_addon_name,
-                          settings.get_localized_string(32043).format(
-                                           color_string(init['verification_uri']),
-                                           color_string(init['user_code'])))
-                                    
-    expires = time.time() + init['expires_in']
-    
+    dialogProgress.create(
+        _addon_name,
+        settings.get_localized_string(32043).format(
+            color_string(init["verification_uri"]), color_string(init["user_code"])
+        ),
+    )
+
+    expires = time.time() + init["expires_in"]
+
     while True:
-        time.sleep(init['interval'])
-        
-        token = API.authorize(init['device_code'])
-        
-        pct_timeout = (time.time() - expires) / init['expires_in'] * 100
+        time.sleep(init["interval"])
+
+        token = API.authorize(init["device_code"])
+
+        pct_timeout = (time.time() - expires) / init["expires_in"] * 100
         pct_timeout = 100 - int(abs(pct_timeout))
-        
+
         if pct_timeout >= 100:
             dialogProgress.close()
             dialog.notification(_addon_name, settings.get_localized_string(32044))
@@ -51,15 +53,15 @@ def authorize(in_addon=False):
             dialogProgress.close()
             dialog.notification(_addon_name, settings.get_localized_string(32045))
             break
-            
+
         dialogProgress.update(int(pct_timeout))
-    
-        if 'access_token' in token:
+
+        if "access_token" in token:
             dialogProgress.close()
             _save_oauth(token)
             dialog.notification(_addon_name, settings.get_localized_string(32046))
             break
-            
+
     del dialog
     del dialogProgress
     if not in_addon:
@@ -68,17 +70,22 @@ def authorize(in_addon=False):
 
 def revoke():
     dialog = xbmcgui.Dialog()
-    if dialog.yesno(_addon_name, settings.get_localized_string(32047).format('https://github.com/settings/connections/applications/')):
+    if dialog.yesno(
+        _addon_name,
+        settings.get_localized_string(32047).format(
+            "https://github.com/settings/connections/applications/"
+        ),
+    ):
         _clear_oauth()
         dialog.notification(_addon_name, settings.get_localized_string(32048))
         settings.open_settings()
 
 
 def _save_oauth(response):
-    settings.set_setting_string('github.token', response['access_token'])
-    settings.set_setting_string('github.username', API.get_username())
-    
+    settings.set_setting_string("github.token", response["access_token"])
+    settings.set_setting_string("github.username", API.get_username())
+
 
 def _clear_oauth():
-    settings.set_setting_string('github.token', '')
-    settings.set_setting_string('github.username', '')
+    settings.set_setting_string("github.token", "")
+    settings.set_setting_string("github.username", "")

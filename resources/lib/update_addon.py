@@ -390,7 +390,8 @@ def update_addon(addon=None):
             dialog.ok(_addon_name, settings.get_localized_string(32079).format(', '.join(failed_deps), addon['name']))
         
         tools.clear_temp()
-        tools.reload_profile()
+        if not exists:
+            tools.reload_profile()
 
     progress.close()
     del progress

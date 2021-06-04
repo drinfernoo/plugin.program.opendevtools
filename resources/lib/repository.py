@@ -57,7 +57,6 @@ def add_repository():
         del dialog
         return
 
-    if API.get_user(user).get('type', 'User') == 'Organization':
     if API.get_user(user).get("type", "User") == "Organization":
         user_repos = API.get_org_repos(user)
     elif user == _user.lower():

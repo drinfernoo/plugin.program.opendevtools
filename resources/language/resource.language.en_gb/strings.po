@@ -153,7 +153,7 @@ msgstr ""
 
 #: /resources/lib/update_addon.py
 msgctxt "#32027"
-msgid "Install finished"
+msgid "Install Finished"
 msgstr ""
 
 #: /resources/lib/repository.py
@@ -424,4 +424,9 @@ msgstr ""
 #: /resources/lib/repository.py
 msgctxt "#32081"
 msgid "No repositories could be found for the entered user or organization."
+msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32082"
+msgid "Reloading profile..."
 msgstr ""

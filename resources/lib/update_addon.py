@@ -185,7 +185,22 @@ def _disable_addon(addon):
         "id": 1,
     }
 
-    return tools.execute_jsonrpc(params)
+    return tools.execute_jsonrpc(params)["result"]
+    
+    
+def _exists(addon):
+    params = {
+            "jsonrpc": "2.0",
+            "method": "Addons.GetAddons",
+            "id": 1,
+        }
+        
+    addons = tools.execute_jsonrpc(params)
+    for a in addons["result"]["addons"]:
+        if a.get("addonid") == addon:
+            return True
+    
+    return False
 
 
 def _enable_addon(addon, exists=False):
@@ -210,7 +225,7 @@ def _enable_addon(addon, exists=False):
             "id": 1,
         }
 
-        return tools.execute_jsonrpc(params)
+        return tools.execute_jsonrpc(params)["result"]
 
 
 def _detect_service(addon):
@@ -398,7 +413,7 @@ def update_addon(addon=None):
         )
 
         disabled = _disable_addon(addon)
-        exists = os.path.exists(os.path.join(_addons, addon["plugin_id"]))
+        exists = _exists(addon["plugin_id"])
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
         enabled = _enable_addon(addon, exists)
@@ -424,7 +439,7 @@ def update_addon(addon=None):
             )
             failed_deps = _install_deps(addon)
 
-        progress.update(100, settings.get_localized_string(32027))
+        progress.update(100, settings.get_localized_string(32082 if not exists else 32027))
 
         if failed_deps:
             dialog.ok(

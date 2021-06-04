@@ -67,13 +67,12 @@ def add_repository():
     addon_repos = []
     repo_items = []
     
-    if 'message' in user_repos:
-        dialog.ok(_addon_name, settings.get_localized_string(32080))
-        del dialog
-        return
-    
-    with tools.busy_dialog():
+    with tools.busy_dialog():            
         for user_repo in user_repos:
+            if 'message' in user_repo:
+                dialog.ok(_addon_name, settings.get_localized_string(32080))
+                del dialog
+                return
             pool.put(get_repo_info, user_repo)
         repos = pool.wait_completion()
         if not repos:

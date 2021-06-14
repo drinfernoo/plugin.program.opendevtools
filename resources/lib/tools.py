@@ -252,4 +252,4 @@ def execute_builtin(bi):
 def execute_jsonrpc(params):
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
-    return response
+    return json.loads(response)

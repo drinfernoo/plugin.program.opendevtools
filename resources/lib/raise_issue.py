@@ -107,11 +107,7 @@ def _upload_log():
 
 
 def _format_issue(title, description, log_key):
-    log_desc = """{}
-    
-    {}
-    
-    Log File - {}""".format(
+    log_desc = "{}\n\n{}\n\nLog File - {}".format(
         settings.get_localized_string(32013).format(_addon_name),
         description,
         _paste_url + "raw/" + log_key,

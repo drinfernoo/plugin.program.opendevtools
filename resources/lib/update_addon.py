@@ -3,14 +3,11 @@ from __future__ import absolute_import, division, unicode_literals
 
 import os
 import re
-import shutil
 import sqlite3
-import sys
 import time
 import zipfile
 
 import xbmcgui
-import xbmcvfs
 
 from resources.lib.color import color_string
 from resources.lib import repository

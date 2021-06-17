@@ -5,10 +5,7 @@ import xbmcgui
 
 import json
 import os
-import re
 import requests
-import time
-import unidecode
 
 from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI

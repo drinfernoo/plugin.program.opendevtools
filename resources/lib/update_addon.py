@@ -175,7 +175,7 @@ def _get_addons_db():
 
 def _disable_addon(addon, exists=True):
     if not exists:
-        return
+        return False
 
     enabled_params = {
         "jsonrpc": "2.0",
@@ -193,12 +193,15 @@ def _disable_addon(addon, exists=True):
 
     tools.execute_jsonrpc(params)
 
-    return (
+    disabled = (
         tools.execute_jsonrpc(enabled_params)
         .get("result", {})
         .get("addon", {})
         .get("enabled", False)
     ) == False
+
+    tools.log("{} {} disabled".format(addon, "" if disabled else "not"))
+    return disabled
 
 
 def _exists(addon):
@@ -209,11 +212,12 @@ def _exists(addon):
     }
 
     addons = tools.execute_jsonrpc(params)
-    for a in addons["result"]["addons"]:
-        if a.get("addonid") == addon:
-            return True
+    exists = False
+    if addon in [a.get("addonid") for a in addons.get("result", {}).get("addons", {})]:
+        exists = True
 
-    return False
+    tools.log("{} {} installed".format(addon, "is" if exists else "not"))
+    return exists
 
 
 def _enable_addon(addon, exists=False):
@@ -247,12 +251,15 @@ def _enable_addon(addon, exists=False):
     else:
         tools.execute_jsonrpc(params)
 
-    return (
+    enabled = (
         tools.execute_jsonrpc(enabled_params)
         .get("result", {})
         .get("addon", {})
         .get("enabled", True)
     ) == True
+
+    tools.log("{} {} enabled".format(addon, "" if enabled else "not"))
+    return enabled
 
 
 def _detect_service(addon):
@@ -440,21 +447,10 @@ def update_addon(addon=None):
         )
 
         exists = _exists(addon["plugin_id"])
-
         disabled = _disable_addon(addon, exists)
-        tools.log(
-            "{} disabled {}".format(
-                addon, "successfully" if disabled else "unsuccessfully"
-            )
-        )
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
         enabled = _enable_addon(addon, exists)
-        tools.log(
-            "{} enabled {}".format(
-                addon, "successfully" if enabled else "unsuccessfully"
-            )
-        )
 
         progress.update(
             50, settings.get_localized_string(32077).format(color_string(addon["name"]))

@@ -182,20 +182,20 @@ def _disable_addon(addon):
     }
 
     return tools.execute_jsonrpc(params)["result"]
-    
-    
+
+
 def _exists(addon):
     params = {
-            "jsonrpc": "2.0",
-            "method": "Addons.GetAddons",
-            "id": 1,
-        }
-        
+        "jsonrpc": "2.0",
+        "method": "Addons.GetAddons",
+        "id": 1,
+    }
+
     addons = tools.execute_jsonrpc(params)
     for a in addons["result"]["addons"]:
         if a.get("addonid") == addon:
             return True
-    
+
     return False
 
 
@@ -435,7 +435,9 @@ def update_addon(addon=None):
             )
             failed_deps = _install_deps(addon)
 
-        progress.update(100, settings.get_localized_string(32082 if not exists else 32027))
+        progress.update(
+            100, settings.get_localized_string(32082 if not exists else 32027)
+        )
 
         if failed_deps:
             dialog.ok(

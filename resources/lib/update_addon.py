@@ -173,8 +173,8 @@ def _get_addons_db():
             return os.path.join(_database, db)
 
 
-def _disable_addon(addon):
-    if not tools.get_condition("System.HasAddon({})".format(addon["plugin_id"])):
+def _disable_addon(addon, exists=True):
+    if not exists:
         return
 
     params = {
@@ -184,7 +184,7 @@ def _disable_addon(addon):
         "id": 1,
     }
 
-    return tools.execute_jsonrpc(params)["result"]
+    return tools.execute_jsonrpc(params).get("result")
 
 
 def _exists(addon):
@@ -224,7 +224,7 @@ def _enable_addon(addon, exists=False):
             "id": 1,
         }
 
-        return tools.execute_jsonrpc(params)["result"]
+        return tools.execute_jsonrpc(params).get("result")
 
 
 def _detect_service(addon):
@@ -411,11 +411,12 @@ def update_addon(addon=None):
             25, settings.get_localized_string(32026).format(color_string(addon["name"]))
         )
 
-        disabled = _disable_addon(addon)
         exists = _exists(addon["plugin_id"])
+
+        _disable_addon(addon, exists)
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
-        enabled = _enable_addon(addon, exists)
+        _enable_addon(addon, exists)
 
         progress.update(
             50, settings.get_localized_string(32077).format(color_string(addon["name"]))

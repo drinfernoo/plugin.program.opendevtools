@@ -67,7 +67,7 @@ def _extract_addon(zip_location, addon):
 
 
 def _update_addon_version(addon, default_branch_name, branch, gitsha):
-    addon_xml = os.path.join(_addons, addon["plugin_id"], "addon.xml")
+    addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Rewriting addon version: {}".format(addon_xml))
 
     branch = re.sub(
@@ -105,7 +105,7 @@ def _rewrite_kodi_dependency_versions(addon):
         kodi_deps = kodi_dep_versions[max(kodi_dep_versions)]
     tools.log("KODI DEPENDENCY VERSIONS: {}".format(kodi_deps))
 
-    addon_xml = os.path.join(_addons, addon["plugin_id"], "addon.xml")
+    addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Rewriting {}".format(addon_xml))
 
     content = tools.read_from_file(addon_xml)
@@ -119,11 +119,10 @@ def _rewrite_kodi_dependency_versions(addon):
 
 
 def _install_deps(addon):
-    plugin = addon["plugin_id"]
     failed_deps = []
     visible_cond = "Window.IsTopMost(yesnodialog)"
 
-    xml_path = os.path.join(_addons, plugin, "addon.xml")
+    xml_path = os.path.join(_addons, addon, "addon.xml")
     tools.log("Finding dependencies in {}".format(xml_path))
     root = tools.parse_xml(file=xml_path)
     requires = root.find("requires")
@@ -173,6 +172,54 @@ def _get_addons_db():
             return os.path.join(_database, db)
 
 
+def _set_enabled(addon, enabled, exists=True):
+    enabled_params = {
+        "jsonrpc": "2.0",
+        "method": "Addons.GetAddonDetails",
+        "params": {"addonid": addon, "properties": ["enabled"]},
+        "id": 1,
+    }
+
+    params = {
+        "jsonrpc": "2.0",
+        "method": "Addons.SetAddonEnabled",
+        "params": {"addonid": addon, "enabled": enabled},
+        "id": 1,
+    }
+
+    if not exists and not enabled:
+        return False
+    elif not exists and enabled:
+        db_file = _get_addons_db()
+        connection = sqlite3.connect(db_file)
+        cursor = connection.cursor()
+        date = time.strftime("%Y-%m-%d %H:%M:%S")
+        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon,))
+        cursor.execute(
+            "INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)",
+            (addon, date),
+        )
+        connection.commit()
+
+        connection.close()
+    else:
+        tools.execute_jsonrpc(params)
+
+    new_status = (
+        tools.execute_jsonrpc(enabled_params)
+        .get("result", {})
+        .get("addon", {})
+        .get("enabled", enabled)
+    ) == enabled
+
+    tools.log(
+        "{}{}{}abled".format(
+            addon, " " if new_status else " not ", "en" if enabled else "dis"
+        )
+    )
+    return new_status
+
+
 def _disable_addon(addon, exists=True):
     if not exists:
         return False
@@ -180,14 +227,14 @@ def _disable_addon(addon, exists=True):
     enabled_params = {
         "jsonrpc": "2.0",
         "method": "Addons.GetAddonDetails",
-        "params": {"addonid": addon["plugin_id"], "properties": ["enabled"]},
+        "params": {"addonid": addon, "properties": ["enabled"]},
         "id": 1,
     }
 
     params = {
         "jsonrpc": "2.0",
         "method": "Addons.SetAddonEnabled",
-        "params": {"addonid": addon["plugin_id"], "enabled": False},
+        "params": {"addonid": addon, "enabled": False},
         "id": 1,
     }
 
@@ -224,14 +271,14 @@ def _enable_addon(addon, exists=False):
     enabled_params = {
         "jsonrpc": "2.0",
         "method": "Addons.GetAddonDetails",
-        "params": {"addonid": addon["plugin_id"], "properties": ["enabled"]},
+        "params": {"addonid": addon, "properties": ["enabled"]},
         "id": 1,
     }
 
     params = {
         "jsonrpc": "2.0",
         "method": "Addons.SetAddonEnabled",
-        "params": {"addonid": addon["plugin_id"], "enabled": True},
+        "params": {"addonid": addon, "enabled": True},
         "id": 1,
     }
 
@@ -240,10 +287,10 @@ def _enable_addon(addon, exists=False):
         connection = sqlite3.connect(db_file)
         cursor = connection.cursor()
         date = time.strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon["plugin_id"],))
+        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon,))
         cursor.execute(
             "INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)",
-            (addon["plugin_id"], date),
+            (addon, date),
         )
         connection.commit()
 
@@ -263,7 +310,7 @@ def _enable_addon(addon, exists=False):
 
 
 def _detect_service(addon):
-    addon_xml = os.path.join(_addons, addon["plugin_id"], "addon.xml")
+    addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Checking for services in {}".format(addon_xml))
     root = tools.parse_xml(file=addon_xml)
     extension = root.findall("extension")
@@ -446,19 +493,19 @@ def update_addon(addon=None):
             25, settings.get_localized_string(32026).format(color_string(addon["name"]))
         )
 
-        exists = _exists(addon["plugin_id"])
-        disabled = _disable_addon(addon, exists)
-        tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
+        plugin_id = addon["plugin_id"]
+        exists = _exists(plugin_id)
+        disabled = _set_enabled(plugin_id, False, exists)
+        tools.remove_folder(os.path.join(_addons, plugin_id))
         _extract_addon(location, addon)
-        enabled = _enable_addon(addon, exists)
 
         progress.update(
             50, settings.get_localized_string(32077).format(color_string(addon["name"]))
         )
 
-        _rewrite_kodi_dependency_versions(addon)
+        _rewrite_kodi_dependency_versions(plugin_id)
         _update_addon_version(
-            addon,
+            plugin_id,
             sorted_branches[0]["name"],
             branch["name"],
             branch["sha"] if not commit_sha else commit_label,
@@ -471,8 +518,9 @@ def update_addon(addon=None):
                     color_string(addon["name"])
                 ),
             )
-            failed_deps = _install_deps(addon)
+            failed_deps = _install_deps(plugin_id)
 
+        enabled = _set_enabled(plugin_id, True, exists)
         progress.update(
             100, settings.get_localized_string(32082 if not exists else 32027)
         )

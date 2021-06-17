@@ -7,7 +7,6 @@ import shutil
 import sqlite3
 import sys
 import time
-from xml.etree import ElementTree
 import zipfile
 
 import xbmcgui
@@ -128,8 +127,8 @@ def _install_deps(addon):
     visible_cond = "Window.IsTopMost(yesnodialog)"
 
     xml_path = os.path.join(_addons, plugin, "addon.xml")
-    addon_xml = ElementTree.parse(xml_path)
-    root = addon_xml.getroot()
+    tools.log("Finding dependencies in {}".format(xml_path))
+    root = tools.parse_xml(file=xml_path)
     requires = root.find("requires")
     if not requires:
         return
@@ -230,8 +229,8 @@ def _enable_addon(addon, exists=False):
 
 def _detect_service(addon):
     addon_xml = os.path.join(_addons, addon["plugin_id"], "addon.xml")
-    tree = ElementTree.parse(addon_xml)
-    root = tree.getroot()
+    tools.log("Checking for services in {}".format(addon_xml))
+    root = tools.parse_xml(file=addon_xml)
     extension = root.findall("extension")
     for ext in extension:
         if ext.get("point", "") == "xbmc.service":

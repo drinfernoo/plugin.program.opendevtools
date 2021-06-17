@@ -3,7 +3,6 @@
 	<requires>
 		<import addon="script.module.dateutil"/>
 		<import addon="script.module.requests"/>
-		<import addon="script.module.unidecode"/>
 	</requires>
 	<extension point="xbmc.python.script" library="default.py">
 		<provides>executable</provides>

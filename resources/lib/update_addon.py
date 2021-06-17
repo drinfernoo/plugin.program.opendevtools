@@ -177,6 +177,13 @@ def _disable_addon(addon, exists=True):
     if not exists:
         return
 
+    enabled_params = {
+        "jsonrpc": "2.0",
+        "method": "Addons.GetAddonDetails",
+        "params": {"addonid": addon["plugin_id"], "properties": ["enabled"]},
+        "id": 1,
+    }
+
     params = {
         "jsonrpc": "2.0",
         "method": "Addons.SetAddonEnabled",
@@ -184,7 +191,14 @@ def _disable_addon(addon, exists=True):
         "id": 1,
     }
 
-    return tools.execute_jsonrpc(params).get("result")
+    tools.execute_jsonrpc(params)
+
+    return (
+        tools.execute_jsonrpc(enabled_params)
+        .get("result", {})
+        .get("addon", {})
+        .get("enabled", False)
+    ) == False
 
 
 def _exists(addon):
@@ -203,6 +217,20 @@ def _exists(addon):
 
 
 def _enable_addon(addon, exists=False):
+    enabled_params = {
+        "jsonrpc": "2.0",
+        "method": "Addons.GetAddonDetails",
+        "params": {"addonid": addon["plugin_id"], "properties": ["enabled"]},
+        "id": 1,
+    }
+
+    params = {
+        "jsonrpc": "2.0",
+        "method": "Addons.SetAddonEnabled",
+        "params": {"addonid": addon["plugin_id"], "enabled": True},
+        "id": 1,
+    }
+
     if not exists:
         db_file = _get_addons_db()
         connection = sqlite3.connect(db_file)
@@ -217,14 +245,14 @@ def _enable_addon(addon, exists=False):
 
         connection.close()
     else:
-        params = {
-            "jsonrpc": "2.0",
-            "method": "Addons.SetAddonEnabled",
-            "params": {"addonid": addon["plugin_id"], "enabled": True},
-            "id": 1,
-        }
+        tools.execute_jsonrpc(params)
 
-        return tools.execute_jsonrpc(params).get("result")
+    return (
+        tools.execute_jsonrpc(enabled_params)
+        .get("result", {})
+        .get("addon", {})
+        .get("enabled", True)
+    ) == True
 
 
 def _detect_service(addon):
@@ -413,10 +441,20 @@ def update_addon(addon=None):
 
         exists = _exists(addon["plugin_id"])
 
-        _disable_addon(addon, exists)
+        disabled = _disable_addon(addon, exists)
+        tools.log(
+            "{} disabled {}".format(
+                addon, "successfully" if disabled else "unsuccessfully"
+            )
+        )
         tools.remove_folder(os.path.join(_addons, addon["plugin_id"]))
         _extract_addon(location, addon)
-        _enable_addon(addon, exists)
+        enabled = _enable_addon(addon, exists)
+        tools.log(
+            "{} enabled {}".format(
+                addon, "successfully" if enabled else "unsuccessfully"
+            )
+        )
 
         progress.update(
             50, settings.get_localized_string(32077).format(color_string(addon["name"]))

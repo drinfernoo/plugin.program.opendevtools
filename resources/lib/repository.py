@@ -314,16 +314,17 @@ def get_icon(user, repo, addon_xml=None):
         addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:
-            def_icon = [
-                i
-                for i in addon.findall("extension")
-                if i.get("point") == "xbmc.addon.metadata"
-            ][0]
-            icon_path = def_icon.find("assets").find("icon").text
+            icon_path = "icon.png"
+            def_icon = list(addon.iter("icon"))
+
+            if def_icon and len(def_icon) > 0:
+                icon_path = def_icon[0].text
+
             icon_url = API.get_file(user, repo, icon_path)["download_url"]
             icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
             tools.log("Could not get icon: {}".format(e), level="warning")
+
     return icon
 
 

@@ -13,7 +13,7 @@ import json
 import os
 import shutil
 import sys
-import time
+from xml.etree import ElementTree
 
 from resources.lib import settings
 
@@ -130,6 +130,20 @@ def write_to_file(file_path, content, bytes=False):
             f.close()
         except:
             pass
+
+
+def parse_xml(file=None, text=None):
+    if (file and text) or not (file or text):
+        raise ValueError("Incorrect parameters for parsing.")
+    if file and not text:
+        text = read_from_file(file)
+
+    text = text.strip()
+    try:
+        root = ElementTree.fromstring(text)
+    except ElementTree.ParseError as e:
+        log("Error parsing XML: {}".format(e), level="error")
+    return root
 
 
 def extend_array(array1, array2):

@@ -9,7 +9,6 @@ import re
 import requests
 import time
 import unidecode
-from xml.etree import ElementTree
 
 from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI
@@ -132,7 +131,7 @@ def add_repository():
         del dialog
         return
 
-    addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+    addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     name = addon.get("name")
     plugin_id = addon.get("id")
@@ -181,7 +180,7 @@ def _add_custom(user):
     addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         def_name = addon.get("name")
         def_id = addon.get("id")
@@ -273,7 +272,7 @@ def get_repo_info(repo_def):
     if not addon_xml:
         return
 
-    addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+    addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     def_name = addon.get("name")
     icon = get_icon(user, name, addon_xml)
@@ -311,7 +310,7 @@ def get_icon(user, repo, addon_xml=None):
         addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:
             def_icon = [

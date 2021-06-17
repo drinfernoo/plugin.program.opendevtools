@@ -141,7 +141,7 @@ def _install_deps(addon):
         if tools.get_condition(installed_cond):
             continue
 
-        tools.log("Installing " + plugin_id)
+        tools.log("Installing dependency: {}".format(plugin_id))
         tools.execute_builtin("InstallAddon({0})".format(plugin_id))
 
         clicked = False
@@ -149,7 +149,10 @@ def _install_deps(addon):
         timeout = 10
         while not tools.get_condition(installed_cond):
             if time.time() >= start + timeout:
-                tools.log("Timed out installing {}".format(plugin_id), "warning")
+                tools.log(
+                    "Timed out installing dependency: {}".format(plugin_id),
+                    level="warning",
+                )
                 failed_deps.append(plugin_id)
                 break
 

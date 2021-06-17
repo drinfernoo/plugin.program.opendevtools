@@ -128,6 +128,7 @@ def add_repository():
         del dialog
         return
 
+    tools.log("Reading addon.xml from {}/{}".format(user, repo))
     addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     name = addon.get("name")
@@ -177,6 +178,7 @@ def _add_custom(user):
     addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
+        tools.log("Reading addon.xml from {}/{}".format(user, repo))
         addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         def_name = addon.get("name")
@@ -264,20 +266,21 @@ def remove_repository():
 
 def get_repo_info(repo_def):
     user = repo_def["owner"]["login"]
-    name = repo_def["name"]
-    addon_xml = API.get_file(user, name, "addon.xml", text=True)
+    repo = repo_def["name"]
+    addon_xml = API.get_file(user, repo, "addon.xml", text=True)
     if not addon_xml:
         return
 
+    tools.log("Reading addon.xml from {}/{}".format(user, repo))
     addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     def_name = addon.get("name")
-    icon = get_icon(user, name, addon_xml)
+    icon = get_icon(user, repo, addon_xml)
     return [
         {
             "name": def_name,
             "user": user,
-            "repo_name": name,
+            "repo_name": repo,
             "updated_at": repo_def["updated_at"],
             "icon": icon,
         }
@@ -307,6 +310,7 @@ def get_icon(user, repo, addon_xml=None):
         addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
+        tools.log("Finding icon in addon.xml from {}/{}".format(user, repo))
         addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:
@@ -319,7 +323,7 @@ def get_icon(user, repo, addon_xml=None):
             icon_url = API.get_file(user, repo, icon_path)["download_url"]
             icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
-            tools.log("Could not get icon: {}".format(e))
+            tools.log("Could not get icon: {}".format(e), level="warning")
     return icon
 
 

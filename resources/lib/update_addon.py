@@ -570,7 +570,6 @@ def update_addon(addon=None):
 
         plugin_id = addon["plugin_id"]
         exists = _exists(plugin_id)
-        is_skin = _detect_skin(plugin_id)
 
         _set_enabled(plugin_id, False, exists)
         tools.remove_folder(os.path.join(_addons, plugin_id))
@@ -596,7 +595,7 @@ def update_addon(addon=None):
                 ),
             )
             failed_deps = _install_deps(plugin_id)
-        
+
         extensions = _detect_extensions(plugin_id)
         _set_enabled(plugin_id, True, exists)
 
@@ -612,9 +611,10 @@ def update_addon(addon=None):
                 ),
             )
 
-        tools.clear_temp()
-        if not exists or is_skin:
+        if not exists:
             tools.reload_profile()
+        elif "skin" in extensions:
+            tools.reload_skin()
 
     progress.close()
     del progress

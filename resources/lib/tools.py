@@ -62,6 +62,10 @@ def reload_profile():
     execute_builtin("LoadProfile({})".format(xbmc.getInfoLabel("system.profilename")))
 
 
+def reload_skin():
+    execute_builtin("ReloadSkin()")
+
+
 def remove_folder(path):
     if xbmcvfs.exists(ensure_path_is_dir(path)):
         log("Removing {}".format(path))

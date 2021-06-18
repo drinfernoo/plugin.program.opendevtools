@@ -32,6 +32,45 @@ _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 
 _media_path = os.path.join(_addon_path, "resources", "media")
 
+_extensions = {
+    "xbmc.gui.skin": "skin",
+    "xbmc.webinterface": "web interface",
+    "xbmc.addon.repository": "repository",
+    "xbmc.service": "service",
+    "xbmc.metadata.scraper.albums": "album information",
+    "xbmc.metadata.scraper.artists": "artist information",
+    "xbmc.metadata.scraper.movies": "movie information",
+    "xbmc.metadata.scraper.musicvideos": "music video information",
+    "xbmc.metadata.scraper.tvshows": "tv information",
+    "xbmc.metadata.scraper.library": "library information",
+    "xbmc.ui.screensaver": "screensaver",
+    "xbmc.player.musicviz": "visualization",
+    "xbmc.python.pluginsource": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+    },
+    "xbmc.python.script": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+    },
+    "xbmc.python.weather": "weather",
+    "xbmc.subtitle.module": "subtitle service module",
+    "xbmc.python.lyrics": "lyrics",
+    "xbmc.python.library": "python library",
+    "xbmc.python.module": "python module",
+    "xbmc.addon.video": "video addon",
+    "xbmc.addon.audio": "music addon",
+    "xbmc.addon.image": "picture addon",
+    "kodi.resource.font": "font pack",
+    "kodi.resource.images": "image pack",
+    "kodi.resource.language": "language pack",
+    "kodi.resource.uisounds": "sound pack",
+}
+
 
 def _get_zip_file(user, repo, branch=None, sha=None):
     if (sha and branch) or not (sha or branch):
@@ -64,6 +103,7 @@ def _extract_addon(zip_location, addon):
     install_path = os.path.join(_addons, addon["plugin_id"])
     tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
     tools.remove_folder(os.path.join(install_path, base_directory))
+    tools.clear_temp()
 
 
 def _update_addon_version(addon, default_branch_name, branch, gitsha):
@@ -309,6 +349,30 @@ def _enable_addon(addon, exists=False):
     return enabled
 
 
+def _detect_extensions(addon):
+    extensions = []
+    addon_xml = os.path.join(_addons, addon, "addon.xml")
+    tools.log("Checking for services in {}".format(addon_xml))
+    root = tools.parse_xml(file=addon_xml)
+    tags = root.findall("extension")
+
+    if tags is not None:
+        for ext in tags:
+            point = ext.get("point")
+            if point and point in _extensions:
+                ext_point = _extensions[point]
+                if isinstance(ext_point, dict):
+                    provides = ext.find("provides")
+                    if provides.text:
+                        all_provides = provides.text.split(" ")
+                        for p in all_provides:
+                            if p in ext_point:
+                                extensions.append(ext_point[p])
+                else:
+                    extensions.append(ext_point)
+    return extensions
+
+
 def _detect_service(addon):
     addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Checking for services in {}".format(addon_xml))
@@ -532,8 +596,10 @@ def update_addon(addon=None):
                 ),
             )
             failed_deps = _install_deps(plugin_id)
-
+        
+        extensions = _detect_extensions(plugin_id)
         _set_enabled(plugin_id, True, exists)
+
         progress.update(
             100, settings.get_localized_string(32082 if not exists else 32027)
         )

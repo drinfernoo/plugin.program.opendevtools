@@ -509,6 +509,7 @@ def update_addon(addon=None):
         plugin_id = addon["plugin_id"]
         exists = _exists(plugin_id)
         is_service = "service" in extensions
+        is_current_skin = "skin" in extensions and tools.get_current_skin() == plugin_id
 
         if is_service:
             _set_enabled(plugin_id, False, exists)
@@ -553,9 +554,8 @@ def update_addon(addon=None):
 
         if not exists:
             tools.reload_profile()
-        elif "skin" in extensions:
-            if tools.get_current_skin() == plugin_id:
-                tools.reload_skin()
+        elif is_current_skin:
+            tools.reload_skin()
 
     progress.close()
     del progress

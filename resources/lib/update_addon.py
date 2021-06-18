@@ -313,9 +313,20 @@ def _detect_service(addon):
     addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Checking for services in {}".format(addon_xml))
     root = tools.parse_xml(file=addon_xml)
-    extension = root.findall("extension")
-    for ext in extension:
-        if ext.get("point", "") == "xbmc.service":
+    extensions = root.findall("extension")
+    for ext in extensions:
+        if ext.get("point") == "xbmc.service":
+            return True
+    return False
+
+
+def _detect_skin(addon):
+    addon_xml = os.path.join(_addons, addon, "addon.xml")
+    tools.log("Checking if {} is a skin".format(addon_xml))
+    root = tools.parse_xml(file=addon_xml)
+    extensions = root.findall("extension")
+    for ext in extensions:
+        if ext.get("point") == "xbmc.gui.skin":
             return True
     return False
 
@@ -495,7 +506,9 @@ def update_addon(addon=None):
 
         plugin_id = addon["plugin_id"]
         exists = _exists(plugin_id)
-        disabled = _set_enabled(plugin_id, False, exists)
+        is_skin = _detect_skin(plugin_id)
+
+        _set_enabled(plugin_id, False, exists)
         tools.remove_folder(os.path.join(_addons, plugin_id))
         _extract_addon(location, addon)
 
@@ -520,7 +533,7 @@ def update_addon(addon=None):
             )
             failed_deps = _install_deps(plugin_id)
 
-        enabled = _set_enabled(plugin_id, True, exists)
+        _set_enabled(plugin_id, True, exists)
         progress.update(
             100, settings.get_localized_string(32082 if not exists else 32027)
         )
@@ -534,7 +547,7 @@ def update_addon(addon=None):
             )
 
         tools.clear_temp()
-        if not exists:
+        if not exists or is_skin:
             tools.reload_profile()
 
     progress.close()

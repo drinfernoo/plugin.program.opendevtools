@@ -63,8 +63,8 @@ def _extract_addon(zip_location, addon):
                 tools.log("Could not extract {}: {}".format(f, e))
     install_path = os.path.join(_addons, addon["plugin_id"])
     tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
-    tools.remove_folder(os.path.join(install_path, base_directory))
-    tools.clear_temp()
+    tools.remove_folder(os.path.join(_temp, base_directory))
+    tools.remove_file(zip_location)
 
 
 def _update_addon_version(addon, default_branch_name, branch, gitsha):

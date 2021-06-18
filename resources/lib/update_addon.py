@@ -535,7 +535,7 @@ def update_addon(addon=None):
 
         addon_xml = os.path.join(_addons, plugin_id, "addon.xml")
         extensions = repository.get_extensions(
-            addon["user"], addon["repo"], tools.read_from_file(addon_xml)
+            addon["user"], addon["repo_name"], tools.read_from_file(addon_xml)
         )
         _set_enabled(plugin_id, True, exists)
 

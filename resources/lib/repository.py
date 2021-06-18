@@ -28,6 +28,48 @@ _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
 
+_extensions = {
+    "xbmc.gui.skin": "skin",
+    "xbmc.webinterface": "web interface",
+    "xbmc.addon.repository": "repository",
+    "xbmc.service": "service",
+    "xbmc.metadata.scraper.albums": "album information",
+    "xbmc.metadata.scraper.artists": "artist information",
+    "xbmc.metadata.scraper.movies": "movie information",
+    "xbmc.metadata.scraper.musicvideos": "music video information",
+    "xbmc.metadata.scraper.tvshows": "tv information",
+    "xbmc.metadata.scraper.library": "library information",
+    "xbmc.ui.screensaver": "screensaver",
+    "xbmc.player.musicviz": "visualization",
+    "xbmc.python.pluginsource": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+        None: "addon",
+    },
+    "xbmc.python.script": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+        None: "script",
+    },
+    "xbmc.python.weather": "weather",
+    "xbmc.subtitle.module": "subtitle service module",
+    "xbmc.python.lyrics": "lyrics",
+    "xbmc.python.library": "python library",
+    "xbmc.python.module": "python module",
+    "xbmc.addon.video": "video addon",
+    "xbmc.addon.audio": "music addon",
+    "xbmc.addon.image": "picture addon",
+    "kodi.resource.font": "font pack",
+    "kodi.resource.images": "image pack",
+    "kodi.resource.language": "language pack",
+    "kodi.resource.uisounds": "sound pack",
+    "kodi.context.item": "context menu",
+}
+
 
 def get_repos(key=None):
     repos = {}
@@ -98,7 +140,12 @@ def add_repository():
                     tools.to_local_time(i["updated_at"])
                 )
             )
-            li = xbmcgui.ListItem(i["name"], label2=byline)
+            li = xbmcgui.ListItem(
+                "{} - ({})".format(
+                    i["name"], ", ".join([e.title() for e in i["extensions"]])
+                ),
+                label2=byline,
+            )
 
             if not _compact:
                 li.setArt({"thumb": i["icon"]})
@@ -276,6 +323,8 @@ def get_repo_info(repo_def):
 
     def_name = addon.get("name")
     icon = get_icon(user, repo, addon_xml)
+    extensions = get_extensions(user, repo, addon_xml)
+    
     return [
         {
             "name": def_name,
@@ -283,6 +332,7 @@ def get_repo_info(repo_def):
             "repo_name": repo,
             "updated_at": repo_def["updated_at"],
             "icon": icon,
+            "extensions": extensions,
         }
     ]
 
@@ -328,6 +378,38 @@ def get_icon(user, repo, addon_xml=None):
     return icon
 
 
+def get_extensions(user, repo, addon_xml=None):
+    extensions = []
+    if not addon_xml:
+        addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+
+    if addon_xml:
+        tools.log("Checking for extensions in {}/{}".format(user, repo))
+        root = tools.parse_xml(text=addon_xml.encode("utf-8"))
+
+        try:
+            tags = root.findall("extension")
+            if tags is not None:
+                for ext in tags:
+                    point = ext.get("point")
+                    if point and point in _extensions:
+                        ext_point = _extensions[point]
+                        if isinstance(ext_point, dict):
+                            provides = ext.find("provides")
+                            if provides is not None and provides.text:
+                                all_provides = provides.text.split(" ")
+                                for p in all_provides:
+                                    if p in ext_point:
+                                        extensions.append(ext_point[p])
+                            else:
+                                extensions.append(ext_point[None])
+                        else:
+                            extensions.append(ext_point)
+        except Exception as e:
+            tools.log("Could not check for extensions: {}".format(e), level="warning")
+    return extensions
+
+
 def get_repo_selection(ret):
     dialog = xbmcgui.Dialog()
     repos = get_repos()
@@ -339,6 +421,7 @@ def get_repo_selection(ret):
             user = repo["user"]
             repo_name = repo["repo_name"]
             name = repo["name"]
+
             li = xbmcgui.ListItem(
                 name, label2=settings.get_localized_string(32063).format(user)
             )

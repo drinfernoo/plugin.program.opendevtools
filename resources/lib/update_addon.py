@@ -505,10 +505,14 @@ def update_addon(addon=None):
             25, settings.get_localized_string(32026).format(color_string(addon["name"]))
         )
 
+        extensions = repository.get_extensions(addon["user"], addon["repo_name"])
         plugin_id = addon["plugin_id"]
         exists = _exists(plugin_id)
+        is_service = "service" in extensions
 
-        _set_enabled(plugin_id, False, exists)
+        if is_service:
+            _set_enabled(plugin_id, False, exists)
+
         tools.remove_folder(os.path.join(_addons, plugin_id))
         _extract_addon(location, addon)
 
@@ -532,11 +536,7 @@ def update_addon(addon=None):
                 ),
             )
             failed_deps = _install_deps(plugin_id)
-
-        addon_xml = os.path.join(_addons, plugin_id, "addon.xml")
-        extensions = repository.get_extensions(
-            addon["user"], addon["repo_name"], tools.read_from_file(addon_xml)
-        )
+        
         _set_enabled(plugin_id, True, exists)
 
         progress.update(

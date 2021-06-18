@@ -270,3 +270,13 @@ def execute_jsonrpc(params):
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
+
+
+def get_current_skin():
+    params = {
+        "jsonrpc": "2.0",
+        "method": "GUI.GetProperties",
+        "params": {"properties": ["skin"]},
+    }
+
+    skin = execute_jsonrpc(params).get("result", {}).get("skin", {}).get("id")

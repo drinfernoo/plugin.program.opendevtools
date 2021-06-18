@@ -310,9 +310,6 @@ def _enable_addon(addon, exists=False):
     return enabled
 
 
-
-
-
 def _detect_service(addon):
     addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Checking for services in {}".format(addon_xml))
@@ -537,7 +534,9 @@ def update_addon(addon=None):
             failed_deps = _install_deps(plugin_id)
 
         addon_xml = os.path.join(_addons, plugin_id, "addon.xml")
-        extensions = repository.get_extensions(addon["user"], addon["repo"], tools.read_from_file(addon_xml))
+        extensions = repository.get_extensions(
+            addon["user"], addon["repo"], tools.read_from_file(addon_xml)
+        )
         _set_enabled(plugin_id, True, exists)
 
         progress.update(
@@ -555,7 +554,8 @@ def update_addon(addon=None):
         if not exists:
             tools.reload_profile()
         elif "skin" in extensions:
-            tools.reload_skin()
+            if tools.get_current_skin() == plugin_id:
+                tools.reload_skin()
 
     progress.close()
     del progress

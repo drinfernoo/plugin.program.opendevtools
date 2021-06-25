@@ -127,7 +127,8 @@ def add_repository():
         addon_repos = [i["repo_name"] for i in repos]
         for i in repos:
             byline = (
-                ", ".join(
+                "{} - ".format(i["repo_name"])
+                + ", ".join(
                     [
                         settings.get_localized_string(32063).format(i["user"]),
                         settings.get_localized_string(32018).format(
@@ -136,7 +137,8 @@ def add_repository():
                     ]
                 )
                 if i["user"].lower() != user
-                else settings.get_localized_string(32018).format(
+                else "{} - ".format(i["repo_name"])
+                + settings.get_localized_string(32018).format(
                     tools.to_local_time(i["updated_at"])
                 )
             )
@@ -324,7 +326,7 @@ def get_repo_info(repo_def):
     def_name = addon.get("name")
     icon = get_icon(user, repo, addon_xml)
     extensions = get_extensions(user, repo, addon_xml)
-    
+
     return [
         {
             "name": def_name,
@@ -423,7 +425,9 @@ def get_repo_selection(ret):
             name = repo["name"]
 
             li = xbmcgui.ListItem(
-                name, label2=settings.get_localized_string(32063).format(user)
+                name,
+                label2="{} - ".format(repo_name)
+                + settings.get_localized_string(32063).format(user),
             )
 
             if not _compact:

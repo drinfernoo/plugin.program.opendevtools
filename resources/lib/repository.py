@@ -326,7 +326,7 @@ def get_repo_info(repo_def):
     def_name = addon.get("name")
     icon = get_icon(user, repo, addon_xml)
     extensions = get_extensions(user, repo, addon_xml)
-
+    
     return [
         {
             "name": def_name,

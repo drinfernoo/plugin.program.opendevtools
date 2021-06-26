@@ -8,12 +8,11 @@ import collections
 from contextlib import contextmanager
 from dateutil import parser
 from dateutil import tz
-from io import open
 import json
 import os
 import shutil
 import sys
-import time
+from xml.etree import ElementTree
 
 from resources.lib import settings
 
@@ -63,6 +62,10 @@ def reload_profile():
     execute_builtin("LoadProfile({})".format(xbmc.getInfoLabel("system.profilename")))
 
 
+def reload_skin():
+    execute_builtin("ReloadSkin()")
+
+
 def remove_folder(path):
     if xbmcvfs.exists(ensure_path_is_dir(path)):
         log("Removing {}".format(path))
@@ -96,7 +99,7 @@ def clear_temp():
             elif os.path.isfile(path) and path not in ["kodi.log"]:
                 shutil.rmtree(path)
     except (OSError, IOError) as e:
-        log("Failed to cleanup temporary storage: {}".format(repr(e)))
+        log("Failed to cleanup temporary storage: {}".format(e))
 
 
 def read_from_file(file_path):
@@ -130,6 +133,20 @@ def write_to_file(file_path, content, bytes=False):
             f.close()
         except:
             pass
+
+
+def parse_xml(file=None, text=None):
+    if (file and text) or not (file or text):
+        raise ValueError("Incorrect parameters for parsing.")
+    if file and not text:
+        text = read_from_file(file)
+
+    text = text.strip()
+    try:
+        root = ElementTree.fromstring(text)
+    except ElementTree.ParseError as e:
+        log("Error parsing XML: {}".format(e), level="error")
+    return root
 
 
 def extend_array(array1, array2):
@@ -253,3 +270,13 @@ def execute_jsonrpc(params):
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
+
+
+def get_current_skin():
+    params = {
+        "jsonrpc": "2.0",
+        "method": "GUI.GetProperties",
+        "params": {"properties": ["skin"]},
+    }
+
+    skin = execute_jsonrpc(params).get("result", {}).get("skin", {}).get("id")

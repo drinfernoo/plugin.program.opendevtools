@@ -4,8 +4,12 @@ from __future__ import absolute_import, division, unicode_literals
 import collections
 from requests import Session
 
+try:
+    from urllib.parse import urljoin
+except ImportError:
+    from urlparse import urljoin
+
 from resources.lib import settings
-from resources.lib import tools
 
 
 class GithubAPI(Session):
@@ -29,7 +33,7 @@ class GithubAPI(Session):
 
     def get(self, endpoint, **params):
         return super(GithubAPI, self).get(
-            tools.urljoin(self.base_url, endpoint), params=params
+            urljoin(self.base_url, endpoint), params=params
         )
 
     def get_all_pages(self, endpoint, **params):
@@ -41,7 +45,7 @@ class GithubAPI(Session):
 
     def post(self, endpoint, *args, **params):
         return super(GithubAPI, self).post(
-            tools.urljoin(self.base_url, endpoint), *args, **params
+            urljoin(self.base_url, endpoint), *args, **params
         )
 
     def post_json(self, endpoint, data):
@@ -87,7 +91,7 @@ class GithubAPI(Session):
             headers = self.headers.copy()
             headers.update({"Accept": "application/vnd.github.v3.raw"})
             response = super(GithubAPI, self).get(
-                tools.urljoin(
+                urljoin(
                     self.base_url, "/repos/{}/{}/contents/{}".format(user, repo, path)
                 ),
                 headers=headers,
@@ -124,7 +128,7 @@ class GithubAPI(Session):
     def authorize(self, code=None):
         if not code:
             result = super(GithubAPI, self).post(
-                tools.urljoin(self.auth_url, "device/code"),
+                urljoin(self.auth_url, "device/code"),
                 data={"client_id": self.client_id, "scope": "repo read:user"},
                 headers=self.headers,
             )
@@ -133,7 +137,7 @@ class GithubAPI(Session):
 
         else:
             result = super(GithubAPI, self).post(
-                tools.urljoin(self.auth_url, "oauth/access_token"),
+                urljoin(self.auth_url, "oauth/access_token"),
                 data={
                     "client_id": self.client_id,
                     "device_code": code,

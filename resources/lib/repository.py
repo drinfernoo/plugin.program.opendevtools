@@ -5,11 +5,7 @@ import xbmcgui
 
 import json
 import os
-import re
 import requests
-import time
-import unidecode
-from xml.etree import ElementTree
 
 from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI
@@ -31,6 +27,48 @@ _user = settings.get_setting_string("github.username")
 _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
+
+_extensions = {
+    "xbmc.gui.skin": "skin",
+    "xbmc.webinterface": "web interface",
+    "xbmc.addon.repository": "repository",
+    "xbmc.service": "service",
+    "xbmc.metadata.scraper.albums": "album information",
+    "xbmc.metadata.scraper.artists": "artist information",
+    "xbmc.metadata.scraper.movies": "movie information",
+    "xbmc.metadata.scraper.musicvideos": "music video information",
+    "xbmc.metadata.scraper.tvshows": "tv information",
+    "xbmc.metadata.scraper.library": "library information",
+    "xbmc.ui.screensaver": "screensaver",
+    "xbmc.player.musicviz": "visualization",
+    "xbmc.python.pluginsource": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+        None: "addon",
+    },
+    "xbmc.python.script": {
+        "audio": "music addon",
+        "image": "picture addon",
+        "executable": "program addon",
+        "video": "video addon",
+        None: "script",
+    },
+    "xbmc.python.weather": "weather",
+    "xbmc.subtitle.module": "subtitle service module",
+    "xbmc.python.lyrics": "lyrics",
+    "xbmc.python.library": "python library",
+    "xbmc.python.module": "python module",
+    "xbmc.addon.video": "video addon",
+    "xbmc.addon.audio": "music addon",
+    "xbmc.addon.image": "picture addon",
+    "kodi.resource.font": "font pack",
+    "kodi.resource.images": "image pack",
+    "kodi.resource.language": "language pack",
+    "kodi.resource.uisounds": "sound pack",
+    "kodi.context.item": "context menu",
+}
 
 
 def get_repos(key=None):
@@ -89,7 +127,8 @@ def add_repository():
         addon_repos = [i["repo_name"] for i in repos]
         for i in repos:
             byline = (
-                ", ".join(
+                "{} - ".format(i["repo_name"])
+                + ", ".join(
                     [
                         settings.get_localized_string(32063).format(i["user"]),
                         settings.get_localized_string(32018).format(
@@ -98,11 +137,17 @@ def add_repository():
                     ]
                 )
                 if i["user"].lower() != user
-                else settings.get_localized_string(32018).format(
+                else "{} - ".format(i["repo_name"])
+                + settings.get_localized_string(32018).format(
                     tools.to_local_time(i["updated_at"])
                 )
             )
-            li = xbmcgui.ListItem(i["name"], label2=byline)
+            li = xbmcgui.ListItem(
+                "{} - ({})".format(
+                    i["name"], ", ".join([e.title() for e in i["extensions"]])
+                ),
+                label2=byline,
+            )
 
             if not _compact:
                 li.setArt({"thumb": i["icon"]})
@@ -132,7 +177,8 @@ def add_repository():
         del dialog
         return
 
-    addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+    tools.log("Reading addon.xml from {}/{}".format(user, repo))
+    addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     name = addon.get("name")
     plugin_id = addon.get("id")
@@ -181,7 +227,8 @@ def _add_custom(user):
     addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+        tools.log("Reading addon.xml from {}/{}".format(user, repo))
+        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         def_name = addon.get("name")
         def_id = addon.get("id")
@@ -268,22 +315,26 @@ def remove_repository():
 
 def get_repo_info(repo_def):
     user = repo_def["owner"]["login"]
-    name = repo_def["name"]
-    addon_xml = API.get_file(user, name, "addon.xml", text=True)
+    repo = repo_def["name"]
+    addon_xml = API.get_file(user, repo, "addon.xml", text=True)
     if not addon_xml:
         return
 
-    addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+    tools.log("Reading addon.xml from {}/{}".format(user, repo))
+    addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     def_name = addon.get("name")
-    icon = get_icon(user, name, addon_xml)
+    icon = get_icon(user, repo, addon_xml)
+    extensions = get_extensions(user, repo, addon_xml)
+    
     return [
         {
             "name": def_name,
             "user": user,
-            "repo_name": name,
+            "repo_name": repo,
             "updated_at": repo_def["updated_at"],
             "icon": icon,
+            "extensions": extensions,
         }
     ]
 
@@ -311,20 +362,54 @@ def get_icon(user, repo, addon_xml=None):
         addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
-        addon = ElementTree.fromstring(addon_xml.encode("utf-8"))
+        tools.log("Finding icon in addon.xml from {}/{}".format(user, repo))
+        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:
-            def_icon = [
-                i
-                for i in addon.findall("extension")
-                if i.get("point") == "xbmc.addon.metadata"
-            ][0]
-            icon_path = def_icon.find("assets").find("icon").text
+            icon_path = "icon.png"
+            def_icon = list(addon.iter("icon"))
+
+            if def_icon and len(def_icon) > 0:
+                icon_path = def_icon[0].text
+
             icon_url = API.get_file(user, repo, icon_path)["download_url"]
             icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
-            tools.log("Could not get icon: {}".format(e))
+            tools.log("Could not get icon: {}".format(e), level="warning")
+
     return icon
+
+
+def get_extensions(user, repo, addon_xml=None):
+    extensions = []
+    if not addon_xml:
+        addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+
+    if addon_xml:
+        tools.log("Checking for extensions in {}/{}".format(user, repo))
+        root = tools.parse_xml(text=addon_xml.encode("utf-8"))
+
+        try:
+            tags = root.findall("extension")
+            if tags is not None:
+                for ext in tags:
+                    point = ext.get("point")
+                    if point and point in _extensions:
+                        ext_point = _extensions[point]
+                        if isinstance(ext_point, dict):
+                            provides = ext.find("provides")
+                            if provides is not None and provides.text:
+                                all_provides = provides.text.split(" ")
+                                for p in all_provides:
+                                    if p in ext_point:
+                                        extensions.append(ext_point[p])
+                            else:
+                                extensions.append(ext_point[None])
+                        else:
+                            extensions.append(ext_point)
+        except Exception as e:
+            tools.log("Could not check for extensions: {}".format(e), level="warning")
+    return extensions
 
 
 def get_repo_selection(ret):
@@ -338,8 +423,11 @@ def get_repo_selection(ret):
             user = repo["user"]
             repo_name = repo["repo_name"]
             name = repo["name"]
+
             li = xbmcgui.ListItem(
-                name, label2=settings.get_localized_string(32063).format(user)
+                name,
+                label2="{} - ".format(repo_name)
+                + settings.get_localized_string(32063).format(user),
             )
 
             if not _compact:

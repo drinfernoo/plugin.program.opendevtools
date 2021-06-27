@@ -263,7 +263,7 @@ msgstr ""
 
 #: /resources/lib/tools.py
 msgctxt "#32049"
-msgid "%a, %b %{0}d, %Y at %{0}I:%M %p"
+msgid "{} at {}"
 msgstr ""
 
 #: /resources/lib/tools.py

@@ -268,6 +268,7 @@ def execute_builtin(bi):
 
 
 def execute_jsonrpc(params):
+    params.update({"id": 1})
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
@@ -281,3 +282,4 @@ def get_current_skin():
     }
 
     skin = execute_jsonrpc(params).get("result", {}).get("skin", {}).get("id")
+    return skin

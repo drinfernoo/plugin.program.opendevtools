@@ -178,14 +178,12 @@ def _set_enabled(addon, enabled, exists=True):
         "jsonrpc": "2.0",
         "method": "Addons.GetAddonDetails",
         "params": {"addonid": addon, "properties": ["enabled"]},
-        "id": 1,
     }
 
     params = {
         "jsonrpc": "2.0",
         "method": "Addons.SetAddonEnabled",
         "params": {"addonid": addon, "enabled": enabled},
-        "id": 1,
     }
 
     if not exists and not enabled:
@@ -537,7 +535,7 @@ def update_addon(addon=None):
                 ),
             )
             failed_deps = _install_deps(plugin_id)
-        
+
         _set_enabled(plugin_id, True, exists)
 
         progress.update(

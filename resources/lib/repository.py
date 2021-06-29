@@ -29,45 +29,49 @@ _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
 
 _extensions = {
-    "xbmc.gui.skin": "skin",
-    "xbmc.webinterface": "web interface",
-    "xbmc.addon.repository": "repository",
-    "xbmc.service": "service",
-    "xbmc.metadata.scraper.albums": "album information",
-    "xbmc.metadata.scraper.artists": "artist information",
-    "xbmc.metadata.scraper.movies": "movie information",
-    "xbmc.metadata.scraper.musicvideos": "music video information",
-    "xbmc.metadata.scraper.tvshows": "tv information",
-    "xbmc.metadata.scraper.library": "library information",
-    "xbmc.ui.screensaver": "screensaver",
+    "xbmc.gui.skin": "skin",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.gui/skin.xsd
+    "xbmc.webinterface": "web interface",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.webinterface/webinterface.xsd
+    "xbmc.addon.repository": "repository",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.addon/repository.xsd
+    "xbmc.service": "service",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/service.xsd
+    "xbmc.metadata.scraper.albums": "album information",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.metadata/scraper.xsd
+    "xbmc.metadata.scraper.artists": "artist information",  #
+    "xbmc.metadata.scraper.movies": "movie information",  #
+    "xbmc.metadata.scraper.musicvideos": "music video information",  #
+    "xbmc.metadata.scraper.tvshows": "tv information",  #
+    "xbmc.metadata.scraper.library": "library information",  #
     "xbmc.player.musicviz": "visualization",
-    "xbmc.python.pluginsource": {
-        "audio": "music addon",
-        "image": "picture addon",
-        "executable": "program addon",
-        "video": "video addon",
-        None: "addon",
+    "xbmc.python.pluginsource": {  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/pluginsource.xsd
+        "audio": "music addon",  #
+        "image": "picture addon",  #
+        "executable": "program addon",  #
+        "video": "video addon",  #
+        "game": "game addon",  #
+        None: "addon",  #
     },
-    "xbmc.python.script": {
-        "audio": "music addon",
-        "image": "picture addon",
-        "executable": "program addon",
-        "video": "video addon",
-        None: "script",
+    "xbmc.python.script": {  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/script.xsd
+        "audio": "music addon",  #
+        "image": "picture addon",  #
+        "executable": "program addon",  #
+        "video": "video addon",  #
+        "game": "game addon",  #
+        None: "script",  #
     },
-    "xbmc.python.weather": "weather",
-    "xbmc.subtitle.module": "subtitle service module",
-    "xbmc.python.lyrics": "lyrics",
-    "xbmc.python.library": "python library",
-    "xbmc.python.module": "python module",
+    "xbmc.python.weather": "weather",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/script.xsd
+    "xbmc.python.lyrics": "lyrics",  #
+    "xbmc.python.library": "python library",  #
+    "xbmc.python.module": "python module",  #
+    "xbmc.python.script": "python script",  #
+    "xbmc.ui.screensaver": "screensaver",  #
+    "xbmc.subtitle.module": "subtitle service module",  #
     "xbmc.addon.video": "video addon",
     "xbmc.addon.audio": "music addon",
     "xbmc.addon.image": "picture addon",
     "kodi.resource.font": "font pack",
-    "kodi.resource.images": "image pack",
-    "kodi.resource.language": "language pack",
-    "kodi.resource.uisounds": "sound pack",
-    "kodi.context.item": "context menu",
+    "kodi.resource.images": "image pack",  # https://github.com/xbmc/xbmc/blob/master/addons/kodi.resource/images.xsd
+    "kodi.resource.language": "language pack",  # https://github.com/xbmc/xbmc/blob/master/addons/kodi.resource/language.xsd
+    "kodi.resource.uisounds": "sound pack",  # https://github.com/xbmc/xbmc/blob/master/addons/kodi.resource/uisounds.xsd
+    "kodi.context.item": "context menu",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.python/contextitem.xsd,
+    "kodi.game.controller": "game controller",  # https://github.com/xbmc/xbmc/blob/master/addons/kodi.binary.instance.game/controller.xsd
 }
 
 
@@ -326,7 +330,7 @@ def get_repo_info(repo_def):
     def_name = addon.get("name")
     icon = get_icon(user, repo, addon_xml)
     extensions = get_extensions(user, repo, addon_xml)
-    
+
     return [
         {
             "name": def_name,

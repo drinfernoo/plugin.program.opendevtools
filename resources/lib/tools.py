@@ -232,8 +232,9 @@ def ensure_path_is_dir(path):
 
 
 def to_local_time(utc_time):
-    rem = "#" if sys.platform == "win32" else "-"
-    format_string = settings.get_localized_string(32049).format(rem)
+    date_long = xbmc.getRegion("datelong")
+    time_long = xbmc.getRegion("time")
+    format_string = settings.get_localized_string(32049).format(date_long, time_long)
 
     utc_parsed = parser.parse(utc_time)
     local_time = utc_parsed.astimezone(tz.tzlocal())
@@ -267,6 +268,7 @@ def execute_builtin(bi):
 
 
 def execute_jsonrpc(params):
+    params.update({"id": 1})
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
@@ -280,3 +282,4 @@ def get_current_skin():
     }
 
     skin = execute_jsonrpc(params).get("result", {}).get("skin", {}).get("id")
+    return skin

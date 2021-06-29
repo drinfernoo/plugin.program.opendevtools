@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.0" provider-name="drinfernoo">
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.1" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.dateutil"/>
 		<import addon="script.module.requests"/>
@@ -18,6 +18,10 @@
 			<fanart>fanart.png</fanart>
 		</assets>
 		<news>
+1.4.1
+ - Fix skin installs
+ - Use regional time formatting
+ - Fix time formatting on Android (all platforms?)
 1.4.0
  - Change format of raised issues
  - More comprehensive XML checking

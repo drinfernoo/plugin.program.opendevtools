@@ -6,13 +6,9 @@ import xbmcgui
 import os
 import sys
 
-try:
-    from urllib.parse import parse_qsl
-except ImportError:
-    from urlparse import parse_qsl
-
 from resources.lib import color
 from resources.lib import oauth
+from resources.lib import logging
 from resources.lib import raise_issue
 from resources.lib import repository
 from resources.lib import settings
@@ -40,15 +36,22 @@ def _do_action():
         elif action == "update_addon" and id:
             update_addon.update_addon(id)
     else:
-        oauth.check_auth()
+        auth = oauth.check_auth()
         dialog = xbmcgui.Dialog()
 
-        actions = [
-            (32000, 32069, update_addon.update_addon, "update.png"),
-            (32001, 32070, raise_issue.raise_issue, "issue.png"),
-            (32002, 32071, repository.add_repository, "plus.png"),
-            (32003, 32072, repository.remove_repository, "minus.png"),
-        ]
+        if auth:
+            actions = [
+                (32000, 32069, update_addon.update_addon, "update.png"),
+                (32001, 32070, raise_issue.raise_issue, "issue.png"),
+                (32002, 32071, repository.add_repository, "plus.png"),
+                (32003, 32072, repository.remove_repository, "minus.png"),
+                (32085, 32086, logging.log_dialog, "log.png"),
+            ]
+        else:
+            actions = [
+                (32057, 32087, oauth.authorize, "github.png"),
+                (32085, 32086, logging.log_dialog, "log.png"),
+            ]
 
         action_items = []
         for action in actions:

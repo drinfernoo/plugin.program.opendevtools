@@ -5,7 +5,6 @@ import threading
 import time
 import traceback
 
-from resources.lib import settings
 from resources.lib import tools
 
 try:

@@ -430,3 +430,33 @@ msgstr ""
 msgctxt "#32082"
 msgid "Reloading profile..."
 msgstr ""
+
+#: /resources/lib/logging.py
+msgctxt "#32083"
+msgid "Log Uploaded"
+msgstr ""
+
+#: /resources/lib/logging.py
+msgctxt "#32084"
+msgid "Log uploaded to:"
+msgstr ""
+
+#: default.py
+msgctxt "#32085"
+msgid "Upload Log"
+msgstr ""
+
+#: default.py
+msgctxt "#32086"
+msgid "Upload the current log file"
+msgstr ""
+
+#: default.py
+msgctxt "#32087"
+msgid "Required to access GitHub repositories"
+msgstr ""
+
+#: /resources/lib/logging.py
+msgctxt "#32088"
+msgid "This URL has been copied to your clipboard."
+msgstr ""

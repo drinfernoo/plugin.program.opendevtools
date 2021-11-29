@@ -16,12 +16,18 @@ _addon_name = settings.get_addon_info("name")
 _access_token = settings.get_setting_string("github.token")
 
 
-def check_auth():
+def force_auth():
     dialog = xbmcgui.Dialog()
     if not _access_token:
         if dialog.yesno(_addon_name, settings.get_localized_string(32005)):
             authorize(True)
     del dialog
+
+
+def check_auth():
+    if not _access_token:
+        return False
+    return True
 
 
 def authorize(in_addon=False):

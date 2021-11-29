@@ -283,3 +283,32 @@ def get_current_skin():
 
     skin = execute_jsonrpc(params).get("result", {}).get("skin", {}).get("id")
     return skin
+
+
+def copy2clip(txt):
+    import subprocess
+
+    platform = sys.platform
+    if platform == "win32":
+        try:
+            cmd = "echo " + txt.strip() + "|clip"
+            subprocess.check_call(cmd, shell=True)
+        except Exception as e:
+            log("Failure to copy to clipboard, \n{}".format(e), "error")
+            return False
+        return True
+    elif platform.startswith("linux") or platform == "darwin":
+        try:
+            cmd = "pbcopy" if platform == "darwin" else ["xsel", "-pi"]
+            kwargs = (
+                {"stdin": subprocess.PIPE, "text": True}
+                if sys.version_info > (3, 0, 0)
+                else {"stdin": subprocess.PIPE}
+            )
+            p = subprocess.Popen(cmd, **kwargs)
+            p.communicate(input=str(txt))
+        except Exception as e:
+            log("Failure to copy to clipboard, \n{}".format(e), "error")
+            return False
+        return True
+    return False

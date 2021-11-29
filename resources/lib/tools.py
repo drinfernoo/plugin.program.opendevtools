@@ -25,12 +25,6 @@ _addon_name = settings.get_addon_info("name")
 _addon_data = translate_path(settings.get_addon_info("profile"))
 _temp = translate_path("special://temp")
 
-
-try:
-    from urlparse import urljoin
-except ImportError:
-    from urllib.parse import urljoin
-
 _log_levels = {
     "debug": xbmc.LOGDEBUG,
     "info": xbmc.LOGINFO,

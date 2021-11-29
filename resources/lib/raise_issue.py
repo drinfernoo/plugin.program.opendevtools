@@ -3,11 +3,9 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
-import getpass
-import os
 import requests
 
-from resources.lib.color import color_string
+from resources.lib import color
 from resources.lib import logging
 from resources.lib import repository
 from resources.lib import settings
@@ -16,13 +14,7 @@ from resources.lib.github_api import GithubAPI
 
 API = GithubAPI()
 
-_home = tools.translate_path("special://home")
-
 _addon_name = settings.get_addon_info("name")
-_addon_id = settings.get_addon_info("id")
-_addon_version = settings.get_addon_info("version")
-
-_compact = settings.get_setting_boolean("general.compact")
 
 
 def raise_issue():
@@ -37,16 +29,17 @@ def raise_issue():
 
             if response:
                 try:
-                    resp = _post_issue(
-                        _format_issue(title, description, log_key),
+                    resp = API.raise_issue(
                         selection["user"],
                         selection["repo"],
+                        _format_issue(title, description, log_key),
                     )
                     if "message" not in resp:
                         dialog.notification(
                             _addon_name,
                             settings.get_localized_string(32009).format(
-                                color_string(selection["repo"]), color_string(log_key)
+                                color.color_string(selection["repo"]),
+                                color.color_string(log_key),
                             ),
                         )
                     else:

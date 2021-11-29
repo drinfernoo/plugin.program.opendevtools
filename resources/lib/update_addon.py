@@ -9,7 +9,7 @@ import zipfile
 
 import xbmcgui
 
-from resources.lib.color import color_string
+from resources.lib import color
 from resources.lib import repository
 from resources.lib import settings
 from resources.lib import tools
@@ -356,7 +356,7 @@ def _get_selected_commit(user, repo, branch):
         for commit in sorted_commits:
             if commit["sha"] in [i[1] for i in tags]:
                 tag = [i[0] for i in tags if i[1] == commit["sha"]][0]
-                label = color_string(tag)
+                label = color.color_string(tag)
                 if label not in [i.getLabel() for i in commit_items]:
                     li = xbmcgui.ListItem(label)
                     li.setArt({"thumb": os.path.join(_media_path, "tag.png")})
@@ -365,7 +365,7 @@ def _get_selected_commit(user, repo, branch):
                 date = tools.to_local_time(commit["commit"]["author"]["date"])
                 li = xbmcgui.ListItem(
                     "{} - {}".format(
-                        color_string(commit["sha"][:7]),
+                        color.color_string(commit["sha"][:7]),
                         commit["commit"]["message"].replace("\n", "; "),
                     ),
                     label2=settings.get_localized_string(32014).format(
@@ -439,7 +439,7 @@ def update_addon(addon=None):
             art = os.path.join(_media_path, "protected-branch.png")
         date = tools.to_local_time(i["updated_at"])
         li = xbmcgui.ListItem(
-            "{} - ({})".format(i["branch"]["name"], color_string(i["sha"][:7])),
+            "{} - ({})".format(i["branch"]["name"], color.color_string(i["sha"][:7])),
             label2=settings.get_localized_string(32018).format(date),
         )
         li.setArt({"thumb": art})
@@ -457,7 +457,7 @@ def update_addon(addon=None):
 
     commit_sha = None
     selection = dialog.yesno(
-        settings.get_localized_string(32020).format(color_string(branch["name"])),
+        settings.get_localized_string(32020).format(color.color_string(branch["name"])),
         settings.get_localized_string(32021),
         yeslabel=settings.get_localized_string(32022),
         nolabel=settings.get_localized_string(32023),
@@ -474,10 +474,10 @@ def update_addon(addon=None):
     if not dialog.yesno(
         settings.get_localized_string(32000),
         settings.get_localized_string(32024).format(
-            color_string(addon["name"]),
-            color_string(branch["branch"]["name"])
+            color.color_string(addon["name"]),
+            color.color_string(branch["branch"]["name"])
             if not commit_sha
-            else color_string(commit_label),
+            else color.color_string(commit_label),
         ),
     ):
         dialog.notification(_addon_name, settings.get_localized_string(32017))
@@ -486,7 +486,7 @@ def update_addon(addon=None):
     progress = xbmcgui.DialogProgress()
     progress.create(
         _addon_name,
-        settings.get_localized_string(32025).format(color_string(addon["name"])),
+        settings.get_localized_string(32025).format(color.color_string(addon["name"])),
     )
     progress.update(0)
 
@@ -500,7 +500,10 @@ def update_addon(addon=None):
 
     if location:
         progress.update(
-            25, settings.get_localized_string(32026).format(color_string(addon["name"]))
+            25,
+            settings.get_localized_string(32026).format(
+                color.color_string(addon["name"])
+            ),
         )
 
         extensions = repository.get_extensions(addon["user"], addon["repo_name"])
@@ -516,7 +519,10 @@ def update_addon(addon=None):
         _extract_addon(location, addon)
 
         progress.update(
-            50, settings.get_localized_string(32077).format(color_string(addon["name"]))
+            50,
+            settings.get_localized_string(32077).format(
+                color.color_string(addon["name"])
+            ),
         )
 
         _rewrite_kodi_dependency_versions(plugin_id)
@@ -531,7 +537,7 @@ def update_addon(addon=None):
             progress.update(
                 75,
                 settings.get_localized_string(32078).format(
-                    color_string(addon["name"])
+                    color.color_string(addon["name"])
                 ),
             )
             failed_deps = _install_deps(plugin_id)

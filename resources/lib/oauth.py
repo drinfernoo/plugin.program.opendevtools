@@ -2,18 +2,17 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
-import os
 import time
 
-from resources.lib.color import color_string
+from resources.lib import color
 from resources.lib.github_api import GithubAPI
 from resources.lib import settings
-from resources.lib import tools
 
 API = GithubAPI()
 
 _addon_name = settings.get_addon_info("name")
 _access_token = settings.get_setting_string("github.token")
+_auth_url = "https://github.com/settings/connections/applications/"
 
 
 def force_auth():
@@ -35,9 +34,10 @@ def authorize(in_addon=False):
     dialog = xbmcgui.Dialog()
     dialogProgress = xbmcgui.DialogProgress()
     dialogProgress.create(
-        _addon_name,
+        settings.get_localized_string(32057),
         settings.get_localized_string(32043).format(
-            color_string(init["verification_uri"]), color_string(init["user_code"])
+            color.color_string(init["verification_uri"]),
+            color.color_string(init["user_code"]),
         ),
     )
 
@@ -77,10 +77,8 @@ def authorize(in_addon=False):
 def revoke():
     dialog = xbmcgui.Dialog()
     if dialog.yesno(
-        _addon_name,
-        settings.get_localized_string(32047).format(
-            "https://github.com/settings/connections/applications/"
-        ),
+        settings.get_localized_string(32059),
+        settings.get_localized_string(32047).format(color.color_string(_auth_url)),
     ):
         _clear_oauth()
         dialog.notification(_addon_name, settings.get_localized_string(32048))

@@ -7,7 +7,6 @@ import json
 import os
 import requests
 
-from resources.lib.color import color_string
 from resources.lib.github_api import GithubAPI
 from resources.lib import settings
 from resources.lib.thread_pool import ThreadPool
@@ -15,8 +14,6 @@ from resources.lib import tools
 
 API = GithubAPI()
 
-_home = tools.translate_path("special://home")
-_addons = os.path.join(_home, "addons")
 _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 _json_path = os.path.join(_addon_data, "json")
 

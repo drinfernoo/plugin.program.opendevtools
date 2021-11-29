@@ -6,11 +6,6 @@ import xbmcgui
 import os
 import sys
 
-try:
-    from urllib.parse import parse_qsl
-except ImportError:
-    from urlparse import parse_qsl
-
 from resources.lib import color
 from resources.lib import oauth
 from resources.lib import logging

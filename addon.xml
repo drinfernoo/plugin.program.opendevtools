@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.2" provider-name="drinfernoo">
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.3" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.dateutil"/>
 		<import addon="script.module.requests"/>
@@ -18,6 +18,8 @@
 			<fanart>fanart.png</fanart>
 		</assets>
 		<news>
+1.4.3
+ - Add OpenDevTools as bundled repository
 1.4.2
  - Add bare log uploading without authorization or issue
 1.4.1

@@ -14,7 +14,9 @@ from resources.lib import tools
 
 API = GithubAPI()
 
+_addon_path = tools.translate_path(settings.get_addon_info("path"))
 _addon_data = tools.translate_path(settings.get_addon_info("profile"))
+_builtin_json_path = os.path.join(_addon_path, "resources", "json")
 _json_path = os.path.join(_addon_data, "json")
 
 _addon_id = settings.get_addon_info("id")
@@ -24,6 +26,7 @@ _user = settings.get_setting_string("github.username")
 _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
+_show_bundled_repos = settings.get_setting_boolean("general.show_bundled_repos")
 
 _extensions = {
     "xbmc.gui.skin": "skin",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.gui/skin.xsd
@@ -76,12 +79,17 @@ def get_repos(key=None):
     repos = {}
 
     tools.create_folder(_json_path)
-    for j in os.listdir(_json_path):
-        file_path = os.path.join(_json_path, j)
-        content = json.loads(tools.read_from_file(file_path))
-        for r in content:
-            repos[r] = content[r]
-            repos[r]["filename"] = file_path
+    paths = [_json_path]
+    if _show_bundled_repos:
+        paths.append(_builtin_json_path)
+
+    for path in [_json_path]:
+        for j in os.listdir(path):
+            file_path = os.path.join(path, j)
+            content = json.loads(tools.read_from_file(file_path))
+            for r in content:
+                repos[r] = content[r]
+                repos[r]["filename"] = file_path
 
     return repos if not key else repos.get(key, {})
 

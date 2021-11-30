@@ -1,0 +1,9 @@
+{
+    "drinfernoo-plugin.program.opendevtools": {
+        "user": "drinfernoo",
+        "repo_name": "plugin.program.opendevtools",
+        "name": "OpenDevTools",
+        "plugin_id": "plugin.program.opendevtools",
+        "exclude_items": []
+    }
+}

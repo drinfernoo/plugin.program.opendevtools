@@ -460,3 +460,8 @@ msgstr ""
 msgctxt "#32088"
 msgid "This URL has been copied to your clipboard."
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32089"
+msgid "Show bundled repositories"
+msgstr ""

@@ -1,3 +1,6 @@
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import, division, unicode_literals
+
 import xbmcgui
 
 import getpass
@@ -32,7 +35,7 @@ def _censor_log_content(log_content):
     return log_content
 
 
-def log_dialog():
+def _log_dialog(log_key):
     response, log_key = upload_log()
     if response:
         copied = tools.copy2clip(log_url(log_key))
@@ -53,7 +56,7 @@ def log_url(log_key):
     return _paste_url + "raw/" + log_key
 
 
-def upload_log():
+def upload_log(dialog=False):
     log_data = _censor_log_content(_get_log_contents())
     user_agent = "{}: {}".format(_addon_id, _addon_version)
 

@@ -45,12 +45,12 @@ def _do_action():
                 (32001, 32070, raise_issue.raise_issue, "issue.png"),
                 (32002, 32071, repository.add_repository, "plus.png"),
                 (32003, 32072, repository.remove_repository, "minus.png"),
-                (32085, 32086, logging.log_dialog, "log.png"),
+                (32085, 32086, logging.upload_log, "log.png", {"dialog": True}),
             ]
         else:
             actions = [
-                (32057, 32087, oauth.authorize, "github.png"),
-                (32085, 32086, logging.log_dialog, "log.png"),
+                (32057, 32087, oauth.authorize, "github.png", {"in_addon": True}),
+                (32085, 32086, logging.upload_log, "log.png", {"dialog": True}),
             ]
 
         action_items = []
@@ -66,7 +66,10 @@ def _do_action():
             settings.get_localized_string(32004), action_items, useDetails=not _compact
         )
         if selection > -1:
-            actions[selection][2]()
+            if len(actions[selection]) == 4:
+                actions[selection][2]()
+            elif len(actions[selection]) == 5:
+                actions[selection][2](**actions[selection][4])
         del dialog
 
 

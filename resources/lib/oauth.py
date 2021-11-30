@@ -7,9 +7,11 @@ import time
 from resources.lib import color
 from resources.lib.github_api import GithubAPI
 from resources.lib import settings
+from resources.lib import tools
 
 API = GithubAPI()
 
+_addon_id = settings.get_addon_info("id")
 _addon_name = settings.get_addon_info("name")
 _access_token = settings.get_setting_string("github.token")
 _auth_url = "https://github.com/settings/connections/applications/"
@@ -70,7 +72,9 @@ def authorize(in_addon=False):
 
     del dialog
     del dialogProgress
-    if not in_addon:
+    if in_addon:
+        tools.execute_builtin("RunScript({})".format(_addon_id))
+    else:
         settings.open_settings()
 
 

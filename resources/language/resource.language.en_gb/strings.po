@@ -470,3 +470,13 @@ msgstr ""
 msgctxt "#32092"
 msgid "Choose Log File"
 msgstr ""
+
+#: /resources/lib/oauth.py
+msgctxt "#32093"
+msgid "Visit the following site from any device:"
+msgstr ""
+
+#: /resources/lib/oauth.py
+msgctxt "#32094"
+msgid "And enter the code:"
+msgstr ""

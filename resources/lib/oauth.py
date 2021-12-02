@@ -2,10 +2,12 @@ from __future__ import absolute_import, division, unicode_literals
 
 import xbmcgui
 
+import os
 import time
 
 from resources.lib import color
 from resources.lib.github_api import GithubAPI
+from resources.lib import qr
 from resources.lib import settings
 from resources.lib import tools
 
@@ -13,8 +15,12 @@ API = GithubAPI()
 
 _addon_id = settings.get_addon_info("id")
 _addon_name = settings.get_addon_info("name")
+_addon_data = tools.translate_path(settings.get_addon_info("profile"))
+
 _access_token = settings.get_setting_string("github.token")
 _auth_url = "https://github.com/settings/connections/applications/"
+
+_color = settings.get_setting_string("general.color")
 
 
 def force_auth():
@@ -33,16 +39,24 @@ def check_auth():
 
 def authorize(in_addon=False):
     init = API.authorize()
+
     dialog = xbmcgui.Dialog()
-    dialogProgress = xbmcgui.DialogProgress()
-    dialogProgress.create(
-        settings.get_localized_string(32057),
-        settings.get_localized_string(32043).format(
-            color.color_string(init["verification_uri"]),
-            color.color_string(init["user_code"]),
-        ),
+    qr_code = qr.generate_qr(init["verification_uri"], _addon_data, "auth.png")
+    top = [
+        (settings.get_localized_string(32093), "#efefefff"),
+        (init["verification_uri"], _color),
+    ]
+    bottom = [
+        (settings.get_localized_string(32094), "#efefefff"),
+        (init["user_code"], _color),
+    ]
+    qr.qr_dialog(
+        qr_code,
+        top_text=top,
+        bottom_text=bottom,
     )
 
+    tools.execute_builtin("ShowPicture({})".format(qr_code))
     expires = time.time() + init["expires_in"]
 
     while True:
@@ -54,24 +68,22 @@ def authorize(in_addon=False):
         pct_timeout = 100 - int(abs(pct_timeout))
 
         if pct_timeout >= 100:
-            dialogProgress.close()
+            tools.execute_builtin('Action(Back)')
             dialog.notification(_addon_name, settings.get_localized_string(32044))
             break
-        if dialogProgress.iscanceled():
-            dialogProgress.close()
+        if not tools.get_condition("Window.IsActive(slideshow)"):
             dialog.notification(_addon_name, settings.get_localized_string(32045))
             break
 
-        dialogProgress.update(int(pct_timeout))
-
         if "access_token" in token:
-            dialogProgress.close()
+            tools.execute_builtin('Action(Back)')
             _save_oauth(token)
             dialog.notification(_addon_name, settings.get_localized_string(32046))
             break
 
     del dialog
-    del dialogProgress
+    os.remove(qr_code)
+
     if in_addon:
         tools.execute_builtin("RunScript({})".format(_addon_id))
     else:

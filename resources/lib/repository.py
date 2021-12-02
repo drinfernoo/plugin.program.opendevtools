@@ -83,7 +83,7 @@ def get_repos(key=None):
     if _show_bundled_repos:
         paths.append(_builtin_json_path)
 
-    for path in [_json_path]:
+    for path in paths:
         for j in os.listdir(path):
             file_path = os.path.join(path, j)
             content = json.loads(tools.read_from_file(file_path))

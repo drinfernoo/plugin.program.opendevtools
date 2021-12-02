@@ -63,7 +63,7 @@ msgstr ""
 
 #: /resources/lib/raise_issue.py
 msgctxt "#32009"
-msgid "Issue successfully opened for {} with log {}"
+msgid "Issue successfully opened for:"
 msgstr ""
 
 #: /resources/lib/raise_issue.py
@@ -479,4 +479,9 @@ msgstr ""
 #: /resources/lib/oauth.py
 msgctxt "#32094"
 msgid "And enter the code:"
+msgstr ""
+
+#: /resources/lib/raise_issue.py
+msgctxt "#32095"
+msgid "Scan the QR code or visit the following URL:"
 msgstr ""

@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
+import xbmc
 import xbmcgui
 
+import os
 import requests
 
 from resources.lib import color
 from resources.lib import logging
+from resources.lib import qr
 from resources.lib import repository
 from resources.lib import settings
 from resources.lib import tools
@@ -15,6 +18,9 @@ from resources.lib.github_api import GithubAPI
 API = GithubAPI()
 
 _addon_name = settings.get_addon_info("name")
+_addon_data = tools.translate_path(settings.get_addon_info("profile"))
+
+_color = settings.get_setting_string("general.color")
 
 
 def raise_issue():
@@ -34,14 +40,37 @@ def raise_issue():
                         selection["repo"],
                         _format_issue(title, description, log_key),
                     )
+
                     if "message" not in resp:
-                        dialog.notification(
-                            _addon_name,
-                            settings.get_localized_string(32009).format(
-                                color.color_string(selection["repo"]),
-                                color.color_string(log_key),
-                            ),
+                        qr_code = qr.generate_qr(
+                            resp["html_url"],
+                            _addon_data,
+                            "{}.png".format(resp["number"]),
                         )
+                        top = [
+                            (
+                                settings.get_localized_string(32009),
+                                "#efefefff",
+                            ),
+                            (
+                                "{}/{}".format(selection["user"], selection["repo"]),
+                                _color,
+                            ),
+                        ]
+                        bottom = [
+                            (settings.get_localized_string(32095), "#efefefff"),
+                            (resp["html_url"], _color),
+                        ]
+                        qr.qr_dialog(
+                            qr_code,
+                            top_text=top,
+                            bottom_text=bottom,
+                        )
+
+                        tools.execute_builtin("ShowPicture({})".format(qr_code))
+                        while tools.get_condition("Window.IsActive(slideshow)"):
+                            xbmc.sleep(1000)
+                        os.remove(qr_code)
                     else:
                         dialog.ok(_addon_name, resp["message"])
                 except requests.exceptions.RequestException as e:

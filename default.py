@@ -50,7 +50,13 @@ def _do_action():
         else:
             actions = [
                 (32057, 32087, oauth.authorize, "github.png", {"in_addon": True}),
-                (32085, 32086, logging.upload_log, "log.png", {"dialog": True}),
+                (
+                    32085,
+                    32086,
+                    logging.upload_log,
+                    "log.png",
+                    {"choose": True, "dialog": True},
+                ),
             ]
 
         action_items = []

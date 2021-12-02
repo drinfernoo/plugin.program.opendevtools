@@ -458,10 +458,15 @@ msgstr ""
 
 #: /resources/lib/logging.py
 msgctxt "#32088"
-msgid "This URL has been copied to your clipboard."
+msgid "This URL has also been copied to your clipboard."
 msgstr ""
 
 #: /resources/settings.xml
 msgctxt "#32089"
 msgid "Show bundled repositories"
+msgstr ""
+
+#: /resources/lib/logging.py
+msgctxt "#32092"
+msgid "Choose Log File"
 msgstr ""

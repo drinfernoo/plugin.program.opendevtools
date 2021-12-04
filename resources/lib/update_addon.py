@@ -219,37 +219,6 @@ def _set_enabled(addon, enabled, exists=True):
     return new_status
 
 
-def _disable_addon(addon, exists=True):
-    if not exists:
-        return False
-
-    enabled_params = {
-        "jsonrpc": "2.0",
-        "method": "Addons.GetAddonDetails",
-        "params": {"addonid": addon, "properties": ["enabled"]},
-        "id": 1,
-    }
-
-    params = {
-        "jsonrpc": "2.0",
-        "method": "Addons.SetAddonEnabled",
-        "params": {"addonid": addon, "enabled": False},
-        "id": 1,
-    }
-
-    tools.execute_jsonrpc(params)
-
-    disabled = (
-        tools.execute_jsonrpc(enabled_params)
-        .get("result", {})
-        .get("addon", {})
-        .get("enabled", False)
-    ) == False
-
-    tools.log("{} {} disabled".format(addon, "" if disabled else "not"))
-    return disabled
-
-
 def _exists(addon):
     params = {
         "jsonrpc": "2.0",
@@ -264,70 +233,6 @@ def _exists(addon):
 
     tools.log("{} {} installed".format(addon, "is" if exists else "not"))
     return exists
-
-
-def _enable_addon(addon, exists=False):
-    enabled_params = {
-        "jsonrpc": "2.0",
-        "method": "Addons.GetAddonDetails",
-        "params": {"addonid": addon, "properties": ["enabled"]},
-        "id": 1,
-    }
-
-    params = {
-        "jsonrpc": "2.0",
-        "method": "Addons.SetAddonEnabled",
-        "params": {"addonid": addon, "enabled": True},
-        "id": 1,
-    }
-
-    if not exists:
-        db_file = _get_addons_db()
-        connection = sqlite3.connect(db_file)
-        cursor = connection.cursor()
-        date = time.strftime("%Y-%m-%d %H:%M:%S")
-        cursor.execute("DELETE FROM installed WHERE addonID = ?", (addon,))
-        cursor.execute(
-            "INSERT INTO installed (addonID, enabled, installDate) VALUES (?, 1, ?)",
-            (addon, date),
-        )
-        connection.commit()
-
-        connection.close()
-    else:
-        tools.execute_jsonrpc(params)
-
-    enabled = (
-        tools.execute_jsonrpc(enabled_params)
-        .get("result", {})
-        .get("addon", {})
-        .get("enabled", True)
-    ) == True
-
-    tools.log("{} {} enabled".format(addon, "" if enabled else "not"))
-    return enabled
-
-
-def _detect_service(addon):
-    addon_xml = os.path.join(_addons, addon, "addon.xml")
-    tools.log("Checking for services in {}".format(addon_xml))
-    root = tools.parse_xml(file=addon_xml)
-    extensions = root.findall("extension")
-    for ext in extensions:
-        if ext.get("point") == "xbmc.service":
-            return True
-    return False
-
-
-def _detect_skin(addon):
-    addon_xml = os.path.join(_addons, addon, "addon.xml")
-    tools.log("Checking if {} is a skin".format(addon_xml))
-    root = tools.parse_xml(file=addon_xml)
-    extensions = root.findall("extension")
-    for ext in extensions:
-        if ext.get("point") == "xbmc.gui.skin":
-            return True
-    return False
 
 
 def _get_selected_commit(user, repo, branch):

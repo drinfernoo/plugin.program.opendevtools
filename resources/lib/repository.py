@@ -222,54 +222,6 @@ def _add_repo(user, repo, name, plugin_id):
     del dialog
 
 
-def _add_custom(user):
-    dialog = xbmcgui.Dialog()
-
-    repo = dialog.input(settings.get_localized_string(32030))
-    if not repo:
-        dialog.notification(_addon_name, settings.get_localized_string(32029))
-        del dialog
-        return
-
-    def_name = ""
-    def_id = ""
-    input_name = settings.get_localized_string(32032)
-    input_id = settings.get_localized_string(32033)
-    addon_xml = API.get_file(user, repo, "addon.xml", text=True)
-
-    if addon_xml:
-        tools.log("Reading addon.xml from {}/{}".format(user, repo))
-        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
-
-        def_name = addon.get("name")
-        def_id = addon.get("id")
-
-        input_name = input_name.format(settings.get_localized_string(32034))
-        input_id = input_id.format(settings.get_localized_string(32034))
-    else:
-        input_name = input_name.format(settings.get_localized_string(32035))
-        input_id = input_id.format(settings.get_localized_string(32035))
-
-    if "" in [def_name, def_id]:
-        if not dialog.yesno(_addon_name, settings.get_localized_string(32036)):
-            del dialog
-            return
-
-    name = dialog.input(input_name, defaultt=def_name)
-    if not name:
-        dialog.notification(_addon_name, settings.get_localized_string(32029))
-        del dialog
-        return
-    plugin_id = dialog.input(input_id, defaultt=def_id)
-    if not plugin_id:
-        dialog.notification(_addon_name, settings.get_localized_string(32029))
-        del dialog
-        return
-
-    _add_repo(user, repo, name, plugin_id)
-    del dialog
-
-
 def _check_repo(user, repo):
     dialog = xbmcgui.Dialog()
 

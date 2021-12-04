@@ -21,6 +21,49 @@ _media_path = os.path.join(_addon_path, "resources", "media")
 _compact = settings.get_setting_boolean("general.compact")
 
 
+def _build_menu(items):
+    action_items = []
+    for action in items:
+        li = xbmcgui.ListItem(
+            settings.get_localized_string(action[0]),
+            label2=settings.get_localized_string(action[1]),
+        )
+        li.setArt({"thumb": os.path.join(_media_path, action[3])})
+        action_items.append(li)
+    return (items, action_items)
+
+
+def _choose_repo():
+    repo = repository.get_repo_selection("manage")
+    if repo is None:
+        return
+
+    actions = _build_menu(
+        [
+            (32000, 32069, update_addon.update_addon, "update.png", {"addon": repo}),
+            (
+                32001,
+                32070,
+                raise_issue.raise_issue,
+                "issue.png",
+                {"selection": {"user": repo["user"], "repo": repo["repo_name"]}},
+            ),
+            (32003, 32072, repository.remove_repository, "minus.png", {"repo": repo}),
+        ]
+    )
+
+    dialog = xbmcgui.Dialog()
+    selection = dialog.select(
+        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+    )
+    if selection > -1:
+        if len(actions[0][selection]) == 4:
+            actions[0][selection][2]()
+        elif len(actions[0][selection]) == 5:
+            actions[0][selection][2](**actions[0][selection][4])
+    del dialog
+
+
 def _do_action():
     if len(sys.argv) > 1:
         _params = sys.argv[1:]
@@ -40,42 +83,41 @@ def _do_action():
         dialog = xbmcgui.Dialog()
 
         if auth:
-            actions = [
-                (32000, 32069, update_addon.update_addon, "update.png"),
-                (32001, 32070, raise_issue.raise_issue, "issue.png"),
-                (32002, 32071, repository.add_repository, "plus.png"),
-                (32003, 32072, repository.remove_repository, "minus.png"),
-                (32085, 32086, logging.upload_log, "log.png", {"dialog": True}),
-            ]
-        else:
-            actions = [
-                (32057, 32087, oauth.authorize, "github.png", {"in_addon": True}),
-                (
-                    32085,
-                    32086,
-                    logging.upload_log,
-                    "log.png",
-                    {"choose": True, "dialog": True},
-                ),
-            ]
 
-        action_items = []
-        for action in actions:
-            li = xbmcgui.ListItem(
-                settings.get_localized_string(action[0]),
-                label2=settings.get_localized_string(action[1]),
+            actions = _build_menu(
+                [
+                    (32090, 32091, _choose_repo, "github.png"),
+                    (
+                        32085,
+                        32086,
+                        logging.upload_log,
+                        "log.png",
+                        {"choose": True, "dialog": True},
+                    ),
+                ]
             )
-            li.setArt({"thumb": os.path.join(_media_path, action[3])})
-            action_items.append(li)
+        else:
+            actions = _build_menu(
+                [
+                    (32057, 32087, oauth.authorize, "github.png", {"in_addon": True}),
+                    (
+                        32085,
+                        32086,
+                        logging.upload_log,
+                        "log.png",
+                        {"choose": True, "dialog": True},
+                    ),
+                ]
+            )
 
         selection = dialog.select(
-            settings.get_localized_string(32004), action_items, useDetails=not _compact
+            settings.get_localized_string(32004), actions[1], useDetails=not _compact
         )
         if selection > -1:
-            if len(actions[selection]) == 4:
-                actions[selection][2]()
-            elif len(actions[selection]) == 5:
-                actions[selection][2](**actions[selection][4])
+            if len(actions[0][selection]) == 4:
+                actions[0][selection][2]()
+            elif len(actions[0][selection]) == 5:
+                actions[0][selection][2](**actions[0][selection][4])
         del dialog
 
 

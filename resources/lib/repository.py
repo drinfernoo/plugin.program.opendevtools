@@ -16,8 +16,10 @@ API = GithubAPI()
 
 _addon_path = tools.translate_path(settings.get_addon_info("path"))
 _addon_data = tools.translate_path(settings.get_addon_info("profile"))
+
 _builtin_json_path = os.path.join(_addon_path, "resources", "json")
 _json_path = os.path.join(_addon_data, "json")
+_media_path = os.path.join(_addon_path, "resources", "media")
 
 _addon_id = settings.get_addon_info("id")
 _addon_name = settings.get_addon_info("name")
@@ -289,11 +291,11 @@ def _prompt_for_update(key):
     del dialog
 
 
-def remove_repository():
+def remove_repository(repo=None):
     dialog = xbmcgui.Dialog()
 
     repos = get_repos()
-    repo = get_repo_selection("remove_repository")
+    repo = get_repo_selection("remove_repository") if repo is None else repo
 
     if repo:
         filename = repo["filename"]
@@ -428,6 +430,14 @@ def get_repo_selection(ret):
 
     repo_items = []
     with tools.busy_dialog():
+        if ret == "manage":
+            add = xbmcgui.ListItem(
+                settings.get_localized_string(32002),
+                label2=settings.get_localized_string(32071),
+            )
+            add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
+            repo_items.append(add)
+
         for repo in repo_defs:
             user = repo["user"]
             repo_name = repo["repo_name"]
@@ -453,10 +463,14 @@ def get_repo_selection(ret):
         del dialog
         return None
     else:
-        repo = repo_defs[selection]
-        if ret in ["update_addon", "remove_repository"]:
-            return repo
-        elif ret == "open_issue":
-            return {"user": repo["user"], "repo": repo["repo_name"]}
         del dialog
-        return None
+        if ret == "manage" and selection == 0:
+            add_repository()
+            return get_repo_selection(ret)
+        else:
+            repo = repo_defs[selection - 1 if ret == "manage" else selection]
+            if ret in ["manage", "update_addon", "remove_repository"]:
+                return repo
+            elif ret == "open_issue":
+                return {"user": repo["user"], "repo": repo["repo_name"]}
+            return None

@@ -466,6 +466,16 @@ msgctxt "#32089"
 msgid "Show bundled repositories"
 msgstr ""
 
+#: default.py
+msgctxt "#32090"
+msgid "Manage Repositories"
+msgstr ""
+
+#: default.py
+msgctxt "#32091"
+msgid "Install add-ons from GitHub"
+msgstr ""
+
 #: /resources/lib/logging.py
 msgctxt "#32092"
 msgid "Choose Log File"

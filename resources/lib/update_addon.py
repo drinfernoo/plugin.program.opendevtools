@@ -400,8 +400,9 @@ def _get_selected_commit(user, repo, branch):
 def update_addon(addon=None):
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
+
     if addon:
-        addon = repository.get_repos(addon)
+        addon = addon if type(addon) == dict else repository.get_repos(addon)
     else:
         addon = repository.get_repo_selection("update_addon")
     if not addon:

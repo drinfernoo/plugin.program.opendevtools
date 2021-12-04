@@ -23,8 +23,10 @@ _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 _color = settings.get_setting_string("general.color")
 
 
-def raise_issue():
-    selection = repository.get_repo_selection("open_issue")
+def raise_issue(selection=None):
+    selection = (
+        repository.get_repo_selection("open_issue") if selection is None else selection
+    )
     if selection:
         dialog = xbmcgui.Dialog()
         title = dialog.input(settings.get_localized_string(32006))

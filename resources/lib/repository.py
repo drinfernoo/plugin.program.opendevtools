@@ -380,7 +380,6 @@ def get_extensions(user, repo, addon_xml=None):
 def get_repo_selection(ret):
     dialog = xbmcgui.Dialog()
     repos = get_repos()
-    repo_defs = sorted(repos.values(), key=lambda b: b["name"])
 
     repo_items = []
     with tools.busy_dialog():
@@ -392,6 +391,7 @@ def get_repo_selection(ret):
             add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
             repo_items.append(add)
 
+        repo_defs = sorted(repos.values(), key=lambda b: b["name"])
         for repo in repo_defs:
             user = repo["user"]
             repo_name = repo["repo_name"]
@@ -404,8 +404,7 @@ def get_repo_selection(ret):
             )
 
             if not _compact:
-                icon = get_icon(user, repo_name)
-                li.setArt({"thumb": icon})
+                li.setArt({"thumb": repo["icon"]})
 
             repo_items.append(li)
 

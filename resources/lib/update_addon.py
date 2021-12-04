@@ -264,7 +264,8 @@ def _get_selected_commit(user, repo, branch):
                 label = color.color_string(tag)
                 if label not in [i.getLabel() for i in commit_items]:
                     li = xbmcgui.ListItem(label)
-                    li.setArt({"thumb": os.path.join(_media_path, "tag.png")})
+                    if not _compact:
+                        li.setArt({"thumb": os.path.join(_media_path, "tag.png")})
                     commit_items.append(li)
             else:
                 date = tools.to_local_time(commit["commit"]["author"]["date"])
@@ -277,13 +278,16 @@ def _get_selected_commit(user, repo, branch):
                         commit["commit"]["author"]["name"], date
                     ),
                 )
-                art = os.path.join(_media_path, "commit.png")
-                if "pull" in commit["commit"]["message"]:
-                    art = os.path.join(_media_path, "pull.png")
-                elif "merge" in commit["commit"]["message"]:
-                    art = os.path.join(_media_path, "merge.png")
 
-                li.setArt({"thumb": art})
+                if not _compact:
+                    art = os.path.join(_media_path, "commit.png")
+                    if "pull" in commit["commit"]["message"]:
+                        art = os.path.join(_media_path, "pull.png")
+                    elif "merge" in commit["commit"]["message"]:
+                        art = os.path.join(_media_path, "merge.png")
+
+                    li.setArt({"thumb": art})
+
                 commit_items.append(li)
 
     selection = dialog.select(
@@ -300,6 +304,26 @@ def _get_selected_commit(user, repo, branch):
             return sha[:7], sha
 
     return None, None
+
+
+def _sort_branches(addon, branches):
+    _default = API.get_default_branch(addon["user"], addon["repo_name"])
+
+    default_branch = []
+    protected_branches = []
+    normal_branches = []
+
+    for i in sorted(branches, key=lambda b: b["updated_at"], reverse=True):
+        if i["name"] == _default:
+            default_branch.append(i)
+        elif i["protected"]:
+            protected_branches.append(i)
+        else:
+            normal_branches.append(i)
+
+    sorted_branches = default_branch + protected_branches + normal_branches
+
+    return default_branch, protected_branches, sorted_branches
 
 
 def update_addon(addon=None):
@@ -319,37 +343,30 @@ def update_addon(addon=None):
                 dialog.ok(_addon_name, b["message"])
                 return
             pool.put(repository.get_branch_info, addon, b)
-        branch_items = pool.wait_completion()
-
-        _default = API.get_default_branch(addon["user"], addon["repo_name"])
-
-        default_branch = [i for i in branch_items if i["name"] == _default]
-        protected_branches = sorted(
-            [i for i in branch_items if i["protected"] and i["name"] != _default],
-            key=lambda b: b["updated_at"],
-            reverse=True,
+        branches = pool.wait_completion()
+        default_branch, protected_branches, sorted_branches = _sort_branches(
+            addon, branches
         )
-        normal_branches = sorted(
-            [i for i in branch_items if not i["protected"] and i["name"] != _default],
-            key=lambda b: b["updated_at"],
-            reverse=True,
-        )
-        sorted_branches = default_branch + protected_branches + normal_branches
 
-    branch_items = []
-    for i in sorted_branches:
-        art = os.path.join(_media_path, "branch.png")
-        if i in default_branch:
-            art = os.path.join(_media_path, "default-branch.png")
-        elif i in protected_branches:
-            art = os.path.join(_media_path, "protected-branch.png")
-        date = tools.to_local_time(i["updated_at"])
-        li = xbmcgui.ListItem(
-            "{} - ({})".format(i["branch"]["name"], color.color_string(i["sha"][:7])),
-            label2=settings.get_localized_string(32018).format(date),
-        )
-        li.setArt({"thumb": art})
-        branch_items.append(li)
+        branch_items = []
+        for i in sorted_branches:
+            date = tools.to_local_time(i["updated_at"])
+            li = xbmcgui.ListItem(
+                "{} - ({})".format(
+                    i["branch"]["name"], color.color_string(i["sha"][:7])
+                ),
+                label2=settings.get_localized_string(32018).format(date),
+            )
+
+            if not _compact:
+                art = os.path.join(_media_path, "branch.png")
+                if i in default_branch:
+                    art = os.path.join(_media_path, "default-branch.png")
+                elif i in protected_branches:
+                    art = os.path.join(_media_path, "protected-branch.png")
+                li.setArt({"thumb": art})
+
+            branch_items.append(li)
     selection = dialog.select(
         settings.get_localized_string(32019), branch_items, useDetails=not _compact
     )

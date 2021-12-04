@@ -34,7 +34,9 @@ def generate_qr(content, path, filename):
 
     qr_file = os.path.join(path, filename)
     qr = pyqrcode.create(content)
-    qr.png(qr_file, scale=16, module_color=_fg_color, background=_bg_color)
+    qr.png(
+        qr_file, scale=16, module_color=_fg_color, background=_bg_color, quiet_zone=2
+    )
 
     return qr_file
 
@@ -63,7 +65,7 @@ def qr_dialog(qr_image, top_text=None, bottom_text=None):
                 text_layer.size[0], text_layer.size[1], line_size[0], line_size[1]
             )
             draw_text.text(
-                (line_coords[0], qr_coords[1] - (32 + (8 + line_size[1]) * idx)),
+                (line_coords[0], qr_coords[1] - 8 - (line_size[1] * (idx + 1))),
                 line[0],
                 font=font,
                 fill=ImageColor.getrgb(line[1]),
@@ -77,7 +79,7 @@ def qr_dialog(qr_image, top_text=None, bottom_text=None):
             draw_text.text(
                 (
                     line_coords[0],
-                    qr_coords[1] + qr.size[1] + (32 + (8 + line_size[1]) * idx),
+                    qr_coords[1] + qr.size[1] + 8 + (line_size[1] * idx),
                 ),
                 line[0],
                 font=font,

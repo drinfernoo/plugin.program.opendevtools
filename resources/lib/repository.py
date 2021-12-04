@@ -92,6 +92,8 @@ def get_repos(key=None):
             for r in content:
                 repos[r] = content[r]
                 repos[r]["filename"] = file_path
+                if r == key:
+                    return repos.get(key, {})
 
     return repos if not key else repos.get(key, {})
 

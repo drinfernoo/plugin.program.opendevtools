@@ -11,12 +11,6 @@ from resources.lib import tools
 _addon_path = tools.translate_path(settings.get_addon_info("path"))
 _font = os.path.join(_addon_path, "resources", "fonts", "DankMono-Regular.ttf")
 
-_device_blurb = "With any device, scan the QR code below or visit:"
-_url = "https://www.github.com/login/device/"
-_code_blurb = "And enter the code:"
-_code = "1234-ABCD"
-
-_color = settings.get_setting_string("general.color")
 _fg_color = ImageColor.getrgb("#efefefff")
 _bg_color = ImageColor.getrgb("#222222ff")
 

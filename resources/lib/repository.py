@@ -197,11 +197,11 @@ def add_repository():
     plugin_id = addon.get("id")
 
     if dialog.yesno(_addon_name, settings.get_localized_string(32074).format(name)):
-        _add_repo(user, repo, name, plugin_id)
+        _add_repo(user, repo, name, plugin_id, repos[selection]["icon"])
     del dialog
 
 
-def _add_repo(user, repo, name, plugin_id):
+def _add_repo(user, repo, name, plugin_id, icon, update=False):
     dialog = xbmcgui.Dialog()
 
     key = user + "-" + plugin_id
@@ -212,15 +212,17 @@ def _add_repo(user, repo, name, plugin_id):
             "name": name,
             "plugin_id": plugin_id,
             "exclude_items": [],
+            "icon": icon,
         }
     }
     filename = key + ".json"
 
     tools.create_folder(_json_path)
     tools.write_to_file(os.path.join(_json_path, filename), json.dumps(addon_def))
-    dialog.notification(_addon_name, settings.get_localized_string(32037))
 
-    _prompt_for_update(key)
+    if not update:
+        dialog.notification(_addon_name, settings.get_localized_string(32037))
+        _prompt_for_update(key)
     del dialog
 
 
@@ -404,7 +406,19 @@ def get_repo_selection(ret):
             )
 
             if not _compact:
-                li.setArt({"thumb": repo["icon"]})
+                icon = repo.get("icon")
+                if icon is None:
+                    repo["icon"] = get_icon(user, repo_name)
+                    _add_repo(
+                        user,
+                        repo["repo_name"],
+                        name,
+                        repo["plugin_id"],
+                        repo["icon"],
+                        update=True,
+                    )
+
+                li.setArt({"thumb": repo.get("icon", "")})
 
             repo_items.append(li)
 

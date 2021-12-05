@@ -201,7 +201,7 @@ def add_repository():
     del dialog
 
 
-def _add_repo(user, repo, name, plugin_id, icon, update=False):
+def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
     dialog = xbmcgui.Dialog()
 
     key = user + "-" + plugin_id
@@ -218,7 +218,10 @@ def _add_repo(user, repo, name, plugin_id, icon, update=False):
     filename = key + ".json"
 
     tools.create_folder(_json_path)
-    tools.write_to_file(os.path.join(_json_path, filename), json.dumps(addon_def))
+    tools.write_to_file(
+        os.path.join(_json_path, filename) if path is None else path,
+        json.dumps(addon_def),
+    )
 
     if not update:
         dialog.notification(_addon_name, settings.get_localized_string(32037))
@@ -416,6 +419,7 @@ def get_repo_selection(ret):
                         repo["plugin_id"],
                         repo["icon"],
                         update=True,
+                        path=repo["filename"],
                     )
 
                 li.setArt({"thumb": repo.get("icon", "")})

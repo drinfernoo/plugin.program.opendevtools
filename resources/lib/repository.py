@@ -220,7 +220,7 @@ def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
     tools.create_folder(_json_path)
     tools.write_to_file(
         os.path.join(_json_path, filename) if path is None else path,
-        json.dumps(addon_def),
+        json.dumps(addon_def, indent=4),
     )
 
     if not update:

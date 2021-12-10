@@ -2,6 +2,7 @@
 <settings>
     <category label="$ADDON[plugin.program.opendevtools 32051]">
 		<setting label="$ADDON[plugin.program.opendevtools 32052]" type="lsep"/>
+		
 		<setting id="general.display_color" type="action" label="$ADDON[plugin.program.opendevtools 32053]"
                  action="RunScript(plugin.program.opendevtools,action=color_picker)"
                  default="[COLOR forestgreen]forestgreen[/COLOR]"/>
@@ -33,14 +34,22 @@
 		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 32062]"
 				 default="7281fc95af8c0e322b96"
 				 visible="false"/>
-
-		<setting label="$ADDON[plugin.program.opendevtools 32064]" type="lsep"/>
+    </category>
+	<category label="$ADDON[plugin.program.opendevtools 32064]">
+		<setting label="$ADDON[plugin.program.opendevtools 32101]" type="lsep"/>
 		
 		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 32065] ($ADDON[plugin.program.opendevtools 32066])" default="true"/>
+		
+		<setting label="$ADDON[plugin.program.opendevtools 32097]" type="lsep"/>
+		
 		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32075]" default="false"/>
 		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32076]" default="false"/>
 		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32089]" default="true"/>
+		
+		<setting label="$ADDON[plugin.program.opendevtools 32098]" type="lsep"/>
+
 		<setting id="general.show_tags" type="bool" label="$ADDON[plugin.program.opendevtools 32096]" default="true"/>
 		<setting id="general.show_commit_stats" type="bool" label="$ADDON[plugin.program.opendevtools 32096]" default="false"/>
-    </category>
+		<setting id="general.commits_per_page" type="slider" label="$ADDON[plugin.program.opendevtools 32099]" default="30" option="int" range="5,5,100"/>
+	</category>
 </settings>

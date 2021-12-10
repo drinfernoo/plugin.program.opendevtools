@@ -501,8 +501,27 @@ msgctxt "#32096"
 msgid "Show Commit Stats"
 msgstr ""
 
+#: /resources/settings.xml
+msgctxt "#32097"
+msgid "Repositories"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32098"
+msgid "Commits"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32099"
+msgid "Commits to Retrieve"
+msgstr ""
 
 #: /resources/settings.xml
 msgctxt "#32100"
 msgid "Show Tags"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32101"
+msgid "Repository Installs"
 msgstr ""

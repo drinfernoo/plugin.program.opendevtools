@@ -40,5 +40,6 @@
 		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32075]" default="false"/>
 		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32076]" default="false"/>
 		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32089]" default="true"/>
+		<setting id="general.show_commit_stats" type="bool" label="$ADDON[plugin.program.opendevtools 32096]" default="false"/>
     </category>
 </settings>

@@ -495,3 +495,8 @@ msgstr ""
 msgctxt "#32095"
 msgid "Scan the QR code or visit the following URL:"
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32096"
+msgid "Show Commit Stats"
+msgstr ""

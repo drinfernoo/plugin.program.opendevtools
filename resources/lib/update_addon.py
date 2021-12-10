@@ -22,6 +22,7 @@ _addon_name = settings.get_addon_info("name")
 
 _compact = settings.get_setting_boolean("general.compact")
 _dependencies = settings.get_setting_boolean("general.dependencies")
+_commit_stats = settings.get_setting_boolean("general.show_commit_stats")
 
 _home = tools.translate_path("special://home")
 _temp = tools.translate_path("special://temp")
@@ -269,14 +270,31 @@ def _get_selected_commit(user, repo, branch):
                     commit_items.append(li)
             else:
                 date = tools.to_local_time(commit["commit"]["author"]["date"])
+                byline = settings.get_localized_string(32014).format(
+                    commit["commit"]["author"]["name"], date
+                )
+                if _commit_stats:
+                    stats = commit['stats']
+                    adds = stats.get("additions", 0)
+                    deletes = stats.get("deletions", 0)
+                    add_text = (
+                        color.color_string("[B]+[/B] {}".format(adds), "springgreen")
+                        if adds > 0
+                        else "[B]+[/B] {}".format(adds)
+                    )
+                    delete_text = (
+                        color.color_string("[B]-[/B] {}".format(deletes), "crimson")
+                        if deletes > 0
+                        else "[B]-[/B] {}".format(deletes)
+                    )
+
+                    byline = "{} {}: ".format(add_text, delete_text) + byline
                 li = xbmcgui.ListItem(
                     "{} - {}".format(
                         color.color_string(commit["sha"][:7]),
                         commit["commit"]["message"].replace("\n", "; "),
                     ),
-                    label2=settings.get_localized_string(32014).format(
-                        commit["commit"]["author"]["name"], date
-                    ),
+                    label2=byline,
                 )
 
                 if not _compact:

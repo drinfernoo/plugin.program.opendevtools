@@ -8,7 +8,6 @@ import getpass
 import os
 import requests
 
-from resources.lib import color
 from resources.lib import qr
 from resources.lib import settings
 from resources.lib import tools

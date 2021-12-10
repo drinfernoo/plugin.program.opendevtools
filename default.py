@@ -33,8 +33,8 @@ def _build_menu(items):
     return (items, action_items)
 
 
-def _choose_repo():
-    repo = repository.get_repo_selection("manage")
+def _repo_menu():
+    repo = repository.get_repo_selection()
     if repo is None:
         return
 
@@ -56,12 +56,13 @@ def _choose_repo():
     selection = dialog.select(
         settings.get_localized_string(32004), actions[1], useDetails=not _compact
     )
+    del dialog
+
     if selection > -1:
         if len(actions[0][selection]) == 4:
             actions[0][selection][2]()
         elif len(actions[0][selection]) == 5:
             actions[0][selection][2](**actions[0][selection][4])
-    del dialog
 
 
 def _do_action():
@@ -70,23 +71,22 @@ def _do_action():
         params = {i[0]: i[1] for i in [j.split("=") for j in _params]}
         action = params.get("action", None)
         id = params.get("id", None)
+
         if action == "color_picker":
             color.color_picker()
         elif action == "authorize":
             oauth.authorize()
         elif action == "revoke":
             oauth.revoke()
-        elif action == "update_addon" and id:
+        elif action == "update_addon" and id is not None:
             update_addon.update_addon(id)
     else:
         auth = oauth.check_auth()
-        dialog = xbmcgui.Dialog()
 
         if auth:
-
             actions = _build_menu(
                 [
-                    (32090, 32091, _choose_repo, "github.png"),
+                    (32090, 32091, _repo_menu, "github.png"),
                     (
                         32085,
                         32086,
@@ -110,15 +110,18 @@ def _do_action():
                 ]
             )
 
+        dialog = xbmcgui.Dialog()
         selection = dialog.select(
             settings.get_localized_string(32004), actions[1], useDetails=not _compact
         )
+        del dialog
+
         if selection > -1:
             if len(actions[0][selection]) == 4:
                 actions[0][selection][2]()
             elif len(actions[0][selection]) == 5:
                 actions[0][selection][2](**actions[0][selection][4])
-        del dialog
 
 
-_do_action()
+if __name__ == "__main__":
+    _do_action()

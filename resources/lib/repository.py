@@ -250,36 +250,33 @@ def _prompt_for_update(key):
     del dialog
 
 
-def remove_repository(repo=None):
+def remove_repository(repo):
     dialog = xbmcgui.Dialog()
-
     repos = get_repos()
-    repo = get_repo_selection("remove_repository") if repo is None else repo
 
-    if repo:
-        filename = repo["filename"]
-        repo_defs = [i for i in repos.values()]
+    filename = repo["filename"]
+    repo_defs = [i for i in repos.values()]
 
-        indices = [i for i, x in enumerate(repo_defs) if x["filename"] == filename]
-        if len(indices) > 1:
-            remove = dialog.yesno(
-                _addon_name,
-                settings.get_localized_string(32039).format(
-                    ", ".join([repo_defs[i]["name"] for i in indices])
-                ),
-            )
-        else:
-            remove = dialog.yesno(
-                _addon_name, settings.get_localized_string(32040).format(repo["name"])
-            )
-        if remove:
-            os.remove(filename)
-            dialog.notification(
-                _addon_name,
-                settings.get_localized_string(
-                    32041 if len(indices) == 1 else 32042
-                ).format(len(indices)),
-            )
+    indices = [i for i, x in enumerate(repo_defs) if x["filename"] == filename]
+    if len(indices) > 1:
+        remove = dialog.yesno(
+            _addon_name,
+            settings.get_localized_string(32039).format(
+                ", ".join([repo_defs[i]["name"] for i in indices])
+            ),
+        )
+    else:
+        remove = dialog.yesno(
+            _addon_name, settings.get_localized_string(32040).format(repo["name"])
+        )
+    if remove:
+        os.remove(filename)
+        dialog.notification(
+            _addon_name,
+            settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(
+                len(indices)
+            ),
+        )
     del dialog
 
 
@@ -382,19 +379,18 @@ def get_extensions(user, repo, addon_xml=None):
     return extensions
 
 
-def get_repo_selection(ret):
+def get_repo_selection():
     dialog = xbmcgui.Dialog()
     repos = get_repos()
 
     repo_items = []
     with tools.busy_dialog():
-        if ret == "manage":
-            add = xbmcgui.ListItem(
-                settings.get_localized_string(32002),
-                label2=settings.get_localized_string(32071),
-            )
-            add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
-            repo_items.append(add)
+        add = xbmcgui.ListItem(
+            settings.get_localized_string(32002),
+            label2=settings.get_localized_string(32071),
+        )
+        add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
+        repo_items.append(add)
 
         repo_defs = sorted(repos.values(), key=lambda b: b["name"])
         for repo in repo_defs:
@@ -435,13 +431,7 @@ def get_repo_selection(ret):
         return None
     else:
         del dialog
-        if ret == "manage" and selection == 0:
+        if selection == 0:
             add_repository()
-            return get_repo_selection(ret)
         else:
-            repo = repo_defs[selection - 1 if ret == "manage" else selection]
-            if ret in ["manage", "update_addon", "remove_repository"]:
-                return repo
-            elif ret == "open_issue":
-                return {"user": repo["user"], "repo": repo["repo_name"]}
-            return None
+            return repo_defs[selection - 1]

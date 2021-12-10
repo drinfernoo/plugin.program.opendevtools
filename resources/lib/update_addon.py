@@ -335,8 +335,8 @@ def _get_selected_commit(user, repo, branch):
     return None, None
 
 
-def _sort_branches(addon, branches):
-    _default = API.get_default_branch(addon["user"], addon["repo_name"])
+def _sort_branches(repo, branches):
+    _default = API.get_default_branch(repo["user"], repo["repo_name"])
 
     default_branch = []
     protected_branches = []
@@ -355,14 +355,11 @@ def _sort_branches(addon, branches):
     return default_branch, protected_branches, sorted_branches
 
 
-def update_addon(addon=None):
+def update_addon(addon):
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
 
-    if addon:
-        addon = addon if type(addon) == dict else repository.get_repos(addon)
-    else:
-        addon = repository.get_repo_selection("update_addon")
+    addon = addon if type(addon) == dict else repository.get_repos(addon)
     if not addon:
         return
 

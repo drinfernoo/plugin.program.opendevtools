@@ -22,6 +22,7 @@ _addon_name = settings.get_addon_info("name")
 
 _compact = settings.get_setting_boolean("general.compact")
 _dependencies = settings.get_setting_boolean("general.dependencies")
+_show_tags = settings.get_setting_boolean("general.show_tags")
 _commit_stats = settings.get_setting_boolean("general.show_commit_stats")
 
 _home = tools.translate_path("special://home")
@@ -236,20 +237,30 @@ def _exists(addon):
     return exists
 
 
+def _get_commit_info(user, repo, sha):
+    return [API.get_commit(user, repo, sha)]
+
+
 def _get_selected_commit(user, repo, branch):
     dialog = xbmcgui.Dialog()
+    pool = ThreadPool()
 
     tags = []
     commits = []
     commit_items = []
     with tools.busy_dialog():
-        for tag in API.get_tags(user, repo):
-            if "message" in tag:
-                break
-            tags.append((os.path.split(tag["ref"])[1], tag["object"]["sha"]))
-            commits.append(API.get_commit(user, repo, tag["object"]["sha"]))
+        if _show_tags:
+            for tag in API.get_tags(user, repo):
+                if "message" in tag:
+                    break
+                tags.append((os.path.split(tag["ref"])[1], tag["object"]["sha"]))
+                pool.put(_get_commit_info, user, repo, tag["object"]["sha"])
         for branch_commit in API.get_branch_commits(user, repo, branch):
-            commits.append(branch_commit)
+            if _commit_stats:
+                pool.put(_get_commit_info, user, repo, branch_commit["sha"])
+            else:
+                commits.append(branch_commit)
+        commits = commits + pool.wait_completion()
 
         sorted_commits = sorted(
             commits,

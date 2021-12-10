@@ -500,3 +500,9 @@ msgstr ""
 msgctxt "#32096"
 msgid "Show Commit Stats"
 msgstr ""
+
+
+#: /resources/settings.xml
+msgctxt "#32100"
+msgid "Show Tags"
+msgstr ""

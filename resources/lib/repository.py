@@ -212,7 +212,7 @@ def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
             "name": name,
             "plugin_id": plugin_id,
             "exclude_items": [],
-            "icon": icon,
+            "icon": icon.split("?")[0],
         }
     }
     filename = key + ".json"

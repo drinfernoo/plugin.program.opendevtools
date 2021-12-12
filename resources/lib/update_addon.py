@@ -68,20 +68,11 @@ def _extract_addon(zip_location, addon):
     tools.remove_file(zip_location)
 
 
-def _update_addon_version(addon, default_branch_name, branch, gitsha):
+def _update_addon_version(addon, gitsha):
     addon_xml = os.path.join(_addons, addon, "addon.xml")
     tools.log("Rewriting addon version: {}".format(addon_xml))
 
-    branch = re.sub(
-        r"[^abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789.+_@~]",
-        "_",
-        branch,
-    )
-
-    if default_branch_name != branch:
-        replace_regex = r'<\1"\2.\3.\4-{}~{}"\7>'.format(gitsha[:7], branch)
-    else:
-        replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[:7])
+    replace_regex = r'<\1"\2.\3.\4-{}"\7>'.format(gitsha[:7])
 
     content = tools.read_from_file(addon_xml)
     content = re.sub(

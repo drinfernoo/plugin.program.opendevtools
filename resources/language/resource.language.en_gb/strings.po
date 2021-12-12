@@ -560,3 +560,18 @@ msgstr ""
 msgctxt "#32108"
 msgid "Browse commits on {} branch"
 msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32109"
+msgid "Sort repositories by"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32110"
+msgid "Name"
+msgstr ""
+
+#: /resources/settings.xml
+msgctxt "#32111"
+msgid "Most Recently Used"
+msgstr ""

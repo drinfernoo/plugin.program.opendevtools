@@ -6,6 +6,7 @@ import xbmcgui
 import json
 import os
 import requests
+import time
 
 from resources.lib.github_api import GithubAPI
 from resources.lib import raise_issue
@@ -31,6 +32,7 @@ _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
 _show_bundled_repos = settings.get_setting_boolean("general.show_bundled_repos")
+_sort_repos = settings.get_setting_int("general.sort_repos")
 
 _extensions = {
     "xbmc.gui.skin": "skin",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.gui/skin.xsd
@@ -227,7 +229,9 @@ def sort_branches(repo, branches):
     return default_branch, protected_branches, sorted_branches
 
 
-def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
+def _add_repo(
+    user, repo, name, plugin_id, icon, timestamp=None, update=False, path=None
+):
     dialog = xbmcgui.Dialog()
 
     key = user + "-" + plugin_id
@@ -239,6 +243,7 @@ def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
             "plugin_id": plugin_id,
             "exclude_items": [],
             "icon": icon.split("?")[0],
+            "timestamp": timestamp or time.time(),
         }
     }
     filename = key + ".json"
@@ -418,7 +423,11 @@ def repo_menu():
         add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
         repo_items.append(add)
 
-        repo_defs = sorted(repos.values(), key=lambda b: b["name"])
+        repo_defs = sorted(
+            repos.values(),
+            key=lambda b: b.get("timestamp", 0) if _sort_repos else b.get("name"),
+            reverse=True,
+        )
         for repo in repo_defs:
             user = repo["user"]
             repo_name = repo["repo_name"]
@@ -476,6 +485,17 @@ def manage_menu(repo):
             ),
             (32003, 32072, remove_repository, "minus.png", {"repo": repo}),
         ]
+    )
+
+    _add_repo(
+        repo["user"],
+        repo["repo_name"],
+        repo["name"],
+        repo["plugin_id"],
+        repo["icon"],
+        timestamp=time.time(),
+        update=True,
+        path=repo["filename"],
     )
 
     dialog = xbmcgui.Dialog()

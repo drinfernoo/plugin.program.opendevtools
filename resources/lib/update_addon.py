@@ -22,7 +22,6 @@ _addon_name = settings.get_addon_info("name")
 
 _compact = settings.get_setting_boolean("general.compact")
 _dependencies = settings.get_setting_boolean("general.dependencies")
-_show_tags = settings.get_setting_boolean("general.show_tags")
 _commit_stats = settings.get_setting_boolean("general.show_commit_stats")
 
 _home = tools.translate_path("special://home")

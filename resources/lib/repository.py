@@ -203,6 +203,30 @@ def add_repository():
     del dialog
 
 
+def get_commit_info(user, repo, sha):
+    return [API.get_commit(user, repo, sha)]
+
+
+def sort_branches(repo, branches):
+    _default = API.get_default_branch(repo["user"], repo["repo_name"])
+
+    default_branch = []
+    protected_branches = []
+    normal_branches = []
+
+    for i in sorted(branches, key=lambda b: b["updated_at"], reverse=True):
+        if i["name"] == _default:
+            default_branch.append(i)
+        elif i["protected"]:
+            protected_branches.append(i)
+        else:
+            normal_branches.append(i)
+
+    sorted_branches = default_branch + protected_branches + normal_branches
+
+    return default_branch, protected_branches, sorted_branches
+
+
 def _add_repo(user, repo, name, plugin_id, icon, update=False, path=None):
     dialog = xbmcgui.Dialog()
 
@@ -381,7 +405,7 @@ def get_extensions(user, repo, addon_xml=None):
     return extensions
 
 
-def get_repo_selection():
+def repo_menu():
     dialog = xbmcgui.Dialog()
     repos = get_repos()
 
@@ -436,4 +460,32 @@ def get_repo_selection():
         if selection == 0:
             add_repository()
         else:
-            return repo_defs[selection - 1]
+            manage_menu(repo_defs[selection - 1])
+
+
+def manage_menu(repo):
+    actions = tools.build_menu(
+        [
+            (32000, 32069, update_addon.update_menu, "update.png", {"repo": repo}),
+            (
+                32001,
+                32070,
+                raise_issue.raise_issue,
+                "issue.png",
+                {"selection": repo},
+            ),
+            (32003, 32072, remove_repository, "minus.png", {"repo": repo}),
+        ]
+    )
+
+    dialog = xbmcgui.Dialog()
+    selection = dialog.select(
+        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+    )
+    del dialog
+
+    if selection > -1:
+        if len(actions[0][selection]) == 4:
+            actions[0][selection][2]()
+        elif len(actions[0][selection]) == 5:
+            actions[0][selection][2](**actions[0][selection][4])

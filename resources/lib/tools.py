@@ -309,3 +309,19 @@ def copy2clip(txt):
             return False
         return True
     return False
+
+
+def build_menu(items):
+    action_items = []
+    for action in items:
+        li = xbmcgui.ListItem(
+            settings.get_localized_string(action[0])
+            if type(action[0]) == int
+            else action[0],
+            label2=settings.get_localized_string(action[1])
+            if type(action[1]) == int
+            else action[1],
+        )
+        li.setArt({"thumb": os.path.join(_media_path, action[3])})
+        action_items.append(li)
+    return (items, action_items)

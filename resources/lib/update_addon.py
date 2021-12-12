@@ -231,26 +231,190 @@ def _get_commit_info(user, repo, sha):
     return [API.get_commit(user, repo, sha)]
 
 
-def _get_selected_commit(user, repo, branch):
+def update_addon(repo, commit=None, label=None):
     dialog = xbmcgui.Dialog()
+    tools.cleanup_old_files()
+
+    if not dialog.yesno(
+        settings.get_localized_string(32000),
+        settings.get_localized_string(32024).format(
+            color.color_string(repo["name"]),
+            color.color_string(label),
+        ),
+    ):
+        dialog.notification(_addon_name, settings.get_localized_string(32017))
+        del dialog
+        return
+
+    progress = xbmcgui.DialogProgress()
+    progress.create(
+        _addon_name,
+        settings.get_localized_string(32025).format(color.color_string(repo["name"])),
+    )
+    progress.update(0)
+
+    location = _get_zip_file(repo["user"], repo["repo_name"], sha=commit["sha"])
+
+    if location:
+        progress.update(
+            25,
+            settings.get_localized_string(32026).format(
+                color.color_string(repo["name"])
+            ),
+        )
+
+        extensions = repository.get_extensions(repo["user"], repo["repo_name"])
+        plugin_id = repo["plugin_id"]
+        exists = _exists(plugin_id)
+        is_service = "service" in extensions
+        is_current_skin = "skin" in extensions and tools.get_current_skin() == plugin_id
+
+        if is_service:
+            _set_enabled(plugin_id, False, exists)
+
+        tools.remove_folder(os.path.join(_addons, plugin_id))
+        _extract_addon(location, repo)
+
+        progress.update(
+            50,
+            settings.get_localized_string(32077).format(
+                color.color_string(repo["name"])
+            ),
+        )
+
+        _rewrite_kodi_dependency_versions(plugin_id)
+        _update_addon_version(
+            plugin_id,
+            commit["sha"],
+        )
+
+        if _dependencies:
+            progress.update(
+                75,
+                settings.get_localized_string(32078).format(
+                    color.color_string(repo["name"])
+                ),
+            )
+            failed_deps = _install_deps(plugin_id)
+
+        _set_enabled(plugin_id, True, exists)
+
+        progress.update(
+            100, settings.get_localized_string(32082 if not exists else 32027)
+        )
+
+        if failed_deps:
+            dialog.ok(
+                _addon_name,
+                settings.get_localized_string(32079).format(
+                    ", ".join(failed_deps), repo["name"]
+                ),
+            )
+
+        if not exists:
+            tools.reload_profile()
+        elif is_current_skin:
+            tools.reload_skin()
+
+    progress.close()
+    del progress
+    del dialog
+
+
+def update_menu(repo):
+    action_items = []
+    with tools.busy_dialog():
+        if type(repo) != dict:
+            repo = repository.get_repos(repo)
+        if not repo:
+            return
+
+        repo_tags = list(API.get_tags(repo["user"], repo["repo_name"]))
+        default_branch = API.get_default_branch(repo["user"], repo["repo_name"])
+        repo_branches = list(API.get_repo_branches(repo["user"], repo["repo_name"]))
+
+    action_items.append(
+        (
+            32105,
+            settings.get_localized_string(32106).format(
+                color.color_string(default_branch)
+            ),
+            update_addon,
+            "default-branch.png",
+            {
+                "repo": repo,
+                "commit": API.get_commit(
+                    repo["user"], repo["repo_name"], default_branch
+                ),
+                "label": default_branch,
+            },
+        )
+    )
+
+    if len(repo_tags) > 0 and "message" not in repo_tags[0]:
+        action_items.append(
+            (32100, 32102, _tag_menu, "tag.png", {"repo": repo, "repo_tags": repo_tags})
+        )
+
+    if len(repo_branches) > 1:
+        action_items.append(
+            (
+                32103,
+                32104,
+                _branch_menu,
+                "branch.png",
+                {"repo": repo, "repo_branches": repo_branches},
+            )
+        )
+    elif len(repo_branches) == 1:
+        action_items.append(
+            (
+                32107,
+                settings.get_localized_string(32108).format(
+                    color.color_string(default_branch)
+                ),
+                _commit_menu,
+                "commit.png",
+                {
+                    "repo": repo,
+                    "branch": repository.get_branch_info(repo, default_branch),
+                },
+            )
+        )
+
+    actions = tools.build_menu(action_items)
+
+    dialog = xbmcgui.Dialog()
+    selection = dialog.select(
+        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+    )
+    del dialog
+
+    if selection > -1:
+        if len(actions[0][selection]) == 4:
+            actions[0][selection][2]()
+        elif len(actions[0][selection]) == 5:
+            actions[0][selection][2](**actions[0][selection][4])
+
+
+def _tag_menu(repo, repo_tags):
     pool = ThreadPool()
 
-    tags = []
     commits = []
-    commit_items = []
+    tag_items = []
+    tags = []
     with tools.busy_dialog():
-        if _show_tags:
-            for tag in API.get_tags(user, repo):
-                if "message" in tag:
-                    break
-                tags.append((os.path.split(tag["ref"])[1], tag["object"]["sha"]))
-                pool.put(_get_commit_info, user, repo, tag["object"]["sha"])
-        for branch_commit in API.get_branch_commits(user, repo, branch):
-            if _commit_stats:
-                pool.put(_get_commit_info, user, repo, branch_commit["sha"])
-            else:
-                commits.append(branch_commit)
-        commits = commits + pool.wait_completion()
+        for tag in repo_tags:
+            if "message" in tag:
+                break
+            tags.append((os.path.split(tag["ref"])[1], tag["object"]["sha"]))
+            pool.put(
+                repository.get_commit_info,
+                repo["user"],
+                repo["repo_name"],
+                tag["object"]["sha"],
+            )
+        commits = pool.wait_completion()
 
         sorted_commits = sorted(
             commits,
@@ -261,107 +425,41 @@ def _get_selected_commit(user, repo, branch):
         )
 
         for commit in sorted_commits:
-            if commit["sha"] in [i[1] for i in tags]:
-                tag = [i[0] for i in tags if i[1] == commit["sha"]][0]
-                label = color.color_string(tag)
-                if label not in [i.getLabel() for i in commit_items]:
-                    li = xbmcgui.ListItem(label)
-                    if not _compact:
-                        li.setArt({"thumb": os.path.join(_media_path, "tag.png")})
-                    commit_items.append(li)
-            else:
-                date = tools.to_local_time(commit["commit"]["author"]["date"])
-                byline = settings.get_localized_string(32014).format(
-                    commit["commit"]["author"]["name"], date
-                )
-                if _commit_stats:
-                    stats = commit['stats']
-                    adds = stats.get("additions", 0)
-                    deletes = stats.get("deletions", 0)
-                    add_text = (
-                        color.color_string("[B]+[/B] {}".format(adds), "springgreen")
-                        if adds > 0
-                        else "[B]+[/B] {}".format(adds)
-                    )
-                    delete_text = (
-                        color.color_string("[B]-[/B] {}".format(deletes), "crimson")
-                        if deletes > 0
-                        else "[B]-[/B] {}".format(deletes)
-                    )
-
-                    byline = "{} {}: ".format(add_text, delete_text) + byline
-                li = xbmcgui.ListItem(
-                    "{} - {}".format(
-                        color.color_string(commit["sha"][:7]),
-                        commit["commit"]["message"].replace("\n", "; "),
-                    ),
-                    label2=byline,
-                )
-
+            tag = [i[0] for i in tags if i[1] == commit["sha"]][0]
+            label = color.color_string(tag)
+            if label not in [i.getLabel() for i in tag_items]:
+                li = xbmcgui.ListItem(label)
                 if not _compact:
-                    art = os.path.join(_media_path, "commit.png")
-                    if "pull" in commit["commit"]["message"]:
-                        art = os.path.join(_media_path, "pull.png")
-                    elif "merge" in commit["commit"]["message"]:
-                        art = os.path.join(_media_path, "merge.png")
+                    li.setArt({"thumb": os.path.join(_media_path, "tag.png")})
+                tag_items.append(li)
 
-                    li.setArt({"thumb": art})
-
-                commit_items.append(li)
-
+    dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32016), commit_items, useDetails=not _compact
+        settings.get_localized_string(32016), tag_items, useDetails=not _compact
     )
     del dialog
+
     if selection > -1:
         sha = sorted_commits[selection]["sha"]
-        if sha in [i[1] for i in tags]:
-            return [i[0] for i in tags if i[1] == sha][0], [
-                i[1] for i in tags if i[1] == sha
-            ][0]
-        else:
-            return sha[:7], sha
-
-    return None, None
+        update_addon(
+            repo,
+            sorted_commits[selection],
+            [i[0] for i in tags if i[1] == sha][0],
+        )
 
 
-def _sort_branches(repo, branches):
-    _default = API.get_default_branch(repo["user"], repo["repo_name"])
-
-    default_branch = []
-    protected_branches = []
-    normal_branches = []
-
-    for i in sorted(branches, key=lambda b: b["updated_at"], reverse=True):
-        if i["name"] == _default:
-            default_branch.append(i)
-        elif i["protected"]:
-            protected_branches.append(i)
-        else:
-            normal_branches.append(i)
-
-    sorted_branches = default_branch + protected_branches + normal_branches
-
-    return default_branch, protected_branches, sorted_branches
-
-
-def update_addon(addon):
+def _branch_menu(repo, repo_branches):
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
 
-    addon = addon if type(addon) == dict else repository.get_repos(addon)
-    if not addon:
-        return
-
     with tools.busy_dialog():
-        for b in API.get_repo_branches(addon["user"], addon["repo_name"]):
-            if "message" in b:
-                dialog.ok(_addon_name, b["message"])
-                return
-            pool.put(repository.get_branch_info, addon, b)
+        for branch in repo_branches:
+            if "message" in branch:
+                break
+            pool.put(repository.get_branch_info, repo, branch)
         branches = pool.wait_completion()
-        default_branch, protected_branches, sorted_branches = _sort_branches(
-            addon, branches
+        default_branch, protected_branches, sorted_branches = repository.sort_branches(
+            repo, branches
         )
 
         branch_items = []
@@ -387,119 +485,87 @@ def update_addon(addon):
         settings.get_localized_string(32019), branch_items, useDetails=not _compact
     )
     if selection > -1:
-        branch = sorted_branches[selection]
+        _commit_menu(repo, sorted_branches[selection])
     else:
         del dialog
         return
 
-    tools.cleanup_old_files()
 
-    commit_sha = None
-    selection = dialog.yesno(
-        settings.get_localized_string(32020).format(color.color_string(branch["name"])),
-        settings.get_localized_string(32021),
-        yeslabel=settings.get_localized_string(32022),
-        nolabel=settings.get_localized_string(32023),
-    )
-    if selection:
-        commit_label, commit_sha = _get_selected_commit(
-            addon["user"], addon["repo_name"], branch["sha"]
+def _commit_menu(repo, branch):
+    pool = ThreadPool()
+
+    commits = []
+    commit_items = []
+    with tools.busy_dialog():
+        for branch_commit in list(
+            API.get_branch_commits(repo["user"], repo["repo_name"], branch["name"])
+        ):
+            pool.put(
+                _get_commit_info,
+                repo["user"],
+                repo["repo_name"],
+                branch_commit["sha"],
+            )
+        commits = pool.wait_completion()
+
+        sorted_commits = sorted(
+            commits,
+            key=lambda b: b["commit"]["author"]["date"]
+            if "commit" in b
+            else b["author"]["date"],
+            reverse=True,
         )
-        if not commit_sha:
-            dialog.notification(_addon_name, settings.get_localized_string(32017))
-            del dialog
-            return
 
-    if not dialog.yesno(
-        settings.get_localized_string(32000),
-        settings.get_localized_string(32024).format(
-            color.color_string(addon["name"]),
-            color.color_string(branch["branch"]["name"])
-            if not commit_sha
-            else color.color_string(commit_label),
-        ),
-    ):
+        for commit in sorted_commits:
+            date = tools.to_local_time(commit["commit"]["author"]["date"])
+            byline = settings.get_localized_string(32014).format(
+                commit["commit"]["author"]["name"], date
+            )
+            if _commit_stats:
+                stats = commit['stats']
+                adds = stats.get("additions", 0)
+                deletes = stats.get("deletions", 0)
+                add_text = (
+                    color.color_string("[B]+[/B] {}".format(adds), "springgreen")
+                    if adds > 0
+                    else "[B]+[/B] {}".format(adds)
+                )
+                delete_text = (
+                    color.color_string("[B]-[/B] {}".format(deletes), "crimson")
+                    if deletes > 0
+                    else "[B]-[/B] {}".format(deletes)
+                )
+
+                byline = "{} {}: ".format(add_text, delete_text) + byline
+            li = xbmcgui.ListItem(
+                "{} - {}".format(
+                    color.color_string(commit["sha"][:7]),
+                    commit["commit"]["message"].replace("\n", "; "),
+                ),
+                label2=byline,
+            )
+
+            if not _compact:
+                art = os.path.join(_media_path, "commit.png")
+                if "pull" in commit["commit"]["message"]:
+                    art = os.path.join(_media_path, "pull.png")
+                elif "merge" in commit["commit"]["message"]:
+                    art = os.path.join(_media_path, "merge.png")
+
+                li.setArt({"thumb": art})
+
+            commit_items.append(li)
+
+    dialog = xbmcgui.Dialog()
+    selection = dialog.select(
+        settings.get_localized_string(32016), commit_items, useDetails=not _compact
+    )
+
+    if selection > -1:
+        del dialog
+        update_addon(
+            repo, sorted_commits[selection], sorted_commits[selection]["sha"][:7]
+        )
+    else:
         dialog.notification(_addon_name, settings.get_localized_string(32017))
         del dialog
-        return
-    progress = xbmcgui.DialogProgress()
-    progress.create(
-        _addon_name,
-        settings.get_localized_string(32025).format(color.color_string(addon["name"])),
-    )
-    progress.update(0)
-
-    location = (
-        _get_zip_file(
-            addon["user"], addon["repo_name"], branch=branch["branch"]["name"]
-        )
-        if not commit_sha
-        else _get_zip_file(addon["user"], addon["repo_name"], sha=commit_sha)
-    )
-
-    if location:
-        progress.update(
-            25,
-            settings.get_localized_string(32026).format(
-                color.color_string(addon["name"])
-            ),
-        )
-
-        extensions = repository.get_extensions(addon["user"], addon["repo_name"])
-        plugin_id = addon["plugin_id"]
-        exists = _exists(plugin_id)
-        is_service = "service" in extensions
-        is_current_skin = "skin" in extensions and tools.get_current_skin() == plugin_id
-
-        if is_service:
-            _set_enabled(plugin_id, False, exists)
-
-        tools.remove_folder(os.path.join(_addons, plugin_id))
-        _extract_addon(location, addon)
-
-        progress.update(
-            50,
-            settings.get_localized_string(32077).format(
-                color.color_string(addon["name"])
-            ),
-        )
-
-        _rewrite_kodi_dependency_versions(plugin_id)
-        _update_addon_version(
-            plugin_id,
-            sorted_branches[0]["name"],
-            branch["name"],
-            branch["sha"] if not commit_sha else commit_label,
-        )
-
-        if _dependencies:
-            progress.update(
-                75,
-                settings.get_localized_string(32078).format(
-                    color.color_string(addon["name"])
-                ),
-            )
-            failed_deps = _install_deps(plugin_id)
-
-        _set_enabled(plugin_id, True, exists)
-
-        progress.update(
-            100, settings.get_localized_string(32082 if not exists else 32027)
-        )
-
-        if failed_deps:
-            dialog.ok(
-                _addon_name,
-                settings.get_localized_string(32079).format(
-                    ", ".join(failed_deps), addon["name"]
-                ),
-            )
-
-        if not exists:
-            tools.reload_profile()
-        elif is_current_skin:
-            tools.reload_skin()
-
-    progress.close()
-    del progress
-    del dialog

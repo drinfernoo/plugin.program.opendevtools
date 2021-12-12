@@ -42,7 +42,7 @@ class GithubAPI(Session):
         headers = self.headers.copy()
         headers.update({"per_page": str(limit)})
 
-        for i in range(1, pages):
+        for i in range(1, pages + 1):
             headers.update({"page": str(i)})
             response = super(GithubAPI, self).get(
                 urljoin(self.base_url, endpoint), headers=headers, **params
@@ -124,7 +124,7 @@ class GithubAPI(Session):
             return self.get_json("/repos/{}/{}/contents/{}".format(user, repo, path))
 
     def get_tags(self, user, repo):
-        return self.get_pages_json("/repos/{}/{}/git/refs/tags".format(user, repo))
+        return self.get_all_pages_json("/repos/{}/{}/git/refs/tags".format(user, repo))
 
     def get_commit(self, user, repo, commit_sha):
         return self.get_json("/repos/{}/{}/commits/{}".format(user, repo, commit_sha))

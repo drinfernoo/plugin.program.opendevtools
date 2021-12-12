@@ -516,12 +516,47 @@ msgctxt "#32099"
 msgid "Commits to Retrieve"
 msgstr ""
 
-#: /resources/settings.xml
+#: /resources/lib/menu.py
 msgctxt "#32100"
-msgid "Show Tags"
+msgid "Tags"
 msgstr ""
 
 #: /resources/settings.xml
 msgctxt "#32101"
 msgid "Repository Installs"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32102"
+msgid "Update from a tagged commit"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32103"
+msgid "Branches"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32104"
+msgid "Browse commits on any branch"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32105"
+msgid "Latest Commit"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32106"
+msgid "Update from latest commit on {}"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32107"
+msgid "Commits"
+msgstr ""
+
+#: /resources/lib/menu.py
+msgctxt "#32108"
+msgid "Browse commits on {} branch"
 msgstr ""

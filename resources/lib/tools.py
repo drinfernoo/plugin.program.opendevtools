@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import xbmc
+import xbmcgui
 import xbmcvfs
 
 import collections
@@ -23,6 +24,8 @@ except AttributeError:
 
 _addon_name = settings.get_addon_info("name")
 _addon_data = translate_path(settings.get_addon_info("profile"))
+_addon_path = translate_path(settings.get_addon_info("path"))
+_media_path = os.path.join(_addon_path, "resources", "media")
 _temp = translate_path("special://temp")
 
 _log_levels = {

@@ -1,24 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
-import xbmcgui
-
-import os
 import sys
 
 from resources.lib import color
+from resources.lib import menu
 from resources.lib import oauth
-from resources.lib import logging
-from resources.lib import raise_issue
-from resources.lib import repository
-from resources.lib import settings
-from resources.lib import tools
 from resources.lib import update_addon
-
-_addon_path = tools.translate_path(settings.get_addon_info("path"))
-_media_path = os.path.join(_addon_path, "resources", "media")
-
-_compact = settings.get_setting_boolean("general.compact")
 
 
 def _build_menu(items):

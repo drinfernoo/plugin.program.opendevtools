@@ -8,9 +8,11 @@ import os
 import requests
 
 from resources.lib.github_api import GithubAPI
+from resources.lib import raise_issue
 from resources.lib import settings
 from resources.lib.thread_pool import ThreadPool
 from resources.lib import tools
+from resources.lib import update_addon
 
 API = GithubAPI()
 
@@ -306,8 +308,8 @@ def get_repo_info(repo_def):
     ]
 
 
-def get_branch_info(addon, branch):
-    branch = API.get_repo_branch(addon["user"], addon["repo_name"], branch["name"])
+def get_branch_info(repo, branch):
+    branch = API.get_repo_branch(repo["user"], repo["repo_name"], branch["name"])
     updated_at = branch["commit"]["commit"]["author"]["date"]
     sha = branch["commit"]["sha"]
     protected = branch["protected"]

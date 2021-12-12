@@ -21,7 +21,7 @@ _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 _color = settings.get_setting_string("general.color")
 
 
-def raise_issue(selection):
+def raise_issue(repo):
     dialog = xbmcgui.Dialog()
     title = dialog.input(settings.get_localized_string(32006))
     if title:
@@ -32,8 +32,8 @@ def raise_issue(selection):
         if response:
             try:
                 resp = API.raise_issue(
-                    selection["user"],
-                    selection["repo"],
+                    repo["user"],
+                    repo["repo"],
                     _format_issue(title, description, log_key),
                 )
 
@@ -49,7 +49,7 @@ def raise_issue(selection):
                             "#efefefff",
                         ),
                         (
-                            "{}/{}".format(selection["user"], selection["repo"]),
+                            "{}/{}".format(repo["user"], repo["repo"]),
                             _color,
                         ),
                     ]

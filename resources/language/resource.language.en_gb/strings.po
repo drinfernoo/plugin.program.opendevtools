@@ -580,3 +580,33 @@ msgstr ""
 msgctxt "#32112"
 msgid "Select a Tag"
 msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32113"
+msgid "Manage Exclusions"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32114"
+msgid "Choose files and/or folders to exclude during installs and updates"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32115"
+msgid "Install the add-on first before attempting to manage exclusions."
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32116"
+msgid "Add {} exclusions for {}?"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32117"
+msgid "Delete the excluded files and/or folders now, if they exist?"
+msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32118"
+msgid "Select files/folders to exclude"
+msgstr ""

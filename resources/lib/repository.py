@@ -8,6 +8,7 @@ import os
 import requests
 import time
 
+from resources.lib import color
 from resources.lib.github_api import GithubAPI
 from resources.lib import raise_issue
 from resources.lib import settings
@@ -480,6 +481,85 @@ def repo_menu():
             manage_menu(repo_defs[selection - 1])
 
 
+def _exclude_filter(repo):
+    excludes = repo.get("exclude_items")
+    addon_path = os.path.join(_addons, repo["plugin_id"])
+
+    dialog = xbmcgui.Dialog()
+    if not os.path.exists(addon_path):
+        dialog.ok(
+            settings.get_localized_string(32113),
+            settings.get_localized_string(32115),
+        )
+        return
+
+    items = sorted(
+        [
+            "/{}".format(i)
+            for i in os.listdir(addon_path)
+            if os.path.isdir(os.path.join(addon_path, i))
+        ]
+    )
+    items += sorted(
+        [
+            i
+            for i in os.listdir(addon_path)
+            if not os.path.isdir(os.path.join(addon_path, i))
+        ]
+    )
+    if excludes is not None:
+        items += excludes
+
+    selected = []
+    list_items = []
+    for i in items:
+        li = xbmcgui.ListItem(i)
+        if not _compact:
+            art = "file.png"
+            if os.path.isdir(os.path.join(addon_path, i.lstrip('/'))):
+                art = "folder.png"
+            else:
+                ext = i.split('.')[-1]
+                file = os.path.join(_media_path, "{}.png".format(ext))
+                if os.path.exists(file):
+                    art = "{}.png".format(ext)
+            li.setArt({"thumb": os.path.join(_media_path, art)})
+        list_items.append(li)
+
+        if i in excludes or i.startswith(('.', "/.")):
+            selected.append(items.index(i))
+
+    selection = dialog.multiselect(
+        settings.get_localized_string(32118),
+        list_items,
+        preselect=selected,
+        useDetails=not _compact,
+    )
+
+    if selection is None:
+        return
+
+    update = dialog.yesno(
+        settings.get_localized_string(32113),
+        settings.get_localized_string(32116).format(
+            color.color_string(len(selection)),
+            color.color_string(repo["repo_name"]),
+        ),
+    )
+
+    if update:
+        _update_repo(repo, exclude_items=[items[i] for i in selection])
+        delete = dialog.yesno(settings.get_localized_string(32113), settings.get_localized_string(32117))
+        del dialog
+        if delete:
+            for i in [items[j] for j in selection]:
+                filepath = os.path.join(addon_path, i.lstrip('/'))
+                if os.path.isdir(filepath):
+                    tools.remove_folder(filepath)
+                else:
+                    tools.remove_file(filepath)
+
+
 def manage_menu(repo):
     actions = tools.build_menu(
         [
@@ -491,6 +571,7 @@ def manage_menu(repo):
                 "issue.png",
                 {"selection": repo},
             ),
+            (32113, 32114, _exclude_filter, "xor.png", {"repo": repo}),
             (32003, 32072, remove_repository, "minus.png", {"repo": repo}),
         ]
     )

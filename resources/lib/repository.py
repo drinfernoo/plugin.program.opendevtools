@@ -537,7 +537,15 @@ def _exclude_filter(repo):
     )
 
     if selection is None:
+        dialog.notification(_addon_name, settings.get_localized_string(32119))
+        del dialog
         return
+    else:
+        excluded_items = [items[i] for i in selection]
+        if excluded_items == excludes:
+            dialog.notification(_addon_name, settings.get_localized_string(32119))
+            del dialog
+            return
 
     update = dialog.yesno(
         settings.get_localized_string(32113),
@@ -548,16 +556,22 @@ def _exclude_filter(repo):
     )
 
     if update:
-        _update_repo(repo, exclude_items=[items[i] for i in selection])
-        delete = dialog.yesno(settings.get_localized_string(32113), settings.get_localized_string(32117))
+        _update_repo(repo, exclude_items=excluded_items)
+        delete = dialog.yesno(
+            settings.get_localized_string(32113), settings.get_localized_string(32117)
+        )
         del dialog
         if delete:
-            for i in [items[j] for j in selection]:
+            for i in excluded_items:
                 filepath = os.path.join(addon_path, i.lstrip('/'))
                 if os.path.isdir(filepath):
                     tools.remove_folder(filepath)
                 else:
                     tools.remove_file(filepath)
+    else:
+        dialog.notification(_addon_name, settings.get_localized_string(32119))
+        del dialog
+        return
 
 
 def manage_menu(repo):

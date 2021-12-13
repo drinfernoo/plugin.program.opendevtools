@@ -610,3 +610,8 @@ msgstr ""
 msgctxt "#32118"
 msgid "Select files/folders to exclude"
 msgstr ""
+
+#: /resources/lib/repository.py
+msgctxt "#32119"
+msgid "No exclusions changed."
+msgstr ""

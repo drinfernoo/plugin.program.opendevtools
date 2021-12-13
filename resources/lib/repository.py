@@ -17,6 +17,7 @@ from resources.lib import update_addon
 
 API = GithubAPI()
 
+_addons = os.path.join(tools.translate_path("special://home"), "addons")
 _addon_path = tools.translate_path(settings.get_addon_info("path"))
 _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 
@@ -201,7 +202,7 @@ def add_repository():
     plugin_id = addon.get("id")
 
     if dialog.yesno(_addon_name, settings.get_localized_string(32074).format(name)):
-        _add_repo(user, repo, name, plugin_id, repos[selection]["icon"])
+        _add_repo(user, repo, name, plugin_id)
     del dialog
 
 
@@ -229,9 +230,7 @@ def sort_branches(repo, branches):
     return default_branch, protected_branches, sorted_branches
 
 
-def _add_repo(
-    user, repo, name, plugin_id, icon, timestamp=None, update=False, path=None
-):
+def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=None):
     dialog = xbmcgui.Dialog()
 
     key = user + "-" + plugin_id
@@ -242,7 +241,6 @@ def _add_repo(
             "name": name,
             "plugin_id": plugin_id,
             "exclude_items": [],
-            "icon": icon.split("?")[0],
             "timestamp": timestamp or time.time(),
         }
     }
@@ -356,6 +354,10 @@ def get_branch_info(repo, branch):
 
 def get_icon(user, repo, addon_xml=None):
     icon = ""
+
+    addon_path = os.path.join(_addons, repo)
+    if os.path.exists(addon_path):
+        addon_xml = tools.read_from_file(os.path.join(addon_path, "addon.xml"))
     if not addon_xml:
         addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
@@ -370,8 +372,11 @@ def get_icon(user, repo, addon_xml=None):
             if def_icon and len(def_icon) > 0:
                 icon_path = def_icon[0].text
 
-            icon_url = API.get_file(user, repo, icon_path)["download_url"]
-            icon = requests.head(icon_url, allow_redirects=True).url
+            if os.path.exists(addon_path):
+                icon = os.path.join(addon_path, icon_path)
+            else:
+                icon_url = API.get_file(user, repo, icon_path)["download_url"]
+                icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
             tools.log("Could not get icon: {}".format(e), level="warning")
 
@@ -440,20 +445,7 @@ def repo_menu():
             )
 
             if not _compact:
-                icon = repo.get("icon")
-                if icon is None:
-                    repo["icon"] = get_icon(user, repo_name)
-                    _add_repo(
-                        user,
-                        repo["repo_name"],
-                        name,
-                        repo["plugin_id"],
-                        repo["icon"],
-                        update=True,
-                        path=repo["filename"],
-                    )
-
-                li.setArt({"thumb": repo.get("icon", "")})
+                li.setArt({"thumb": get_icon(user, repo_name)})
 
             repo_items.append(li)
 

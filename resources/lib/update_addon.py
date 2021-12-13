@@ -48,7 +48,7 @@ def _store_zip_file(zip_contents):
     return zip_location
 
 
-def _extract_addon(zip_location, addon):
+def _extract_addon(zip_location, repo):
     tools.log("Opening {}".format(zip_location))
     with zipfile.ZipFile(zip_location) as file:
         base_directory = file.namelist()[0]
@@ -56,13 +56,13 @@ def _extract_addon(zip_location, addon):
         for f in [
             i
             for i in file.namelist()
-            if all(e not in i for e in addon.get("exclude_items", []))
+            if all(e not in i for e in repo.get("exclude_items", []))
         ]:
             try:
                 file.extract(f, _temp)
             except Exception as e:
                 tools.log("Could not extract {}: {}".format(f, e))
-    install_path = os.path.join(_addons, addon["plugin_id"])
+    install_path = os.path.join(_addons, repo["plugin_id"])
     tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
     tools.remove_folder(os.path.join(_temp, base_directory))
     tools.remove_file(zip_location)

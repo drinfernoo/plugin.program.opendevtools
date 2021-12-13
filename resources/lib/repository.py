@@ -348,7 +348,11 @@ def get_repo_info(repo_def):
 
 
 def get_branch_info(repo, branch):
-    branch = API.get_repo_branch(repo["user"], repo["repo_name"], branch["name"])
+    branch = API.get_repo_branch(
+        repo["user"],
+        repo["repo_name"],
+        branch["name"] if type(branch) == dict else branch,
+    )
     updated_at = branch["commit"]["commit"]["author"]["date"]
     sha = branch["commit"]["sha"]
     protected = branch["protected"]

@@ -155,7 +155,7 @@ def color_picker():
     for i in _color_chart:
         select_list.append(color_string(i, i))
     color = dialog.select(
-        "{}: {}".format(_addon_name, settings.get_localized_string(32050)),
+        "{}: {}".format(_addon_name, settings.get_localized_string(30036)),
         select_list,
         preselect=_color_chart.index(current_color),
     )

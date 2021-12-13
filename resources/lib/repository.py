@@ -108,9 +108,9 @@ def add_repository():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
 
-    user = dialog.input(settings.get_localized_string(32028)).lower()
+    user = dialog.input(settings.get_localized_string(30022)).lower()
     if not user:
-        dialog.notification(_addon_name, settings.get_localized_string(32029))
+        dialog.notification(_addon_name, settings.get_localized_string(30023))
         del dialog
         return
 
@@ -132,13 +132,13 @@ def add_repository():
     with tools.busy_dialog():
         for user_repo in user_repos:
             if "message" in user_repo:
-                dialog.ok(_addon_name, settings.get_localized_string(32080))
+                dialog.ok(_addon_name, settings.get_localized_string(30065))
                 del dialog
                 return
             pool.put(get_repo_info, user_repo)
         repos = pool.wait_completion()
         if not repos:
-            dialog.ok(_addon_name, settings.get_localized_string(32081))
+            dialog.ok(_addon_name, settings.get_localized_string(30066))
             del dialog
             return
 
@@ -149,15 +149,15 @@ def add_repository():
                 "{} - ".format(i["repo_name"])
                 + ", ".join(
                     [
-                        settings.get_localized_string(32063).format(i["user"]),
-                        settings.get_localized_string(32018).format(
+                        settings.get_localized_string(30049).format(i["user"]),
+                        settings.get_localized_string(30016).format(
                             tools.to_local_time(i["updated_at"])
                         ),
                     ]
                 )
                 if i["user"].lower() != user
                 else "{} - ".format(i["repo_name"])
-                + settings.get_localized_string(32018).format(
+                + settings.get_localized_string(30016).format(
                     tools.to_local_time(i["updated_at"])
                 )
             )
@@ -174,12 +174,12 @@ def add_repository():
             repo_items.append(li)
 
     if len(addon_repos) == 0:
-        dialog.ok(_addon_name, settings.get_localized_string(32073))
+        dialog.ok(_addon_name, settings.get_localized_string(30058))
         del dialog
         return
 
     selection = dialog.select(
-        settings.get_localized_string(32012), repo_items, useDetails=not _compact
+        settings.get_localized_string(30011), repo_items, useDetails=not _compact
     )
     if selection < 0:
         del dialog
@@ -202,7 +202,7 @@ def add_repository():
     name = addon.get("name")
     plugin_id = addon.get("id")
 
-    if dialog.yesno(_addon_name, settings.get_localized_string(32074).format(name)):
+    if dialog.yesno(_addon_name, settings.get_localized_string(30059).format(name)):
         _add_repo(user, repo, name, plugin_id)
     del dialog
 
@@ -254,7 +254,7 @@ def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=No
     )
 
     if not update:
-        dialog.notification(_addon_name, settings.get_localized_string(32037))
+        dialog.notification(_addon_name, settings.get_localized_string(30025))
         _prompt_for_update(key)
     del dialog
 
@@ -276,7 +276,7 @@ def _check_repo(user, repo):
 
     can_get = API.get("repos/{}/{}".format(user, repo))
     if not can_get.ok:
-        dialog.ok(_addon_name, settings.get_localized_string(32031))
+        dialog.ok(_addon_name, settings.get_localized_string(30024))
         del dialog
         return False
     return True
@@ -285,7 +285,7 @@ def _check_repo(user, repo):
 def _prompt_for_update(key):
     dialog = xbmcgui.Dialog()
 
-    if dialog.yesno(_addon_name, settings.get_localized_string(32068)):
+    if dialog.yesno(_addon_name, settings.get_localized_string(30053)):
         tools.execute_builtin(
             "RunScript({},action=update_addon,id={})".format(_addon_id, key)
         )
@@ -303,19 +303,19 @@ def remove_repository(repo):
     if len(indices) > 1:
         remove = dialog.yesno(
             _addon_name,
-            settings.get_localized_string(32039).format(
+            settings.get_localized_string(30026).format(
                 ", ".join([repo_defs[i]["name"] for i in indices])
             ),
         )
     else:
         remove = dialog.yesno(
-            _addon_name, settings.get_localized_string(32040).format(repo["name"])
+            _addon_name, settings.get_localized_string(30027).format(repo["name"])
         )
     if remove:
         os.remove(filename)
         dialog.notification(
             _addon_name,
-            settings.get_localized_string(32041 if len(indices) == 1 else 32042).format(
+            settings.get_localized_string(30028 if len(indices) == 1 else 30029).format(
                 len(indices)
             ),
         )
@@ -439,8 +439,8 @@ def repo_menu():
     repo_items = []
     with tools.busy_dialog():
         add = xbmcgui.ListItem(
-            settings.get_localized_string(32002),
-            label2=settings.get_localized_string(32071),
+            settings.get_localized_string(30002),
+            label2=settings.get_localized_string(30056),
         )
         add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
         repo_items.append(add)
@@ -458,7 +458,7 @@ def repo_menu():
             li = xbmcgui.ListItem(
                 name,
                 label2="{} - ".format(repo_name)
-                + settings.get_localized_string(32063).format(user),
+                + settings.get_localized_string(30049).format(user),
             )
 
             if not _compact:
@@ -467,10 +467,10 @@ def repo_menu():
             repo_items.append(li)
 
     selection = dialog.select(
-        settings.get_localized_string(32012), repo_items, useDetails=not _compact
+        settings.get_localized_string(30011), repo_items, useDetails=not _compact
     )
     if selection == -1:
-        dialog.notification(_addon_name, settings.get_localized_string(32029))
+        dialog.notification(_addon_name, settings.get_localized_string(30023))
         del dialog
         return None
     else:
@@ -488,8 +488,8 @@ def _exclude_filter(repo):
     dialog = xbmcgui.Dialog()
     if not os.path.exists(addon_path):
         dialog.ok(
-            settings.get_localized_string(32113),
-            settings.get_localized_string(32115),
+            settings.get_localized_string(30095),
+            settings.get_localized_string(30097),
         )
         return
 
@@ -530,26 +530,26 @@ def _exclude_filter(repo):
             selected.append(items.index(i))
 
     selection = dialog.multiselect(
-        settings.get_localized_string(32118),
+        settings.get_localized_string(30100),
         list_items,
         preselect=selected,
         useDetails=not _compact,
     )
 
     if selection is None:
-        dialog.notification(_addon_name, settings.get_localized_string(32119))
+        dialog.notification(_addon_name, settings.get_localized_string(30101))
         del dialog
         return
     else:
         excluded_items = [items[i] for i in selection]
         if excluded_items == excludes:
-            dialog.notification(_addon_name, settings.get_localized_string(32119))
+            dialog.notification(_addon_name, settings.get_localized_string(30101))
             del dialog
             return
 
     update = dialog.yesno(
-        settings.get_localized_string(32113),
-        settings.get_localized_string(32116).format(
+        settings.get_localized_string(30095),
+        settings.get_localized_string(30098).format(
             color.color_string(len(selection)),
             color.color_string(repo["repo_name"]),
         ),
@@ -558,7 +558,7 @@ def _exclude_filter(repo):
     if update:
         _update_repo(repo, exclude_items=excluded_items)
         delete = dialog.yesno(
-            settings.get_localized_string(32113), settings.get_localized_string(32117)
+            settings.get_localized_string(30095), settings.get_localized_string(30099)
         )
         del dialog
         if delete:
@@ -569,7 +569,7 @@ def _exclude_filter(repo):
                 else:
                     tools.remove_file(filepath)
     else:
-        dialog.notification(_addon_name, settings.get_localized_string(32119))
+        dialog.notification(_addon_name, settings.get_localized_string(30101))
         del dialog
         return
 
@@ -577,16 +577,16 @@ def _exclude_filter(repo):
 def manage_menu(repo):
     actions = tools.build_menu(
         [
-            (32000, 32069, update_addon.update_menu, "update.png", {"repo": repo}),
+            (30000, 30054, update_addon.update_menu, "update.png", {"repo": repo}),
             (
-                32001,
-                32070,
+                30001,
+                30055,
                 raise_issue.raise_issue,
                 "issue.png",
                 {"selection": repo},
             ),
-            (32113, 32114, _exclude_filter, "xor.png", {"repo": repo}),
-            (32003, 32072, remove_repository, "minus.png", {"repo": repo}),
+            (30095, 30096, _exclude_filter, "xor.png", {"repo": repo}),
+            (30003, 30057, remove_repository, "minus.png", {"repo": repo}),
         ]
     )
 
@@ -594,7 +594,7 @@ def manage_menu(repo):
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+        settings.get_localized_string(30004), actions[1], useDetails=not _compact
     )
     del dialog
 

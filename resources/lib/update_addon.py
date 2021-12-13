@@ -236,20 +236,20 @@ def update_addon(repo, commit=None, label=None):
     tools.cleanup_old_files()
 
     if not dialog.yesno(
-        settings.get_localized_string(32000),
-        settings.get_localized_string(32024).format(
+        settings.get_localized_string(30000),
+        settings.get_localized_string(30018).format(
             color.color_string(repo["name"]),
             color.color_string(label),
         ),
     ):
-        dialog.notification(_addon_name, settings.get_localized_string(32017))
+        dialog.notification(_addon_name, settings.get_localized_string(30015))
         del dialog
         return
 
     progress = xbmcgui.DialogProgress()
     progress.create(
         _addon_name,
-        settings.get_localized_string(32025).format(color.color_string(repo["name"])),
+        settings.get_localized_string(30019).format(color.color_string(repo["name"])),
     )
     progress.update(0)
 
@@ -258,7 +258,7 @@ def update_addon(repo, commit=None, label=None):
     if location:
         progress.update(
             25,
-            settings.get_localized_string(32026).format(
+            settings.get_localized_string(30020).format(
                 color.color_string(repo["name"])
             ),
         )
@@ -277,7 +277,7 @@ def update_addon(repo, commit=None, label=None):
 
         progress.update(
             50,
-            settings.get_localized_string(32077).format(
+            settings.get_localized_string(30062).format(
                 color.color_string(repo["name"])
             ),
         )
@@ -291,7 +291,7 @@ def update_addon(repo, commit=None, label=None):
         if _dependencies:
             progress.update(
                 75,
-                settings.get_localized_string(32078).format(
+                settings.get_localized_string(30063).format(
                     color.color_string(repo["name"])
                 ),
             )
@@ -300,13 +300,13 @@ def update_addon(repo, commit=None, label=None):
         _set_enabled(plugin_id, True, exists)
 
         progress.update(
-            100, settings.get_localized_string(32082 if not exists else 32027)
+            100, settings.get_localized_string(30067 if not exists else 30021)
         )
 
         if failed_deps:
             dialog.ok(
                 _addon_name,
-                settings.get_localized_string(32079).format(
+                settings.get_localized_string(30064).format(
                     ", ".join(failed_deps), repo["name"]
                 ),
             )
@@ -335,8 +335,8 @@ def update_menu(repo):
 
     action_items.append(
         (
-            32105,
-            settings.get_localized_string(32106).format(
+            30088,
+            settings.get_localized_string(30089).format(
                 color.color_string(default_branch)
             ),
             update_addon,
@@ -353,14 +353,14 @@ def update_menu(repo):
 
     if len(repo_tags) > 0 and "message" not in repo_tags[0]:
         action_items.append(
-            (32100, 32112, _tag_menu, "tag.png", {"repo": repo, "repo_tags": repo_tags})
+            (30084, 30094, _tag_menu, "tag.png", {"repo": repo, "repo_tags": repo_tags})
         )
 
     if len(repo_branches) > 1:
         action_items.append(
             (
-                32103,
-                32104,
+                30086,
+                30087,
                 _branch_menu,
                 "branch.png",
                 {"repo": repo, "repo_branches": repo_branches},
@@ -369,8 +369,8 @@ def update_menu(repo):
     elif len(repo_branches) == 1:
         action_items.append(
             (
-                32107,
-                settings.get_localized_string(32108).format(
+                30082,
+                settings.get_localized_string(30090).format(
                     color.color_string(default_branch)
                 ),
                 _commit_menu,
@@ -386,7 +386,7 @@ def update_menu(repo):
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+        settings.get_localized_string(30004), actions[1], useDetails=not _compact
     )
     del dialog
 
@@ -435,7 +435,7 @@ def _tag_menu(repo, repo_tags):
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32016), tag_items, useDetails=not _compact
+        settings.get_localized_string(30014), tag_items, useDetails=not _compact
     )
     del dialog
 
@@ -469,7 +469,7 @@ def _branch_menu(repo, repo_branches):
                 "{} - ({})".format(
                     i["branch"]["name"], color.color_string(i["sha"][:7])
                 ),
-                label2=settings.get_localized_string(32018).format(date),
+                label2=settings.get_localized_string(30016).format(date),
             )
 
             if not _compact:
@@ -482,7 +482,7 @@ def _branch_menu(repo, repo_branches):
 
             branch_items.append(li)
     selection = dialog.select(
-        settings.get_localized_string(32019), branch_items, useDetails=not _compact
+        settings.get_localized_string(30017), branch_items, useDetails=not _compact
     )
     if selection > -1:
         _commit_menu(repo, sorted_branches[selection])
@@ -518,7 +518,7 @@ def _commit_menu(repo, branch):
 
         for commit in sorted_commits:
             date = tools.to_local_time(commit["commit"]["author"]["date"])
-            byline = settings.get_localized_string(32014).format(
+            byline = settings.get_localized_string(30013).format(
                 commit["commit"]["author"]["name"], date
             )
             if _commit_stats:
@@ -558,7 +558,7 @@ def _commit_menu(repo, branch):
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32016), commit_items, useDetails=not _compact
+        settings.get_localized_string(30014), commit_items, useDetails=not _compact
     )
 
     if selection > -1:
@@ -567,5 +567,5 @@ def _commit_menu(repo, branch):
             repo, sorted_commits[selection], sorted_commits[selection]["sha"][:7]
         )
     else:
-        dialog.notification(_addon_name, settings.get_localized_string(32017))
+        dialog.notification(_addon_name, settings.get_localized_string(30015))
         del dialog

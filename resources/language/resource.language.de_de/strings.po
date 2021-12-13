@@ -19,33 +19,33 @@ msgstr ""
 #: /resources/lib/repository.py:579 /resources/lib/update_addon.py:238
 msgctxt "#30000"
 msgid "Update Addon"
-msgstr "Update Addon"
+msgstr "Add-On aktualisieren"
 
 #: /resources/lib/repository.py:581
 msgctxt "#30001"
 msgid "Open Issue"
-msgstr "Open Issue"
+msgstr "Open Issue / Offene Fragen"
 
 #: /resources/lib/repository.py:441
 msgctxt "#30002"
 msgid "Add Repository"
-msgstr "Add Repository"
+msgstr "Repository hinzufügen"
 
 #: /resources/lib/repository.py:588
 msgctxt "#30003"
 msgid "Remove Repository"
-msgstr "Remove Repository"
+msgstr "Repository entfernen"
 
 #: /resources/lib/menu.py:49 /resources/lib/repository.py:596
 #: /resources/lib/update_addon.py:388
 msgctxt "#30004"
 msgid "Select an Action"
-msgstr "Select an Action"
+msgstr "Wählen eine Akrion"
 
 #: /resources/lib/oauth.py:28
 msgctxt "#30005"
 msgid "GitHub has not been authorized. Would you like to authorize now?"
-msgstr "GitHub has not been authorized. Would you like to authorize now?"
+msgstr "GitHub wurde nicht autorisiert. Möchten Sie jetzt autorisieren?"
 
 #: /resources/lib/raise_issue.py:25
 msgctxt "#30006"
@@ -55,32 +55,32 @@ msgstr "Issue Title"
 #: /resources/lib/raise_issue.py:27
 msgctxt "#30007"
 msgid "Issue Description"
-msgstr "Issue Description"
+msgstr "Problembeschreibung"
 
 #: /resources/lib/raise_issue.py:47
 msgctxt "#30008"
 msgid "Issue successfully opened for:"
-msgstr "Issue successfully opened for:"
+msgstr "Ausgabe erfolgreich eröffnet für:"
 
 #: /resources/lib/raise_issue.py:72
 msgctxt "#30009"
 msgid "Error Opening Issue"
-msgstr "Error Opening Issue"
+msgstr "Fehler beim Öffnen Problem"
 
 #: /resources/lib/raise_issue.py:75
 msgctxt "#30010"
 msgid "An issue title is required to submit an issue."
-msgstr "An issue title is required to submit an issue."
+msgstr "Zum Einreichen einer Ausgabe ist ein Ausgabetitel erforderlich."
 
 #: /resources/lib/repository.py:181 /resources/lib/repository.py:469
 msgctxt "#30011"
 msgid "Select a Repository"
-msgstr "Select a Repository"
+msgstr "Wählen Sie ein Repository"
 
 #: /resources/lib/raise_issue.py:81
 msgctxt "#30012"
 msgid "Issue Opened via {}"
-msgstr "Issue Opened via {}"
+msgstr "Ausgabe geöffnet über {}"
 
 #: /resources/lib/update_addon.py:520
 msgctxt "#30013"
@@ -90,53 +90,55 @@ msgstr "by {} on {}"
 #: /resources/lib/update_addon.py:437 /resources/lib/update_addon.py:560
 msgctxt "#30014"
 msgid "Select a Commit"
-msgstr "Select a Commit"
+msgstr "Wählen Sie ein Commit"
 
 #: /resources/lib/update_addon.py:244 /resources/lib/update_addon.py:569
 msgctxt "#30015"
 msgid "Update Cancelled."
-msgstr "Update Cancelled."
+msgstr "Aktualisierung abgebrochen."
 
 #: /resources/lib/repository.py:152 /resources/lib/repository.py:159
 #: /resources/lib/update_addon.py:471
 msgctxt "#30016"
 msgid "Updated on {}"
-msgstr "Updated on {}"
+msgstr "Aktualisiert am {}"
 
 #: /resources/lib/update_addon.py:484
 msgctxt "#30017"
 msgid "Select a Branch"
-msgstr "Select a Branch"
+msgstr "Wählen Sie eine Filiale"
 
 #: /resources/lib/update_addon.py:239
 msgctxt "#30018"
 msgid "This will attempt to update {} from the {} branch, are you sure?"
-msgstr "This will attempt to update {} from the {} branch, are you sure?"
+msgstr ""
+"Dadurch wird versucht, {} aus dem {}-Zweig zu aktualisieren. Sind Sie "
+"sicher?"
 
 #: /resources/lib/update_addon.py:251
 msgctxt "#30019"
 msgid "Downloading {}..."
-msgstr "Downloading {}..."
+msgstr "Pobieranie {}..."
 
 #: /resources/lib/update_addon.py:260
 msgctxt "#30020"
 msgid "Extracting {}..."
-msgstr "Extracting {}..."
+msgstr "Drogenauszug {}..."
 
 #: /resources/lib/update_addon.py:302
 msgctxt "#30021"
 msgid "Install Finished"
-msgstr "Install Finished"
+msgstr "Installieren Beendet"
 
 #: /resources/lib/repository.py:110
 msgctxt "#30022"
 msgid "Enter GitHub Username or Organization Name"
-msgstr "Enter GitHub Username or Organization Name"
+msgstr "Geben Sie den GitHub-Benutzernamen oder den Organisationsnamen ein"
 
 #: /resources/lib/repository.py:112 /resources/lib/repository.py:472
 msgctxt "#30023"
 msgid "Cancelled"
-msgstr "Cancelled"
+msgstr "Storniert"
 
 #: /resources/lib/repository.py:278
 msgctxt "#30024"
@@ -144,13 +146,14 @@ msgid ""
 "This repository either does not exist, or you do not have access to it. "
 "Please verify the repository owner and name, and that you have access."
 msgstr ""
-"This repository either does not exist, or you do not have access to it. "
-"Please verify the repository owner and name, and that you have access."
+"Dieses Repository existiert entweder nicht oder Sie haben keinen Zugriff "
+"darauf. Bitte überprüfen Sie den Eigentümer und Namen des Repositorys und "
+"dass Sie Zugriff haben."
 
 #: /resources/lib/repository.py:256
 msgctxt "#30025"
 msgid "Repository Added"
-msgstr "Repository Added"
+msgstr "Repository hinzugefügt"
 
 #: /resources/lib/repository.py:305
 msgctxt "#30026"
@@ -158,38 +161,38 @@ msgid ""
 "Removing this repository will remove the following repositories: {}. Are you"
 " sure you want to remove them?"
 msgstr ""
-"Removing this repository will remove the following repositories: {}. Are you"
-" sure you want to remove them?"
+"Durch das Entfernen dieses Repositorys werden die folgenden Repositorys "
+"entfernt: {}. Möchten Sie sie wirklich entfernen?"
 
 #: /resources/lib/repository.py:311
 msgctxt "#30027"
 msgid "Are you sure you want to remove {}?"
-msgstr "Are you sure you want to remove {}?"
+msgstr "Sind Sie sicher, dass Sie entfernen möchten {}?"
 
 #: /resources/lib/repository.py:317
 msgctxt "#30028"
 msgid "{} Repository Removed"
-msgstr "{} Repository Removed"
+msgstr "{} Repository entfernt"
 
 #: /resources/lib/repository.py:317
 msgctxt "#30029"
 msgid "{} Repositories Removed"
-msgstr "{} Repositories Removed"
+msgstr "{} Repositorys entfernt"
 
 #: /resources/lib/oauth.py:71
 msgctxt "#30030"
 msgid "GitHub Authorization Failed"
-msgstr "GitHub Authorization Failed"
+msgstr "GitHub-Autorisierung fehlgeschlagen"
 
 #: /resources/lib/oauth.py:74
 msgctxt "#30031"
 msgid "GitHub Authorization Cancelled"
-msgstr "GitHub Authorization Cancelled"
+msgstr "GitHub-Autorisierung abgebrochen"
 
 #: /resources/lib/oauth.py:80
 msgctxt "#30032"
 msgid "GitHub Authorized Successfully"
-msgstr "GitHub Authorized Successfully"
+msgstr "GitHub erfolgreich autorisiert"
 
 #: /resources/lib/oauth.py:96
 msgctxt "#30033"
@@ -197,48 +200,50 @@ msgid ""
 "Are you sure you want to clear your authorization? To fully revoke your "
 "OAuth key, please visit {}."
 msgstr ""
-"Are you sure you want to clear your authorization? To fully revoke your "
-"OAuth key, please visit {}."
+"Möchten Sie Ihre Autorisierung wirklich löschen? Um Ihren OAuth-Schlüssel "
+"vollständig zu widerrufen, besuchen Sie {}."
 
 #: /resources/lib/oauth.py:99
 msgctxt "#30034"
 msgid "GitHub Authorization Cleared"
-msgstr "GitHub Authorization Cleared"
+msgstr "GitHub-Autorisierung gelöscht"
 
 #: /resources/lib/tools.py:233
 msgctxt "#30035"
 msgid "{} at {}"
-msgstr "{} at {}"
+msgstr ""
+"{} Ich habe den rechtlichen Hinweis und die Datenschutzrichtlinie gelesen "
+"und akzeptiere sie. {}"
 
 #: /resources/lib/color.py:157
 msgctxt "#30036"
 msgid "Choose a Color"
-msgstr "Choose a Color"
+msgstr "Wählen Sie eine Farbe"
 
 #: /resources/settings.xml:2
 msgctxt "#30037"
 msgid "General"
-msgstr "General"
+msgstr "Allgemeines"
 
 #: /resources/settings.xml:3
 msgctxt "#30038"
 msgid "Interface"
-msgstr "Interface"
+msgstr "Schnittstelle"
 
 #: /resources/settings.xml:5
 msgctxt "#30039"
 msgid "Choose Color Scheme"
-msgstr "Choose Color Scheme"
+msgstr "Farbschema wählen"
 
 #: /resources/settings.xml:8
 msgctxt "#30040"
 msgid "Color Scheme"
-msgstr "Color Scheme"
+msgstr "Farbschema"
 
 #: /resources/settings.xml:9
 msgctxt "#30041"
 msgid "Use Compact List"
-msgstr "Use Compact List"
+msgstr "Use Kompakte Liste"
 
 #: /resources/settings.xml:11
 msgctxt "#30042"
@@ -248,107 +253,108 @@ msgstr "GitHub"
 #: /resources/settings.xml:13 /resources/lib/menu.py:36
 msgctxt "#30043"
 msgid "Authorize GitHub"
-msgstr "Authorize GitHub"
+msgstr "GitHub autorisieren"
 
 #: /resources/settings.xml:17
 msgctxt "#30044"
 msgid "Reauthorize GitHub"
-msgstr "Reauthorize GitHub"
+msgstr "GitHub erneut autorisieren"
 
 #: /resources/settings.xml:21 /resources/lib/oauth.py:95
 msgctxt "#30045"
 msgid "Clear GitHub Authorization"
-msgstr "Clear GitHub Authorization"
+msgstr "GitHub-Autorisierung löschen"
 
 #: /resources/settings.xml:26
 msgctxt "#30046"
 msgid "Github Username"
-msgstr "Github Username"
+msgstr "Github-Benutzername"
 
 #: /resources/settings.xml:29
 msgctxt "#30047"
 msgid "Github Access Token"
-msgstr "Github Access Token"
+msgstr "Github-Zugriffstoken"
 
 #: /resources/settings.xml:33
 msgctxt "#30048"
 msgid "Github Client ID"
-msgstr "Github Client ID"
+msgstr "Github-Client-ID"
 
 #: /resources/lib/repository.py:151 /resources/lib/repository.py:460
 msgctxt "#30049"
 msgid "by {}"
-msgstr "by {}"
+msgstr "° {}"
 
 #: /resources/settings.xml:37
 msgctxt "#30050"
 msgid "Advanced"
-msgstr "Advanced"
+msgstr "Erweitert"
 
 #: /resources/settings.xml:40
 msgctxt "#30051"
 msgid "Install Dependencies"
-msgstr "Install Dependencies"
+msgstr "Abhängigkeiten installieren"
 
 #: /resources/settings.xml:40
 msgctxt "#30052"
 msgid "Always installs latest version available"
-msgstr "Always installs latest version available"
+msgstr "Installiert immer die neueste verfügbare Version"
 
 #: /resources/lib/repository.py:287
 msgctxt "#30053"
 msgid "Would you like to update this add-on now?"
-msgstr "Would you like to update this add-on now?"
+msgstr "Möchten Sie dieses Add-on jetzt aktualisieren?"
 
 #: /resources/lib/repository.py:579
 msgctxt "#30054"
 msgid "Update an addon from one of your added repositories"
-msgstr "Update an addon from one of your added repositories"
+msgstr ""
+"Aktualisieren Sie ein Add-On aus einem Ihrer hinzugefügten Repositorys"
 
 #: /resources/lib/repository.py:582
 msgctxt "#30055"
 msgid "Open an issue for one of your added repositories"
-msgstr "Open an issue for one of your added repositories"
+msgstr "Öffnen Sie ein Problem für eines Ihrer hinzugefügten Repositorys"
 
 #: /resources/lib/repository.py:442
 msgctxt "#30056"
 msgid "Add a repository from GitHub"
-msgstr "Add a repository from GitHub"
+msgstr "Repository von GitHub hinzufügen"
 
 #: /resources/lib/repository.py:588
 msgctxt "#30057"
 msgid "Remove an added repository"
-msgstr "Remove an added repository"
+msgstr "Entfernen Sie ein hinzugefügtes Repository"
 
 #: /resources/lib/repository.py:176
 msgctxt "#30058"
 msgid "No repositories found that contain a valid Kodi addon."
-msgstr "No repositories found that contain a valid Kodi addon."
+msgstr "Keine Repositorys gefunden, die ein gültiges Kodi-Add-On enthalten."
 
 #: /resources/lib/repository.py:204
 msgctxt "#30059"
 msgid "Do you want to add {} repository?"
-msgstr "Do you want to add {} repository?"
+msgstr "Möchten Sie {} Repository hinzufügen?"
 
 #: /resources/settings.xml:45
 msgctxt "#30060"
 msgid "Show repos with current user as collaborator"
-msgstr "Show repos with current user as collaborator"
+msgstr "Repos mit aktuellem Benutzer als Mitbearbeiter anzeigen"
 
 #: /resources/settings.xml:46
 msgctxt "#30061"
 msgid "Show organization repos for current user"
-msgstr "Show organization repos for current user"
+msgstr "Organisations-Repositorys für aktuellen Benutzer anzeigen"
 
 #: /resources/lib/update_addon.py:279
 msgctxt "#30062"
 msgid "Updating addon.xml for {}..."
-msgstr "Updating addon.xml for {}..."
+msgstr "Aktualisieren von addon.xml für {}..."
 
 #: /resources/lib/update_addon.py:293
 msgctxt "#30063"
 msgid "Installing dependencies for {}..."
-msgstr "Installing dependencies for {}..."
+msgstr "Abhängigkeiten installieren for {}..."
 
 #: /resources/lib/update_addon.py:308
 msgctxt "#30064"
@@ -356,73 +362,77 @@ msgid ""
 "The following dependencies could not be installed: {}\n"
 "This may cause issues with {} functioning properly."
 msgstr ""
-"The following dependencies could not be installed: {}\n"
-"This may cause issues with {} functioning properly."
+"Die folgenden Abhängigkeiten konnten nicht installiert werden: {}\n"
+" Dies kann zu Problemen mit der ordnungsgemäßen Funktion von {} führen."
 
 #: /resources/lib/repository.py:134
 msgctxt "#30065"
 msgid "The user or organization you entered could not be found."
-msgstr "The user or organization you entered could not be found."
+msgstr ""
+"Der von Ihnen eingegebene Benutzer oder die eingegebene Organisation konnte "
+"nicht gefunden werden."
 
 #: /resources/lib/repository.py:140
 msgctxt "#30066"
 msgid "No repositories could be found for the entered user or organization."
-msgstr "No repositories could be found for the entered user or organization."
+msgstr ""
+"Für den eingegebenen Benutzer oder die eingegebene Organisation konnten "
+"keine Repositorys gefunden werden."
 
 #: /resources/lib/update_addon.py:302
 msgctxt "#30067"
 msgid "Reloading profile..."
-msgstr "Reloading profile..."
+msgstr "Profil wird neu geladen..."
 
 #: /resources/lib/logging.py:79
 msgctxt "#30068"
 msgid "Log uploaded to:"
-msgstr "Log uploaded to:"
+msgstr "Protokoll hochgeladen auf:"
 
 #: /resources/lib/menu.py:25 /resources/lib/menu.py:38
 msgctxt "#30069"
 msgid "Upload Log"
-msgstr "Upload Log"
+msgstr "Protokoll hochladen"
 
 #: /resources/lib/menu.py:26 /resources/lib/menu.py:39
 msgctxt "#30070"
 msgid "Upload the current log file"
-msgstr "Upload the current log file"
+msgstr "Laden Sie die aktuelle Protokolldatei hoch"
 
 #: /resources/lib/menu.py:36
 msgctxt "#30071"
 msgid "Required to access GitHub repositories"
-msgstr "Required to access GitHub repositories"
+msgstr "Erforderlich für den Zugriff auf GitHub-Repositorys"
 
 #: /resources/lib/logging.py:80
 msgctxt "#30072"
 msgid "This URL has also been copied to your clipboard."
-msgstr "This URL has also been copied to your clipboard."
+msgstr "Diese URL wurde auch in Ihre Zwischenablage kopiert."
 
 #: /resources/settings.xml:47
 msgctxt "#30073"
 msgid "Show bundled repositories"
-msgstr "Show bundled repositories"
+msgstr "Gebündelte Repositorys anzeigen"
 
 #: /resources/lib/menu.py:23
 msgctxt "#30074"
 msgid "Manage Repositories"
-msgstr "Manage Repositories"
+msgstr "Repositorys verwalten"
 
 #: /resources/lib/menu.py:23
 msgctxt "#30075"
 msgid "Install add-ons from GitHub"
-msgstr "Install add-ons from GitHub"
+msgstr "Add-ons von GitHub installieren"
 
 #: /resources/lib/logging.py:47
 msgctxt "#30076"
 msgid "Choose Log File"
-msgstr "Choose Log File"
+msgstr "Protokolldatei auswÃ¤hlen"
 
 #: /resources/lib/oauth.py:45
 msgctxt "#30077"
 msgid "Visit the following site from any device:"
-msgstr "Visit the following site from any device:"
+msgstr "Besuchen Sie die folgende Website von einem beliebigen Gerät aus:"
 
 #: /resources/lib/oauth.py:49
 msgctxt "#30078"
@@ -432,12 +442,12 @@ msgstr "And enter the code:"
 #: /resources/lib/raise_issue.py:56
 msgctxt "#30079"
 msgid "Scan the QR code or visit the following URL:"
-msgstr "Scan the QR code or visit the following URL:"
+msgstr "Scannen Sie den QR-Code oder besuchen Sie die folgende URL:"
 
 #: /resources/settings.xml:51
 msgctxt "#30080"
 msgid "Show Commit Stats"
-msgstr "Show Commit Stats"
+msgstr "Commit-Statistiken anzeigen"
 
 #: /resources/settings.xml:42
 msgctxt "#30081"
@@ -447,12 +457,12 @@ msgstr "Repositories"
 #: /resources/settings.xml:49 /resources/lib/update_addon.py:371
 msgctxt "#30082"
 msgid "Commits"
-msgstr "Commits"
+msgstr "提交"
 
 #: /resources/settings.xml:52
 msgctxt "#30083"
 msgid "Commits to Retrieve"
-msgstr "Commits to Retrieve"
+msgstr "Verpflichtet sich zum Abrufen"
 
 #: /resources/lib/update_addon.py:355
 msgctxt "#30084"
@@ -462,86 +472,91 @@ msgstr "Tags"
 #: /resources/settings.xml:38
 msgctxt "#30085"
 msgid "Repository Installs"
-msgstr "Repository Installs"
+msgstr "Repository-Installationen"
 
 #: /resources/lib/update_addon.py:361
 msgctxt "#30086"
 msgid "Branches"
-msgstr "Branches"
+msgstr "Niederlassungen"
 
 #: /resources/lib/update_addon.py:362
 msgctxt "#30087"
 msgid "Browse commits on any branch"
-msgstr "Browse commits on any branch"
+msgstr "Durchsuchen Sie Commits in jedem Branch"
 
 #: /resources/lib/update_addon.py:337
 msgctxt "#30088"
 msgid "Latest Commit"
-msgstr "Latest Commit"
+msgstr "Letztes Commit"
 
 #: /resources/lib/update_addon.py:338
 msgctxt "#30089"
 msgid "Update from latest commit on {}"
-msgstr "Update from latest commit on {}"
+msgstr "Update vom letzten Commit am {}"
 
 #: /resources/lib/update_addon.py:372
 msgctxt "#30090"
 msgid "Browse commits on {} branch"
-msgstr "Browse commits on {} branch"
+msgstr "Durchsuchen Sie Commits im {}-Zweig"
 
 #: /resources/settings.xml:44
 msgctxt "#30091"
 msgid "Sort repositories by"
-msgstr "Sort repositories by"
+msgstr "Repositorys sortieren nach"
 
 #: /resources/settings.xml:44
 msgctxt "#30092"
 msgid "Name"
-msgstr "Name"
+msgstr "Produktbezeichnung mit Kategoriename"
 
 #: /resources/settings.xml:44
 msgctxt "#30093"
 msgid "Most Recently Used"
-msgstr "Most Recently Used"
+msgstr "Zuletzt verwendet"
 
 #: /resources/lib/update_addon.py:355
 msgctxt "#30094"
 msgid "Select a Tag"
-msgstr "Select a Tag"
+msgstr "Wähle ein Schlagwort"
 
 #: /resources/lib/repository.py:490 /resources/lib/repository.py:550
 #: /resources/lib/repository.py:560 /resources/lib/repository.py:587
 msgctxt "#30095"
 msgid "Manage Exclusions"
-msgstr "Manage Exclusions"
+msgstr "Ausschlüsse verwalten"
 
 #: /resources/lib/repository.py:587
 msgctxt "#30096"
 msgid "Choose files and/or folders to exclude during installs and updates"
-msgstr "Choose files and/or folders to exclude during installs and updates"
+msgstr ""
+"Wählen Sie Dateien und/oder Ordner aus, die während Installationen und "
+"Updates ausgeschlossen werden sollen"
 
 #: /resources/lib/repository.py:491
 msgctxt "#30097"
 msgid "Install the add-on first before attempting to manage exclusions."
-msgstr "Install the add-on first before attempting to manage exclusions."
+msgstr ""
+"Installieren Sie zuerst das Add-on, bevor Sie versuchen, Ausschlüsse zu "
+"verwalten."
 
 #: /resources/lib/repository.py:551
 msgctxt "#30098"
 msgid "Add {} exclusions for {}?"
-msgstr "Add {} exclusions for {}?"
+msgstr "{} Ausschlüsse für {} hinzufügen?"
 
 #: /resources/lib/repository.py:560
 msgctxt "#30099"
 msgid "Delete the excluded files and/or folders now, if they exist?"
-msgstr "Delete the excluded files and/or folders now, if they exist?"
+msgstr ""
+"Die ausgeschlossenen Dateien und/oder Ordner jetzt löschen, falls vorhanden?"
 
 #: /resources/lib/repository.py:532
 msgctxt "#30100"
 msgid "Select files/folders to exclude"
-msgstr "Select files/folders to exclude"
+msgstr "Wählen Sie die auszuschließenden Dateien/Ordner aus"
 
 #: /resources/lib/repository.py:539 /resources/lib/repository.py:545
 #: /resources/lib/repository.py:571
 msgctxt "#30101"
 msgid "No exclusions changed."
-msgstr "No exclusions changed."
+msgstr "Keine Ausschlüsse geändert."

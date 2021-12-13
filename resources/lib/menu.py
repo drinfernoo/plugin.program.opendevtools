@@ -21,10 +21,10 @@ def main_menu():
     if auth:
         actions = tools.build_menu(
             [
-                (32090, 32091, repository.repo_menu, "github.png"),
+                (30074, 30075, repository.repo_menu, "github.png"),
                 (
-                    32085,
-                    32086,
+                    30069,
+                    30070,
                     logging.upload_log,
                     "log.png",
                     {"choose": True, "dialog": True},
@@ -34,10 +34,10 @@ def main_menu():
     else:
         actions = tools.build_menu(
             [
-                (32057, 32087, oauth.authorize, "github.png", {"in_addon": True}),
+                (30043, 30071, oauth.authorize, "github.png", {"in_addon": True}),
                 (
-                    32085,
-                    32086,
+                    30069,
+                    30070,
                     logging.upload_log,
                     "log.png",
                     {"choose": True, "dialog": True},
@@ -47,7 +47,7 @@ def main_menu():
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(
-        settings.get_localized_string(32004), actions[1], useDetails=not _compact
+        settings.get_localized_string(30004), actions[1], useDetails=not _compact
     )
     del dialog
 

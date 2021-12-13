@@ -23,9 +23,9 @@ _color = settings.get_setting_string("general.color")
 
 def raise_issue(repo):
     dialog = xbmcgui.Dialog()
-    title = dialog.input(settings.get_localized_string(32006))
+    title = dialog.input(settings.get_localized_string(30006))
     if title:
-        description = dialog.input(settings.get_localized_string(32007))
+        description = dialog.input(settings.get_localized_string(30007))
         log_key = None
         response, log_key = logging.upload_log()
 
@@ -45,7 +45,7 @@ def raise_issue(repo):
                     )
                     top = [
                         (
-                            settings.get_localized_string(32009),
+                            settings.get_localized_string(30008),
                             "#efefefff",
                         ),
                         (
@@ -54,7 +54,7 @@ def raise_issue(repo):
                         ),
                     ]
                     bottom = [
-                        (settings.get_localized_string(32095), "#efefefff"),
+                        (settings.get_localized_string(30079), "#efefefff"),
                         (resp["html_url"], _color),
                     ]
                     qr.qr_dialog(
@@ -70,16 +70,16 @@ def raise_issue(repo):
                 else:
                     dialog.ok(_addon_name, resp["message"])
             except requests.exceptions.RequestException as e:
-                dialog.notification(_addon_name, settings.get_localized_string(32010))
+                dialog.notification(_addon_name, settings.get_localized_string(30009))
                 tools.log("Error opening issue: {}".format(e), "error")
     else:
-        dialog.ok(_addon_name, settings.get_localized_string(32011))
+        dialog.ok(_addon_name, settings.get_localized_string(30010))
     del dialog
 
 
 def _format_issue(title, description, log_key):
     log_desc = "{}\n\n{}\n\nLog File - {}".format(
-        settings.get_localized_string(32013).format(_addon_name),
+        settings.get_localized_string(30012).format(_addon_name),
         description,
         logging.log_url(log_key),
     )

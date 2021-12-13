@@ -45,7 +45,7 @@ def _select_log_file():
 
     filenames = [os.path.split(i)[1] for i in log_files]
     f = dialog.select(
-        settings.get_localized_string(32092),
+        settings.get_localized_string(30076),
         filenames,
         preselect=filenames.index("kodi.log"),
     )
@@ -77,8 +77,8 @@ def _log_dialog(log_key):
     copied = tools.copy2clip(url)
 
     qr_code = qr.generate_qr(url, _addon_data, "{}.png".format(log_key))
-    top = [(settings.get_localized_string(32084), "#efefefff"), (url, _color)]
-    bottom = [(settings.get_localized_string(32088), "#efefefff")] if copied else []
+    top = [(settings.get_localized_string(30068), "#efefefff"), (url, _color)]
+    bottom = [(settings.get_localized_string(30072), "#efefefff")] if copied else []
     qr.qr_dialog(
         qr_code,
         top_text=top,

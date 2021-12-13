@@ -1,55 +1,55 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <settings>
-    <category label="$ADDON[plugin.program.opendevtools 32051]">
-		<setting label="$ADDON[plugin.program.opendevtools 32052]" type="lsep"/>
+    <category label="$ADDON[plugin.program.opendevtools 30037]">
+		<setting label="$ADDON[plugin.program.opendevtools 30038]" type="lsep"/>
 		
-		<setting id="general.display_color" type="action" label="$ADDON[plugin.program.opendevtools 32053]"
+		<setting id="general.display_color" type="action" label="$ADDON[plugin.program.opendevtools 30039]"
                  action="RunScript(plugin.program.opendevtools,action=color_picker)"
                  default="[COLOR forestgreen]forestgreen[/COLOR]"/>
-		<setting id="general.color" type="text" label="$ADDON[plugin.program.opendevtools 32054]" visible="false" default="forestgreen"/>
-		<setting id="general.compact" type="bool" label="$ADDON[plugin.program.opendevtools 32055]" default="false"/>
+		<setting id="general.color" type="text" label="$ADDON[plugin.program.opendevtools 30040]" visible="false" default="forestgreen"/>
+		<setting id="general.compact" type="bool" label="$ADDON[plugin.program.opendevtools 30041]" default="false"/>
 		
-		<setting label="$ADDON[plugin.program.opendevtools 32056]" type="lsep"/>
+		<setting label="$ADDON[plugin.program.opendevtools 30042]" type="lsep"/>
 		
-		<setting type="action" label="$ADDON[plugin.program.opendevtools 32057]"
+		<setting type="action" label="$ADDON[plugin.program.opendevtools 30043]"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
 				 visible="eq(4,)"/>
-		<setting type="action" label="$ADDON[plugin.program.opendevtools 32058]"
+		<setting type="action" label="$ADDON[plugin.program.opendevtools 30044]"
                  action="RunScript(plugin.program.opendevtools,action=authorize)"
 				 option="close"
 				 visible="!eq(3,)"/>
-        <setting type="action" label="$ADDON[plugin.program.opendevtools 32059]"
+        <setting type="action" label="$ADDON[plugin.program.opendevtools 30045]"
                  action="RunScript(plugin.program.opendevtools,action=revoke)"
 				 option="close"
 				 visible="!eq(2,)"/>
 
-		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 32060]"
+		<setting id="github.username" type="text" label="$ADDON[plugin.program.opendevtools 30046]"
 				 enable="false"
 				 visible="!eq(0,)"/>		 
-		<setting id="github.token" type="text" label="$ADDON[plugin.program.opendevtools 32061]"
+		<setting id="github.token" type="text" label="$ADDON[plugin.program.opendevtools 30047]"
 				 option="hidden"
 				 enable="false"
 				 visible="false"/>
-		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 32062]"
+		<setting id="github.client_id" type="text" label="$ADDON[plugin.program.opendevtools 30048]"
 				 default="7281fc95af8c0e322b96"
 				 visible="false"/>
     </category>
-	<category label="$ADDON[plugin.program.opendevtools 32064]">
-		<setting label="$ADDON[plugin.program.opendevtools 32101]" type="lsep"/>
+	<category label="$ADDON[plugin.program.opendevtools 30050]">
+		<setting label="$ADDON[plugin.program.opendevtools 30085]" type="lsep"/>
 		
-		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 32065] ($ADDON[plugin.program.opendevtools 32066])" default="true"/>
+		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 30051] ($ADDON[plugin.program.opendevtools 30052])" default="true"/>
 		
-		<setting label="$ADDON[plugin.program.opendevtools 32097]" type="lsep"/>
+		<setting label="$ADDON[plugin.program.opendevtools 30081]" type="lsep"/>
 		
-		<setting id="general.sort_repos" type="enum" label="$ADDON[plugin.program.opendevtools 32109]" lvalues="32110|32111" default="1"/>
-		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32075]" default="false"/>
-		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32076]" default="false"/>
-		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 32089]" default="true"/>
+		<setting id="general.sort_repos" type="enum" label="$ADDON[plugin.program.opendevtools 30091]" lvalues="30092|30093" default="1"/>
+		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30060]" default="false"/>
+		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30061]" default="false"/>
+		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30073]" default="true"/>
 		
-		<setting label="$ADDON[plugin.program.opendevtools 32098]" type="lsep"/>
+		<setting label="$ADDON[plugin.program.opendevtools 30082]" type="lsep"/>
 
-		<setting id="general.show_commit_stats" type="bool" label="$ADDON[plugin.program.opendevtools 32096]" default="false"/>
-		<setting id="general.commits_per_page" type="slider" label="$ADDON[plugin.program.opendevtools 32099]" default="30" option="int" range="5,5,100"/>
+		<setting id="general.show_commit_stats" type="bool" label="$ADDON[plugin.program.opendevtools 30080]" default="false"/>
+		<setting id="general.commits_per_page" type="slider" label="$ADDON[plugin.program.opendevtools 30083]" default="30" option="int" range="5,5,100"/>
 	</category>
 </settings>

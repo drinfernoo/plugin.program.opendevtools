@@ -26,7 +26,7 @@ _color = settings.get_setting_string("general.color")
 def force_auth():
     dialog = xbmcgui.Dialog()
     if not _access_token:
-        if dialog.yesno(_addon_name, settings.get_localized_string(32005)):
+        if dialog.yesno(_addon_name, settings.get_localized_string(30005)):
             authorize(True)
     del dialog
 
@@ -43,11 +43,11 @@ def authorize(in_addon=False):
     dialog = xbmcgui.Dialog()
     qr_code = qr.generate_qr(init["verification_uri"], _addon_data, "auth.png")
     top = [
-        (settings.get_localized_string(32093), "#efefefff"),
+        (settings.get_localized_string(30077), "#efefefff"),
         (init["verification_uri"], _color),
     ]
     bottom = [
-        (settings.get_localized_string(32094), "#efefefff"),
+        (settings.get_localized_string(30078), "#efefefff"),
         (init["user_code"], _color),
     ]
     qr.qr_dialog(
@@ -69,16 +69,16 @@ def authorize(in_addon=False):
 
         if pct_timeout >= 100:
             tools.execute_builtin('Action(Back)')
-            dialog.notification(_addon_name, settings.get_localized_string(32044))
+            dialog.notification(_addon_name, settings.get_localized_string(30030))
             break
         if not tools.get_condition("Window.IsActive(slideshow)"):
-            dialog.notification(_addon_name, settings.get_localized_string(32045))
+            dialog.notification(_addon_name, settings.get_localized_string(30031))
             break
 
         if "access_token" in token:
             tools.execute_builtin('Action(Back)')
             _save_oauth(token)
-            dialog.notification(_addon_name, settings.get_localized_string(32046))
+            dialog.notification(_addon_name, settings.get_localized_string(30032))
             break
 
     del dialog
@@ -93,11 +93,11 @@ def authorize(in_addon=False):
 def revoke():
     dialog = xbmcgui.Dialog()
     if dialog.yesno(
-        settings.get_localized_string(32059),
-        settings.get_localized_string(32047).format(color.color_string(_auth_url)),
+        settings.get_localized_string(30045),
+        settings.get_localized_string(30033).format(color.color_string(_auth_url)),
     ):
         _clear_oauth()
-        dialog.notification(_addon_name, settings.get_localized_string(32048))
+        dialog.notification(_addon_name, settings.get_localized_string(30034))
         settings.open_settings()
 
 

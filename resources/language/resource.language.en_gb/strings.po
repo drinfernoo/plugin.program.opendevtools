@@ -575,3 +575,8 @@ msgstr ""
 msgctxt "#32111"
 msgid "Most Recently Used"
 msgstr ""
+
+#: /resources/lib/update_addon.py
+msgctxt "#32112"
+msgid "Select a Tag"
+msgstr ""

@@ -353,7 +353,7 @@ def update_menu(repo):
 
     if len(repo_tags) > 0 and "message" not in repo_tags[0]:
         action_items.append(
-            (32100, 32102, _tag_menu, "tag.png", {"repo": repo, "repo_tags": repo_tags})
+            (32100, 32112, _tag_menu, "tag.png", {"repo": repo, "repo_tags": repo_tags})
         )
 
     if len(repo_branches) > 1:

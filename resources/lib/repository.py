@@ -258,6 +258,18 @@ def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=No
     del dialog
 
 
+def _update_repo(repo, **kwargs):
+    key = "{}-{}".format(repo["user"], repo["plugin_id"])
+    repo_def = get_repos(key)
+    repo_def.update(**kwargs)
+
+    tools.create_folder(_json_path)
+    tools.write_to_file(
+        repo_def["filename"],
+        json.dumps({key: repo_def}, indent=4),
+    )
+
+
 def _check_repo(user, repo):
     dialog = xbmcgui.Dialog()
 
@@ -479,16 +491,7 @@ def manage_menu(repo):
         ]
     )
 
-    _add_repo(
-        repo["user"],
-        repo["repo_name"],
-        repo["name"],
-        repo["plugin_id"],
-        repo["icon"],
-        timestamp=time.time(),
-        update=True,
-        path=repo["filename"],
-    )
+    _update_repo(repo, timestamp=time.time())
 
     dialog = xbmcgui.Dialog()
     selection = dialog.select(

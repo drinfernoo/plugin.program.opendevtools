@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
+import xbmc
 import xbmcgui
 
+import os
 import requests
 
-from resources.lib import color
 from resources.lib import logging
-from resources.lib import repository
+from resources.lib import qr
 from resources.lib import settings
 from resources.lib import tools
 from resources.lib.github_api import GithubAPI
@@ -15,48 +16,70 @@ from resources.lib.github_api import GithubAPI
 API = GithubAPI()
 
 _addon_name = settings.get_addon_info("name")
+_addon_data = tools.translate_path(settings.get_addon_info("profile"))
+
+_color = settings.get_setting_string("general.color")
 
 
-def raise_issue():
-    selection = repository.get_repo_selection("open_issue")
-    if selection:
-        dialog = xbmcgui.Dialog()
-        title = dialog.input(settings.get_localized_string(32006))
-        if title:
-            description = dialog.input(settings.get_localized_string(32007))
-            log_key = None
-            response, log_key = logging.upload_log()
+def raise_issue(repo):
+    dialog = xbmcgui.Dialog()
+    title = dialog.input(settings.get_localized_string(30006))
+    if title:
+        description = dialog.input(settings.get_localized_string(30007))
+        log_key = None
+        response, log_key = logging.upload_log()
 
-            if response:
-                try:
-                    resp = API.raise_issue(
-                        selection["user"],
-                        selection["repo"],
-                        _format_issue(title, description, log_key),
+        if response:
+            try:
+                resp = API.raise_issue(
+                    repo["user"],
+                    repo["repo"],
+                    _format_issue(title, description, log_key),
+                )
+
+                if "message" not in resp:
+                    qr_code = qr.generate_qr(
+                        resp["html_url"],
+                        _addon_data,
+                        "{}.png".format(resp["number"]),
                     )
-                    if "message" not in resp:
-                        dialog.notification(
-                            _addon_name,
-                            settings.get_localized_string(32009).format(
-                                color.color_string(selection["repo"]),
-                                color.color_string(log_key),
-                            ),
-                        )
-                    else:
-                        dialog.ok(_addon_name, resp["message"])
-                except requests.exceptions.RequestException as e:
-                    dialog.notification(
-                        _addon_name, settings.get_localized_string(32010)
+                    top = [
+                        (
+                            settings.get_localized_string(30008),
+                            "#efefefff",
+                        ),
+                        (
+                            "{}/{}".format(repo["user"], repo["repo"]),
+                            _color,
+                        ),
+                    ]
+                    bottom = [
+                        (settings.get_localized_string(30079), "#efefefff"),
+                        (resp["html_url"], _color),
+                    ]
+                    qr.qr_dialog(
+                        qr_code,
+                        top_text=top,
+                        bottom_text=bottom,
                     )
-                    tools.log("Error opening issue: {}".format(e), "error")
-        else:
-            dialog.ok(_addon_name, settings.get_localized_string(32011))
-        del dialog
+
+                    tools.execute_builtin("ShowPicture({})".format(qr_code))
+                    while tools.get_condition("Window.IsActive(slideshow)"):
+                        xbmc.sleep(1000)
+                    os.remove(qr_code)
+                else:
+                    dialog.ok(_addon_name, resp["message"])
+            except requests.exceptions.RequestException as e:
+                dialog.notification(_addon_name, settings.get_localized_string(30009))
+                tools.log("Error opening issue: {}".format(e), "error")
+    else:
+        dialog.ok(_addon_name, settings.get_localized_string(30010))
+    del dialog
 
 
 def _format_issue(title, description, log_key):
     log_desc = "{}\n\n{}\n\nLog File - {}".format(
-        settings.get_localized_string(32013).format(_addon_name),
+        settings.get_localized_string(30012).format(_addon_name),
         description,
         logging.log_url(log_key),
     )

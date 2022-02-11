@@ -2,6 +2,7 @@
 from __future__ import absolute_import, division, unicode_literals
 
 import xbmc
+import xbmcgui
 import xbmcvfs
 
 import collections
@@ -23,6 +24,8 @@ except AttributeError:
 
 _addon_name = settings.get_addon_info("name")
 _addon_data = translate_path(settings.get_addon_info("profile"))
+_addon_path = translate_path(settings.get_addon_info("path"))
+_media_path = os.path.join(_addon_path, "resources", "media")
 _temp = translate_path("special://temp")
 
 _log_levels = {
@@ -228,7 +231,7 @@ def ensure_path_is_dir(path):
 def to_local_time(utc_time):
     date_long = xbmc.getRegion("datelong")
     time_long = xbmc.getRegion("time")
-    format_string = settings.get_localized_string(32049).format(date_long, time_long)
+    format_string = settings.get_localized_string(30035).format(date_long, time_long)
 
     utc_parsed = parser.parse(utc_time)
     local_time = utc_parsed.astimezone(tz.tzlocal())
@@ -306,3 +309,19 @@ def copy2clip(txt):
             return False
         return True
     return False
+
+
+def build_menu(items):
+    action_items = []
+    for action in items:
+        li = xbmcgui.ListItem(
+            settings.get_localized_string(action[0])
+            if type(action[0]) == int
+            else action[0],
+            label2=settings.get_localized_string(action[1])
+            if type(action[1]) == int
+            else action[1],
+        )
+        li.setArt({"thumb": os.path.join(_media_path, action[3])})
+        action_items.append(li)
+    return (items, action_items)

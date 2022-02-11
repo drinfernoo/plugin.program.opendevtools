@@ -2,6 +2,8 @@
 <addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.3" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.dateutil"/>
+		<import addon="script.module.pil"/>
+		<import addon="script.module.pyqrcode"/>
 		<import addon="script.module.requests"/>
 	</requires>
 	<extension point="xbmc.python.script" library="default.py">

@@ -4,6 +4,7 @@
         "repo_name": "plugin.program.opendevtools",
         "name": "OpenDevTools",
         "plugin_id": "plugin.program.opendevtools",
-        "exclude_items": []
+        "exclude_items": [],
+        "icon": "https://raw.githubusercontent.com/drinfernoo/plugin.program.opendevtools/main/icon.png"
     }
 }

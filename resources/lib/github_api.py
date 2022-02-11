@@ -11,6 +11,8 @@ except ImportError:
 
 from resources.lib import settings
 
+_per_page = settings.get_setting_int("general.commits_per_page")
+
 
 class GithubAPI(Session):
     def __init__(self):
@@ -35,6 +37,26 @@ class GithubAPI(Session):
         return super(GithubAPI, self).get(
             urljoin(self.base_url, endpoint), params=params
         )
+
+    def get_pages(self, endpoint, pages=1, limit=30, **params):
+        headers = self.headers.copy()
+        headers.update({"per_page": str(limit)})
+
+        for i in range(1, pages + 1):
+            headers.update({"page": str(i)})
+            response = super(GithubAPI, self).get(
+                urljoin(self.base_url, endpoint), headers=headers, **params
+            )
+            yield response
+
+    def get_pages_json(self, endpoint, pages=1, limit=30, **params):
+        for page in self.get_pages(endpoint, pages, limit, **params):
+            page = page.json()
+            if isinstance(page, (list, set, collections.Sequence)):
+                for item in page:
+                    yield item
+            else:
+                yield page
 
     def get_all_pages(self, endpoint, **params):
         response = self.get(endpoint, **params)
@@ -73,8 +95,8 @@ class GithubAPI(Session):
         return self.get_all_pages_json("repos/{}/{}/branches".format(user, repo))
 
     def get_branch_commits(self, user, repo, branch):
-        return self.get_all_pages_json(
-            "repos/{}/{}/commits?sha={}".format(user, repo, branch)
+        return self.get_pages_json(
+            "repos/{}/{}/commits?sha={}".format(user, repo, branch), limit=_per_page
         )
 
     def raise_issue(self, user, repo, formatted_issue):
@@ -105,9 +127,7 @@ class GithubAPI(Session):
         return self.get_all_pages_json("/repos/{}/{}/git/refs/tags".format(user, repo))
 
     def get_commit(self, user, repo, commit_sha):
-        return self.get_json(
-            "/repos/{}/{}/git/commits/{}".format(user, repo, commit_sha)
-        )
+        return self.get_json("/repos/{}/{}/commits/{}".format(user, repo, commit_sha))
 
     def get_user(self, user):
         return self.get_json("/users/{}".format(user))

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.4.3" provider-name="drinfernoo">
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.5.0" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.dateutil"/>
 		<import addon="script.module.pil"/>
@@ -20,6 +20,13 @@
 			<fanart>fanart.png</fanart>
 		</assets>
 		<news>
+1.5.0
+ - Reorganization of most functions
+ - Scannable QR code dialogs for GitHub authorization and uploaded logs
+ - Limit on number of fetched commits
+ - Add "Most Recently Used" sorting method for repos
+ - Exclusions manager
+ - Speed and performance increases
 1.4.3
  - Add OpenDevTools as bundled repository
 1.4.2

@@ -92,7 +92,7 @@ def get_repos(key=None):
         paths.append(_builtin_json_path)
 
     for path in paths:
-        for j in os.listdir(path):
+        for j in [i for i in os.listdir(path) if i.endswith('.json')]:
             file_path = os.path.join(path, j)
             content = json.loads(tools.read_from_file(file_path))
             for r in content:
@@ -369,10 +369,10 @@ def get_branch_info(repo, branch):
     ]
 
 
-def get_icon(user, repo, addon_xml=None):
+def get_icon(user, repo, plugin_id, addon_xml=None):
     icon = ""
 
-    addon_path = os.path.join(_addons, repo)
+    addon_path = os.path.join(_addons, plugin_id)
     if os.path.exists(addon_path):
         addon_xml = tools.read_from_file(os.path.join(addon_path, "addon.xml"))
     if not addon_xml:
@@ -454,6 +454,7 @@ def repo_menu():
             user = repo["user"]
             repo_name = repo["repo_name"]
             name = repo["name"]
+            plugin_id = repo["plugin_id"]
 
             li = xbmcgui.ListItem(
                 name,
@@ -462,7 +463,7 @@ def repo_menu():
             )
 
             if not _compact:
-                li.setArt({"thumb": get_icon(user, repo_name)})
+                li.setArt({"thumb": get_icon(user, repo_name, plugin_id)})
 
             repo_items.append(li)
 

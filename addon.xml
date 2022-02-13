@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.5.1" provider-name="drinfernoo">
+<addon id="plugin.program.opendevtools" name="OpenDevTools" version="1.5.2" provider-name="drinfernoo">
 	<requires>
 		<import addon="script.module.dateutil"/>
 		<import addon="script.module.pil"/>
@@ -20,6 +20,9 @@
 			<fanart>fanart.png</fanart>
 		</assets>
 		<news>
+1.5.2
+ - Only read .json files for repo definitions
+ - Fix already installed addons downloading icons again
 1.5.1
  - Allow automatically adding Web-PDB to installed add-ons
 1.5.0

@@ -120,3 +120,4 @@ ENV/
 
 # test cache
 .pytest_cache
+scripts/

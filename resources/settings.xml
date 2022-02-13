@@ -39,6 +39,7 @@
 		<setting label="$ADDON[plugin.program.opendevtools 30085]" type="lsep"/>
 		
 		<setting id="general.dependencies" type="bool" label="$ADDON[plugin.program.opendevtools 30051] ($ADDON[plugin.program.opendevtools 30052])" default="true"/>
+		<setting id="general.add_webpdb" type="bool" label="$ADDON[plugin.program.opendevtools 30102]" default="false"/>
 		
 		<setting label="$ADDON[plugin.program.opendevtools 30081]" type="lsep"/>
 		

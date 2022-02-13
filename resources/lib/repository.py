@@ -92,7 +92,7 @@ def get_repos(key=None):
         paths.append(_builtin_json_path)
 
     for path in paths:
-        for j in os.listdir(path):
+        for j in [i for i in os.listdir(path) if i.endswith('.json')]:
             file_path = os.path.join(path, j)
             content = json.loads(tools.read_from_file(file_path))
             for r in content:

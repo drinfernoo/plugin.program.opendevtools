@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
+from xml.etree import ElementTree
+
 import os
 import re
 import sqlite3
@@ -23,6 +25,7 @@ _addon_name = settings.get_addon_info("name")
 _compact = settings.get_setting_boolean("general.compact")
 _dependencies = settings.get_setting_boolean("general.dependencies")
 _commit_stats = settings.get_setting_boolean("general.show_commit_stats")
+_add_webpdb = settings.get_setting_boolean("general.add_webpdb")
 
 _home = tools.translate_path("special://home")
 _temp = tools.translate_path("special://temp")
@@ -81,6 +84,25 @@ def _update_addon_version(addon, gitsha):
         content,
     )
     tools.write_to_file(addon_xml, content)
+
+
+def _add_webpdb(addon):
+    addon_xml_path = os.path.join(_addons, addon, "addon.xml")
+    if os.path.exists(addon_xml_path):
+        addon_xml = ElementTree.parse(addon_xml_path)
+        addon_root = addon_xml.getroot()
+        requires = addon_root.find("requires")
+        if requires is not None:
+            requires.append(
+                ElementTree.Element("import", {"addon": "script.module.web-pdb"})
+            )
+        else:
+            requires = ElementTree.Element("requires")
+            requires.append(
+                ElementTree.Element("import", {"addon": "script.module.web-pdb"})
+            )
+            addon_root.append(requires)
+        addon_xml.write(addon_xml_path, encoding="utf-8", xml_declaration=True)
 
 
 def _rewrite_kodi_dependency_versions(addon):
@@ -282,6 +304,8 @@ def update_addon(repo, commit=None, label=None):
             ),
         )
 
+        if _add_webpdb:
+            _add_webpdb(plugin_id)
         _rewrite_kodi_dependency_versions(plugin_id)
         _update_addon_version(
             plugin_id,

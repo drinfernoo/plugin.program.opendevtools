@@ -545,3 +545,8 @@ msgstr "Select files/folders to exclude"
 msgctxt "#30101"
 msgid "No exclusions changed."
 msgstr "No exclusions changed."
+
+#: /resources/settings.xml:41
+msgctxt "#30102"
+msgid "Add Web-PDB to Add-ons on Install"
+msgstr "Add Web-PDB to Add-ons on Install"

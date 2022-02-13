@@ -16,7 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /resources/lib/repository.py:579 /resources/lib/update_addon.py:238
+#: /resources/lib/repository.py:579 /resources/lib/update_addon.py:260
 msgctxt "#30000"
 msgid "Update Addon"
 msgstr "Add-on bijwerken"
@@ -37,7 +37,7 @@ msgid "Remove Repository"
 msgstr "Repository verwijderen"
 
 #: /resources/lib/menu.py:49 /resources/lib/repository.py:596
-#: /resources/lib/update_addon.py:388
+#: /resources/lib/update_addon.py:412
 msgctxt "#30004"
 msgid "Select an Action"
 msgstr "Selecteer een actie"
@@ -83,49 +83,49 @@ msgctxt "#30012"
 msgid "Issue Opened via {}"
 msgstr "Uitgave geopend via {}"
 
-#: /resources/lib/update_addon.py:520
+#: /resources/lib/update_addon.py:544
 msgctxt "#30013"
 msgid "by {} on {}"
 msgstr "door {} op {}"
 
-#: /resources/lib/update_addon.py:437 /resources/lib/update_addon.py:560
+#: /resources/lib/update_addon.py:461 /resources/lib/update_addon.py:584
 msgctxt "#30014"
 msgid "Select a Commit"
 msgstr "Selecteer een toezegging"
 
-#: /resources/lib/update_addon.py:244 /resources/lib/update_addon.py:569
+#: /resources/lib/update_addon.py:266 /resources/lib/update_addon.py:593
 msgctxt "#30015"
 msgid "Update Cancelled."
 msgstr "Update geannuleerd."
 
 #: /resources/lib/repository.py:152 /resources/lib/repository.py:159
-#: /resources/lib/update_addon.py:471
+#: /resources/lib/update_addon.py:495
 msgctxt "#30016"
 msgid "Updated on {}"
 msgstr "Bijgewerkt op {}"
 
-#: /resources/lib/update_addon.py:484
+#: /resources/lib/update_addon.py:508
 msgctxt "#30017"
 msgid "Select a Branch"
 msgstr "Selecteer een vestiging"
 
-#: /resources/lib/update_addon.py:239
+#: /resources/lib/update_addon.py:261
 msgctxt "#30018"
 msgid "This will attempt to update {} from the {} branch, are you sure?"
 msgstr ""
 "Dit zal proberen om {} te updaten vanuit de {} branch, weet je het zeker?"
 
-#: /resources/lib/update_addon.py:251
+#: /resources/lib/update_addon.py:273
 msgctxt "#30019"
 msgid "Downloading {}..."
 msgstr "Aan het downloaden {}..."
 
-#: /resources/lib/update_addon.py:260
+#: /resources/lib/update_addon.py:282
 msgctxt "#30020"
 msgid "Extracting {}..."
 msgstr "Uitpakken {}..."
 
-#: /resources/lib/update_addon.py:302
+#: /resources/lib/update_addon.py:326
 msgctxt "#30021"
 msgid "Install Finished"
 msgstr "Installatie voltooid"
@@ -332,27 +332,27 @@ msgctxt "#30059"
 msgid "Do you want to add {} repository?"
 msgstr "Wil je {} repository toevoegen?"
 
-#: /resources/settings.xml:45
+#: /resources/settings.xml:46
 msgctxt "#30060"
 msgid "Show repos with current user as collaborator"
 msgstr "Repo's weergeven met huidige gebruiker als bijdrager"
 
-#: /resources/settings.xml:46
+#: /resources/settings.xml:47
 msgctxt "#30061"
 msgid "Show organization repos for current user"
 msgstr "Organisatie-repo's weergeven voor huidige gebruiker"
 
-#: /resources/lib/update_addon.py:279
+#: /resources/lib/update_addon.py:301
 msgctxt "#30062"
 msgid "Updating addon.xml for {}..."
 msgstr "Addon.xml bijwerken voor {}..."
 
-#: /resources/lib/update_addon.py:293
+#: /resources/lib/update_addon.py:317
 msgctxt "#30063"
 msgid "Installing dependencies for {}..."
 msgstr "Afhankelijkheden installeren voor {}..."
 
-#: /resources/lib/update_addon.py:308
+#: /resources/lib/update_addon.py:332
 msgctxt "#30064"
 msgid ""
 "The following dependencies could not be installed: {}\n"
@@ -373,7 +373,7 @@ msgstr ""
 "Er zijn geen repositories gevonden voor de ingevoerde gebruiker of "
 "organisatie."
 
-#: /resources/lib/update_addon.py:302
+#: /resources/lib/update_addon.py:326
 msgctxt "#30067"
 msgid "Reloading profile..."
 msgstr "Profiel opnieuw laden..."
@@ -403,7 +403,7 @@ msgctxt "#30072"
 msgid "This URL has also been copied to your clipboard."
 msgstr "Deze URL is ook naar uw klembord gekopieerd."
 
-#: /resources/settings.xml:47
+#: /resources/settings.xml:48
 msgctxt "#30073"
 msgid "Show bundled repositories"
 msgstr "Gebundelde opslagplaatsen weergeven"
@@ -438,27 +438,27 @@ msgctxt "#30079"
 msgid "Scan the QR code or visit the following URL:"
 msgstr "Scan de QR-code of bezoek de volgende URL:"
 
-#: /resources/settings.xml:51
+#: /resources/settings.xml:52
 msgctxt "#30080"
 msgid "Show Commit Stats"
 msgstr "Commit-statistieken weergeven"
 
-#: /resources/settings.xml:42
+#: /resources/settings.xml:43
 msgctxt "#30081"
 msgid "Repositories"
 msgstr "Repositories"
 
-#: /resources/settings.xml:49 /resources/lib/update_addon.py:371
+#: /resources/settings.xml:50 /resources/lib/update_addon.py:395
 msgctxt "#30082"
 msgid "Commits"
 msgstr "Commits"
 
-#: /resources/settings.xml:52
+#: /resources/settings.xml:53
 msgctxt "#30083"
 msgid "Commits to Retrieve"
 msgstr "Belooft op te halen"
 
-#: /resources/lib/update_addon.py:355
+#: /resources/lib/update_addon.py:379
 msgctxt "#30084"
 msgid "Tags"
 msgstr "Trefwoorden"
@@ -468,47 +468,47 @@ msgctxt "#30085"
 msgid "Repository Installs"
 msgstr "Repository-installaties"
 
-#: /resources/lib/update_addon.py:361
+#: /resources/lib/update_addon.py:385
 msgctxt "#30086"
 msgid "Branches"
 msgstr "Vestigingen"
 
-#: /resources/lib/update_addon.py:362
+#: /resources/lib/update_addon.py:386
 msgctxt "#30087"
 msgid "Browse commits on any branch"
 msgstr "Blader door commits op elke branch"
 
-#: /resources/lib/update_addon.py:337
+#: /resources/lib/update_addon.py:361
 msgctxt "#30088"
 msgid "Latest Commit"
 msgstr "Laatste vastlegging"
 
-#: /resources/lib/update_addon.py:338
+#: /resources/lib/update_addon.py:362
 msgctxt "#30089"
 msgid "Update from latest commit on {}"
 msgstr "Update van de laatste commit op {}"
 
-#: /resources/lib/update_addon.py:372
+#: /resources/lib/update_addon.py:396
 msgctxt "#30090"
 msgid "Browse commits on {} branch"
 msgstr "Blader door commits op {} branch"
 
-#: /resources/settings.xml:44
+#: /resources/settings.xml:45
 msgctxt "#30091"
 msgid "Sort repositories by"
 msgstr "Sorteer opslagplaatsen op"
 
-#: /resources/settings.xml:44
+#: /resources/settings.xml:45
 msgctxt "#30092"
 msgid "Name"
 msgstr "Naam"
 
-#: /resources/settings.xml:44
+#: /resources/settings.xml:45
 msgctxt "#30093"
 msgid "Most Recently Used"
 msgstr "Meest recent gebruikt"
 
-#: /resources/lib/update_addon.py:355
+#: /resources/lib/update_addon.py:379
 msgctxt "#30094"
 msgid "Select a Tag"
 msgstr "Selecteer een tag"
@@ -552,3 +552,8 @@ msgstr "Selecteer bestanden/mappen om uit te sluiten"
 msgctxt "#30101"
 msgid "No exclusions changed."
 msgstr "Geen uitsluitingen gewijzigd."
+
+#: /resources/settings.xml:41
+msgctxt "#30102"
+msgid "Add Web-PDB to Add-ons on Install"
+msgstr "Web-PDB toevoegen aan add-ons bij installatie"

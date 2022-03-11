@@ -86,7 +86,7 @@ def _update_addon_version(addon, gitsha):
     tools.write_to_file(addon_xml, content)
 
 
-def _add_webpdb(addon):
+def _add_webpdb_to_addon(addon):
     addon_xml_path = os.path.join(_addons, addon, "addon.xml")
     if os.path.exists(addon_xml_path):
         addon_xml = ElementTree.parse(addon_xml_path)
@@ -305,7 +305,8 @@ def update_addon(repo, commit=None, label=None):
         )
 
         if _add_webpdb:
-            _add_webpdb(plugin_id)
+            _add_webpdb_to_addon(plugin_id)
+
         _rewrite_kodi_dependency_versions(plugin_id)
         _update_addon_version(
             plugin_id,

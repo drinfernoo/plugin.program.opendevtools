@@ -313,6 +313,7 @@ def update_addon(repo, commit=None, label=None):
             commit["sha"],
         )
 
+        failed_deps = []
         if _dependencies:
             progress.update(
                 75,

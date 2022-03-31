@@ -108,6 +108,9 @@ class GithubAPI(Session):
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get("{}/{}/archive/{}.zip".format(user, repo, commit_sha)).content
 
+    def get_contents(self, user, repo, path=""):
+        return self.get_json("/repos/{}/{}/contents/{}".format(user, repo, path))
+
     def get_file(self, user, repo, path, text=False):
         if text:
             headers = self.headers.copy()

@@ -54,7 +54,11 @@ def _store_zip_file(zip_contents):
 def _extract_addon(zip_location, repo):
     tools.log("Opening {}".format(zip_location))
     with zipfile.ZipFile(zip_location) as file:
-        base_directory = file.namelist()[0]
+        base_directory = (
+            os.path.join(file.namelist()[0], repo.get("subdirectory"))
+            if repo.get("subdirectory")
+            else file.namelist()[0]
+        )
         tools.log("Extracting to: {}".format(os.path.join(_temp, base_directory)))
         for f in [
             i

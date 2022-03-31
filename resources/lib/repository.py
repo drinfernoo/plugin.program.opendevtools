@@ -191,19 +191,22 @@ def add_repository():
         del dialog
         return
 
-    addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+    subdir = repos[selection].get("subdirectory")
+    addon_xml = API.get_file(
+        user, repo, "{}/addon.xml".format(subdir) if subdir else "addon.xml", text=True
+    )
     if not addon_xml:
         del dialog
         return
 
-    tools.log("Reading addon.xml from {}/{}".format(user, repo))
+    tools.log("Reading {}/addon.xml from {}/{}".format(subdir, user, repo))
     addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
     name = addon.get("name")
     plugin_id = addon.get("id")
 
     if dialog.yesno(_addon_name, settings.get_localized_string(30059).format(name)):
-        _add_repo(user, repo, name, plugin_id)
+        _add_repo(user, repo, name, plugin_id, subdir=subdir)
     del dialog
 
 
@@ -231,7 +234,9 @@ def sort_branches(repo, branches):
     return default_branch, protected_branches, sorted_branches
 
 
-def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=None):
+def _add_repo(
+    user, repo, name, plugin_id, timestamp=None, update=False, path=None, subdir=""
+):
     dialog = xbmcgui.Dialog()
 
     key = user + "-" + plugin_id
@@ -243,6 +248,7 @@ def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=No
             "plugin_id": plugin_id,
             "exclude_items": [],
             "timestamp": timestamp or time.time(),
+            "subdirectory": subdir,
         }
     }
     filename = key + ".json"
@@ -322,30 +328,91 @@ def remove_repository(repo):
     del dialog
 
 
+def _get_repo_subdirectories(user, repo):
+    contents = API.get_contents(user, repo)
+    if not contents:
+        return
+
+    subdirs = []
+    if type(contents) == list:
+        for i in [i for i in contents if i.get("type") == "dir"]:
+            subdirs.append(i)
+    elif type(contents) == dict and contents.get("type") == "dir":
+        subdirs.append(contents)
+
+    return subdirs
+
+
 def get_repo_info(repo_def):
+    repo_infos = []
+
     user = repo_def["owner"]["login"]
     repo = repo_def["name"]
     addon_xml = API.get_file(user, repo, "addon.xml", text=True)
     if not addon_xml:
-        return
+        subdirectories = _get_repo_subdirectories(user, repo)
+        for dir in subdirectories:
+            sub_addon_xml = API.get_file(
+                user, repo, "{}/addon.xml".format(dir["name"]), text=True
+            )
+            if not sub_addon_xml:
+                continue
 
-    tools.log("Reading addon.xml from {}/{}".format(user, repo))
-    addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
+            tools.log("Reading {}/addon.xml from {}/{}".format(dir["name"], user, repo))
+            sub_addon = tools.parse_xml(text=sub_addon_xml.encode("utf-8"))
 
-    def_name = addon.get("name")
-    icon = get_icon(user, repo, addon_xml)
-    extensions = get_extensions(user, repo, addon_xml)
+            sub_def_name = sub_addon.get("name")
+            sub_def_id = sub_addon.get("id")
+            sub_icon = get_icon(
+                user,
+                repo,
+                plugin_id=sub_def_id,
+                addon_xml=sub_addon_xml,
+                subdir=dir["name"],
+            )
+            sub_extensions = get_extensions(
+                user,
+                repo,
+                addon_xml=sub_addon_xml,
+                subdir=dir["name"],
+            )
 
-    return [
-        {
-            "name": def_name,
-            "user": user,
-            "repo_name": repo,
-            "updated_at": repo_def["updated_at"],
-            "icon": icon,
-            "extensions": extensions,
-        }
-    ]
+            repo_infos.append(
+                {
+                    "name": sub_def_name,
+                    "user": user,
+                    "repo_name": repo,
+                    "updated_at": repo_def["updated_at"],
+                    "icon": sub_icon,
+                    "extensions": sub_extensions,
+                    "subdirectory": dir["name"],
+                }
+            )
+        if not repo_infos:
+            return
+    else:
+        tools.log("Reading addon.xml from {}/{}".format(user, repo))
+        addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
+
+        def_name = addon.get("name")
+        def_id = addon.get("id")
+
+        icon = get_icon(user, repo, plugin_id=def_id, addon_xml=addon_xml)
+        extensions = get_extensions(user, repo, addon_xml=addon_xml)
+
+        repo_infos.append(
+            {
+                "name": def_name,
+                "user": user,
+                "repo_name": repo,
+                "updated_at": repo_def["updated_at"],
+                "icon": icon,
+                "extensions": extensions,
+                "subdirectory": "",
+            }
+        )
+
+    return repo_infos
 
 
 def get_branch_info(repo, branch):
@@ -369,17 +436,22 @@ def get_branch_info(repo, branch):
     ]
 
 
-def get_icon(user, repo, plugin_id, addon_xml=None):
+def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
     icon = ""
 
     addon_path = os.path.join(_addons, plugin_id)
     if os.path.exists(addon_path):
         addon_xml = tools.read_from_file(os.path.join(addon_path, "addon.xml"))
     if not addon_xml:
-        addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+        addon_xml = API.get_file(
+            user,
+            repo,
+            "{}/addon.xml".format(subdir) if subdir else "addon.xml",
+            text=True,
+        )
 
     if addon_xml:
-        tools.log("Finding icon in addon.xml from {}/{}".format(user, repo))
+        tools.log("Finding icon in {}/addon.xml from {}/{}".format(subdir, user, repo))
         addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:
@@ -392,7 +464,7 @@ def get_icon(user, repo, plugin_id, addon_xml=None):
             if os.path.exists(addon_path):
                 icon = os.path.join(addon_path, icon_path)
             else:
-                icon_url = API.get_file(user, repo, icon_path)["download_url"]
+                icon_url = API.get_file(user, repo, "{}/{}".format(subdir, icon_path) if subdir else icon_path)["download_url"]
                 icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
             tools.log("Could not get icon: {}".format(e), level="warning")
@@ -400,13 +472,17 @@ def get_icon(user, repo, plugin_id, addon_xml=None):
     return icon
 
 
-def get_extensions(user, repo, addon_xml=None):
+def get_extensions(user, repo, addon_xml=None, subdir=None):
     extensions = []
     if not addon_xml:
         addon_xml = API.get_file(user, repo, "addon.xml", text=True)
 
     if addon_xml:
-        tools.log("Checking for extensions in {}/{}".format(user, repo))
+        tools.log(
+            "Checking for extensions in {}/addon.xml from {}/{}".format(
+                subdir, user, repo
+            )
+        )
         root = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         try:

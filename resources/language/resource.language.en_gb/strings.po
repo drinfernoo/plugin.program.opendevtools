@@ -130,8 +130,8 @@ msgstr "Install Finished"
 
 #: /resources/lib/repository.py:110
 msgctxt "#30022"
-msgid "Enter GitHub Username or Organization Name"
-msgstr "Enter GitHub Username or Organization Name"
+msgid "Enter GitHub Username, Organization Name, or Repository Name (owner/repository)"
+msgstr "Enter GitHub Username, Organization Name, or Repository Name (owner/repository)"
 
 #: /resources/lib/repository.py:112 /resources/lib/repository.py:472
 msgctxt "#30023"

@@ -29,7 +29,7 @@ _media_path = os.path.join(_addon_path, "resources", "media")
 _addon_id = settings.get_addon_info("id")
 _addon_name = settings.get_addon_info("name")
 
-_user = settings.get_setting_string("github.username")
+_authed_user = settings.get_setting_string("github.username")
 _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
@@ -108,84 +108,92 @@ def add_repository():
     dialog = xbmcgui.Dialog()
     pool = ThreadPool()
 
-    user = dialog.input(settings.get_localized_string(30022)).lower()
-    if not user:
+    _user = dialog.input(settings.get_localized_string(30022)).lower()
+    if not _user:
         dialog.notification(_addon_name, settings.get_localized_string(30023))
         del dialog
         return
 
-    if API.get_user(user).get("type", "User") == "Organization":
-        user_repos = API.get_org_repos(user)
-    elif user == _user.lower():
-        access_level = [
-            "owner",
-            "collaborator" if _collaborator else "",
-            "organization_member" if _organization else "",
-        ]
-        user_repos = API.get_repos(",".join(access_level))
-    else:
-        user_repos = API.get_user_repos(user)
+    splits = _user.split("/")
+    if len(splits) < 2:
+        user = _user
+        if API.get_user(user).get("type", "User") == "Organization":
+            user_repos = API.get_org_repos(user)
+        elif user == _authed_user.lower():
+            access_level = [
+                "owner",
+                "collaborator" if _collaborator else "",
+                "organization_member" if _organization else "",
+            ]
+            user_repos = API.get_repos(",".join(access_level))
+        else:
+            user_repos = API.get_user_repos(user)
 
-    addon_repos = []
-    repo_items = []
+        addon_repos = []
+        repo_items = []
 
-    with tools.busy_dialog():
-        for user_repo in user_repos:
-            if "message" in user_repo:
-                dialog.ok(_addon_name, settings.get_localized_string(30065))
+        with tools.busy_dialog():
+            for user_repo in user_repos:
+                if "message" in user_repo:
+                    dialog.ok(_addon_name, settings.get_localized_string(30065))
+                    del dialog
+                    return
+                pool.put(get_repo_info, user_repo)
+            repos = pool.wait_completion()
+            if not repos:
+                dialog.ok(_addon_name, settings.get_localized_string(30066))
                 del dialog
                 return
-            pool.put(get_repo_info, user_repo)
-        repos = pool.wait_completion()
-        if not repos:
-            dialog.ok(_addon_name, settings.get_localized_string(30066))
+
+            repos.sort(key=lambda b: b["updated_at"], reverse=True)
+            addon_repos = [i["repo_name"] for i in repos]
+            for i in repos:
+                byline = (
+                    "{} - ".format(i["repo_name"])
+                    + ", ".join(
+                        [
+                            settings.get_localized_string(30049).format(i["user"]),
+                            settings.get_localized_string(30016).format(
+                                tools.to_local_time(i["updated_at"])
+                            ),
+                        ]
+                    )
+                    if i["user"].lower() != user
+                    else "{} - ".format(i["repo_name"])
+                    + settings.get_localized_string(30016).format(
+                        tools.to_local_time(i["updated_at"])
+                    )
+                )
+                li = xbmcgui.ListItem(
+                    "{} - ({})".format(
+                        i["name"], ", ".join([e.title() for e in i["extensions"]])
+                    ),
+                    label2=byline,
+                )
+
+                if not _compact:
+                    li.setArt({"thumb": i["icon"]})
+
+                repo_items.append(li)
+
+        if len(addon_repos) == 0:
+            dialog.ok(_addon_name, settings.get_localized_string(30058))
             del dialog
             return
 
-        repos.sort(key=lambda b: b["updated_at"], reverse=True)
-        addon_repos = [i["repo_name"] for i in repos]
-        for i in repos:
-            byline = (
-                "{} - ".format(i["repo_name"])
-                + ", ".join(
-                    [
-                        settings.get_localized_string(30049).format(i["user"]),
-                        settings.get_localized_string(30016).format(
-                            tools.to_local_time(i["updated_at"])
-                        ),
-                    ]
-                )
-                if i["user"].lower() != user
-                else "{} - ".format(i["repo_name"])
-                + settings.get_localized_string(30016).format(
-                    tools.to_local_time(i["updated_at"])
-                )
-            )
-            li = xbmcgui.ListItem(
-                "{} - ({})".format(
-                    i["name"], ", ".join([e.title() for e in i["extensions"]])
-                ),
-                label2=byline,
-            )
-
-            if not _compact:
-                li.setArt({"thumb": i["icon"]})
-
-            repo_items.append(li)
-
-    if len(addon_repos) == 0:
-        dialog.ok(_addon_name, settings.get_localized_string(30058))
-        del dialog
-        return
-
-    selection = dialog.select(
-        settings.get_localized_string(30011), repo_items, useDetails=not _compact
-    )
-    if selection < 0:
-        del dialog
-        return
-    user = repos[selection]["user"]
-    repo = addon_repos[selection]
+        selection = dialog.select(
+            settings.get_localized_string(30011), repo_items, useDetails=not _compact
+        )
+        if selection < 0:
+            del dialog
+            return
+        user = repos[selection]["user"]
+        repo = addon_repos[selection]
+        subdir = repos[selection].get("subdirectory")
+    else:
+        user = splits[0]
+        repo = splits[1]
+        subdir = splits[2] if len(splits) > 2 else ""
 
     if not _check_repo(user, repo):
         del dialog

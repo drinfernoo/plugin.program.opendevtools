@@ -37,6 +37,20 @@ _addon_data = tools.translate_path(settings.get_addon_info("profile"))
 _media_path = os.path.join(_addon_path, "resources", "media")
 
 
+def _download_files_in_folder(user, repo, subdir="", sha="HEAD"):
+    tree = API.get_tree(user, repo, commit_sha=sha, recursive=True)
+    
+    contents = [i for i in tree["tree"] if i["path"].startswith(subdir)]
+    tools.remove_folder(os.path.join(_addons, subdir))
+    
+    for entry in contents:
+        path = os.path.join(_addons, entry["path"])
+        if entry["type"] == "tree":
+            tools.create_folder(path)
+        elif entry["type"] == "blob":
+            tools.write_to_file(path, API.get_file(entry["url"]), True)
+
+
 def _get_zip_file(user, repo, branch=None, sha=None):
     if (sha and branch) or not (sha or branch):
         raise ValueError("Cannot specify both branch and sha")
@@ -278,73 +292,81 @@ def update_addon(repo, commit=None, label=None):
         settings.get_localized_string(30019).format(color.color_string(repo["name"])),
     )
     progress.update(0)
+    
+    extensions = repository.get_extensions(repo["user"], repo["repo_name"])
+    plugin_id = repo["plugin_id"]
+    exists = _exists(plugin_id)
+    is_service = "service" in extensions
+    is_current_skin = "skin" in extensions and tools.get_current_skin() == plugin_id
+    
+    if is_service:
+        _set_enabled(plugin_id, False, exists)
 
-    location = _get_zip_file(repo["user"], repo["repo_name"], sha=commit["sha"])
-
-    if location:
-        progress.update(
-            25,
-            settings.get_localized_string(30020).format(
-                color.color_string(repo["name"])
-            ),
+    if repo.get("subdirectory"):
+        _download_files_in_folder(
+            repo["user"],
+            repo["repo_name"],
+            subdir=repo.get("subdirectory"),
+            sha=commit["sha"],
         )
+    else:
+        location = _get_zip_file(repo["user"], repo["repo_name"], sha=commit["sha"])
 
-        extensions = repository.get_extensions(repo["user"], repo["repo_name"])
-        plugin_id = repo["plugin_id"]
-        exists = _exists(plugin_id)
-        is_service = "service" in extensions
-        is_current_skin = "skin" in extensions and tools.get_current_skin() == plugin_id
-
-        if is_service:
-            _set_enabled(plugin_id, False, exists)
-
-        tools.remove_folder(os.path.join(_addons, plugin_id))
-        _extract_addon(location, repo)
-
-        progress.update(
-            50,
-            settings.get_localized_string(30062).format(
-                color.color_string(repo["name"])
-            ),
-        )
-
-        if _add_webpdb:
-            _add_webpdb_to_addon(plugin_id)
-
-        _rewrite_kodi_dependency_versions(plugin_id)
-        _update_addon_version(
-            plugin_id,
-            commit["sha"],
-        )
-
-        failed_deps = []
-        if _dependencies:
+        if location:
             progress.update(
-                75,
-                settings.get_localized_string(30063).format(
+                25,
+                settings.get_localized_string(30020).format(
                     color.color_string(repo["name"])
                 ),
             )
-            failed_deps = _install_deps(plugin_id)
 
-        _set_enabled(plugin_id, True, exists)
+            tools.remove_folder(os.path.join(_addons, plugin_id))
+            _extract_addon(location, repo)
 
+    progress.update(
+        50,
+        settings.get_localized_string(30062).format(
+            color.color_string(repo["name"])
+        ),
+    )
+
+    if _add_webpdb:
+        _add_webpdb_to_addon(plugin_id)
+
+    _rewrite_kodi_dependency_versions(plugin_id)
+    _update_addon_version(
+        plugin_id,
+        commit["sha"],
+    )
+
+    failed_deps = []
+    if _dependencies:
         progress.update(
-            100, settings.get_localized_string(30067 if not exists else 30021)
+            75,
+            settings.get_localized_string(30063).format(
+                color.color_string(repo["name"])
+            ),
+        )
+        failed_deps = _install_deps(plugin_id)
+
+    _set_enabled(plugin_id, True, exists)
+
+    progress.update(
+        100, settings.get_localized_string(30067 if not exists else 30021)
+    )
+
+    if failed_deps:
+        dialog.ok(
+            _addon_name,
+            settings.get_localized_string(30064).format(
+                ", ".join(failed_deps), repo["name"]
+            ),
         )
 
-        if failed_deps:
-            dialog.ok(
-                _addon_name,
-                settings.get_localized_string(30064).format(
-                    ", ".join(failed_deps), repo["name"]
-                ),
-            )
-
-        if not exists:
-            tools.reload_profile()
-        elif is_current_skin:
-            tools.reload_skin()
+    if not exists:
+        tools.reload_profile()
+    elif is_current_skin:
+        tools.reload_skin()
 
     progress.close()
     del progress

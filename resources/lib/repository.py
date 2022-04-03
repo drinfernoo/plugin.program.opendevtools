@@ -338,7 +338,7 @@ def remove_repository(repo):
 def _get_repo_subdirectories(user, repo):
     contents = API.get_contents(user, repo)
     if not contents:
-        return
+        return []
 
     subdirs = []
     if type(contents) == list:

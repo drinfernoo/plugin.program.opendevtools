@@ -111,7 +111,7 @@ class GithubAPI(Session):
     def get_contents(self, user, repo, path=""):
         return self.get_json("/repos/{}/{}/contents/{}".format(user, repo, path))
 
-    def get_file(self, user, repo, path, text=False):
+    def get_contents(self, user, repo, path="", text=False):
         if text:
             headers = self.headers.copy()
             headers.update({"Accept": "application/vnd.github.v3.raw"})

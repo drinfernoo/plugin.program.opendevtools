@@ -191,8 +191,7 @@ def add_repository():
         del dialog
         return
 
-    subdir = repos[selection].get("subdirectory")
-    addon_xml = API.get_file(
+    addon_xml = API.get_contents(
         user, repo, "{}/addon.xml".format(subdir) if subdir else "addon.xml", text=True
     )
     if not addon_xml:
@@ -329,7 +328,7 @@ def remove_repository(repo):
 
 
 def _get_repo_subdirectories(user, repo):
-    contents = API.get_contents(user, repo)
+    contents = API.get_contents(user, repo, text=True)
     if not contents:
         return
 
@@ -348,11 +347,11 @@ def get_repo_info(repo_def):
 
     user = repo_def["owner"]["login"]
     repo = repo_def["name"]
-    addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+    addon_xml = API.get_contents(user, repo, "addon.xml", text=True)
     if not addon_xml:
         subdirectories = _get_repo_subdirectories(user, repo)
         for dir in subdirectories:
-            sub_addon_xml = API.get_file(
+            sub_addon_xml = API.get_contents(
                 user, repo, "{}/addon.xml".format(dir["name"]), text=True
             )
             if not sub_addon_xml:
@@ -443,7 +442,7 @@ def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
     if os.path.exists(addon_path):
         addon_xml = tools.read_from_file(os.path.join(addon_path, "addon.xml"))
     if not addon_xml:
-        addon_xml = API.get_file(
+        addon_xml = API.get_contents(
             user,
             repo,
             "{}/addon.xml".format(subdir) if subdir else "addon.xml",
@@ -464,7 +463,11 @@ def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
             if os.path.exists(addon_path):
                 icon = os.path.join(addon_path, icon_path)
             else:
-                icon_url = API.get_file(user, repo, "{}/{}".format(subdir, icon_path) if subdir else icon_path)["download_url"]
+                icon_url = API.get_contents(
+                    user,
+                    repo,
+                    "{}/{}".format(subdir, icon_path) if subdir else icon_path,
+                )["download_url"]
                 icon = requests.head(icon_url, allow_redirects=True).url
         except Exception as e:
             tools.log("Could not get icon: {}".format(e), level="warning")
@@ -475,7 +478,7 @@ def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
 def get_extensions(user, repo, addon_xml=None, subdir=None):
     extensions = []
     if not addon_xml:
-        addon_xml = API.get_file(user, repo, "addon.xml", text=True)
+        addon_xml = API.get_contents(user, repo, "addon.xml", text=True)
 
     if addon_xml:
         tools.log(

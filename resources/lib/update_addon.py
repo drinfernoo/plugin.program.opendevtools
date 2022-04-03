@@ -403,7 +403,9 @@ def update_menu(repo):
                 "commit.png",
                 {
                     "repo": repo,
-                    "branch": repository.get_branch_info(repo, default_branch),
+                    "branch": repository.get_branch_info(repo, default_branch)[0][
+                        "branch"
+                    ],
                 },
             )
         )

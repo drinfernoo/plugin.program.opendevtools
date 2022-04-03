@@ -200,7 +200,7 @@ def add_repository():
         return
 
     addon_xml = API.get_contents(
-        user, repo, "{}/addon.xml".format(subdir) if subdir else "addon.xml", text=True
+        user, repo, "{}/addon.xml".format(subdir) if subdir else "addon.xml", raw=True
     )
     if not addon_xml:
         del dialog
@@ -336,7 +336,7 @@ def remove_repository(repo):
 
 
 def _get_repo_subdirectories(user, repo):
-    contents = API.get_contents(user, repo, text=True)
+    contents = API.get_contents(user, repo)
     if not contents:
         return
 
@@ -355,12 +355,12 @@ def get_repo_info(repo_def):
 
     user = repo_def["owner"]["login"]
     repo = repo_def["name"]
-    addon_xml = API.get_contents(user, repo, "addon.xml", text=True)
+    addon_xml = API.get_contents(user, repo, "addon.xml", raw=True)
     if not addon_xml:
         subdirectories = _get_repo_subdirectories(user, repo)
         for dir in subdirectories:
             sub_addon_xml = API.get_contents(
-                user, repo, "{}/addon.xml".format(dir["name"]), text=True
+                user, repo, "{}/addon.xml".format(dir["name"]), raw=True
             )
             if not sub_addon_xml:
                 continue
@@ -454,7 +454,7 @@ def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
             user,
             repo,
             "{}/addon.xml".format(subdir) if subdir else "addon.xml",
-            text=True,
+            raw=True,
         )
 
     if addon_xml:
@@ -486,7 +486,7 @@ def get_icon(user, repo, plugin_id, addon_xml=None, subdir=None):
 def get_extensions(user, repo, addon_xml=None, subdir=None):
     extensions = []
     if not addon_xml:
-        addon_xml = API.get_contents(user, repo, "addon.xml", text=True)
+        addon_xml = API.get_contents(user, repo, "addon.xml", raw=True)
 
     if addon_xml:
         tools.log(

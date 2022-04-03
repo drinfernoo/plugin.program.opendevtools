@@ -108,11 +108,29 @@ class GithubAPI(Session):
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get("{}/{}/archive/{}.zip".format(user, repo, commit_sha)).content
 
-    def get_contents(self, user, repo, path=""):
-        return self.get_json("/repos/{}/{}/contents/{}".format(user, repo, path))
+    def get_tree(self, user, repo, commit_sha="HEAD", recursive=False):
+        if recursive == True:
+            recursive = 'true'
+        elif recursive == False:
+            recursive = 'false'
 
-    def get_contents(self, user, repo, path="", text=False):
-        if text:
+        return self.get_json(
+            "repos/{}/{}/git/trees/{}".format(user, repo, commit_sha),
+            recursive=recursive,
+        )
+
+    def get_file(self, url):
+        headers = self.headers.copy()
+        headers.update({"Accept": "application/vnd.github.v3.raw"})
+        response = super(GithubAPI, self).get(
+            url,
+            headers=headers,
+        )
+        if response.ok:
+            return response.content
+
+    def get_contents(self, user, repo, path="", raw=False):
+        if raw:
             headers = self.headers.copy()
             headers.update({"Accept": "application/vnd.github.v3.raw"})
             response = super(GithubAPI, self).get(
@@ -170,8 +188,6 @@ class GithubAPI(Session):
             )
 
             return result.json()
-
-        return False
 
     def revoke(self):
         return self.post(

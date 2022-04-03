@@ -187,6 +187,7 @@ def add_repository():
         if selection < 0:
             del dialog
             return
+
         user = repos[selection]["user"]
         repo = addon_repos[selection]
         subdir = repos[selection].get("subdirectory")
@@ -194,6 +195,58 @@ def add_repository():
         user = splits[0]
         repo = splits[1]
         subdir = splits[2] if len(splits) > 2 else ""
+
+        if not subdir:
+            with tools.busy_dialog():
+                repo_items = []
+                repos = get_repo_info(API.get_repo(user, repo))
+
+                if len(repos) == 1:
+                    subdir = repos[0].get("subdirectory")
+                elif len(repos) > 1:
+                    addon_repos = [i["repo_name"] for i in repos]
+                    for i in repos:
+                        byline = (
+                            "{} - ".format(i["repo_name"])
+                            + ", ".join(
+                                [
+                                    settings.get_localized_string(30049).format(
+                                        i["user"]
+                                    ),
+                                    settings.get_localized_string(30016).format(
+                                        tools.to_local_time(i["updated_at"])
+                                    ),
+                                ]
+                            )
+                            if i["user"].lower() != user
+                            else "{} - ".format(i["repo_name"])
+                            + settings.get_localized_string(30016).format(
+                                tools.to_local_time(i["updated_at"])
+                            )
+                        )
+                        li = xbmcgui.ListItem(
+                            "{} - ({})".format(
+                                i["name"],
+                                ", ".join([e.title() for e in i["extensions"]]),
+                            ),
+                            label2=byline,
+                        )
+
+                        if not _compact:
+                            li.setArt({"thumb": i["icon"]})
+
+                        repo_items.append(li)
+
+                    selection = dialog.select(
+                        settings.get_localized_string(30011),
+                        repo_items,
+                        useDetails=not _compact,
+                    )
+                    if selection < 0:
+                        del dialog
+                        return
+
+                    subdir = repos[selection].get("subdirectory")
 
     if not _check_repo(user, repo):
         del dialog

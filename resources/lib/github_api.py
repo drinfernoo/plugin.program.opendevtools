@@ -85,6 +85,9 @@ class GithubAPI(Session):
     def get_json(self, endpoint, **params):
         return self.get(endpoint, **params).json()
 
+    def get_repo(self, user, repo):
+        return self.get_json("repos/{}/{}".format(user, repo))
+
     def get_default_branch(self, user, repo):
         return self.get_json("repos/{}/{}".format(user, repo)).get("default_branch")
 

@@ -35,6 +35,7 @@ _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
 _show_bundled_repos = settings.get_setting_boolean("general.show_bundled_repos")
 _sort_repos = settings.get_setting_int("general.sort_repos")
+_search_subdirs = settings.get_setting_boolean("github.search_subdirs")
 
 _extensions = {
     "xbmc.gui.skin": "skin",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.gui/skin.xsd
@@ -374,7 +375,7 @@ def get_repo_info(repo_def, subdir=None):
         "{}/addon.xml".format(subdir) if subdir else "addon.xml",
         raw=True,
     )
-    if not addon_xml:
+    if not addon_xml and _search_subdirs:
         subdirectories = _get_repo_subdirectories(user, repo)
         for dir in subdirectories:
             repo_infos.append(get_repo_info(repo_def, dir["name"]))

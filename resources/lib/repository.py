@@ -363,62 +363,32 @@ def _get_repo_subdirectories(user, repo):
     return subdirs
 
 
-def get_repo_info(repo_def):
+def get_repo_info(repo_def, subdir=None):
     repo_infos = []
 
     user = repo_def["owner"]["login"]
     repo = repo_def["name"]
-    addon_xml = API.get_contents(user, repo, "addon.xml", raw=True)
+    addon_xml = API.get_contents(
+        user,
+        repo,
+        "{}/addon.xml".format(subdir) if subdir else "addon.xml",
+        raw=True,
+    )
     if not addon_xml:
         subdirectories = _get_repo_subdirectories(user, repo)
         for dir in subdirectories:
-            sub_addon_xml = API.get_contents(
-                user, repo, "{}/addon.xml".format(dir["name"]), raw=True
-            )
-            if not sub_addon_xml:
-                continue
-
-            tools.log("Reading {}/addon.xml from {}/{}".format(dir["name"], user, repo))
-            sub_addon = tools.parse_xml(text=sub_addon_xml.encode("utf-8"))
-
-            sub_def_name = sub_addon.get("name")
-            sub_def_id = sub_addon.get("id")
-            sub_icon = get_icon(
-                user,
-                repo,
-                plugin_id=sub_def_id,
-                addon_xml=sub_addon_xml,
-                subdir=dir["name"],
-            )
-            sub_extensions = get_extensions(
-                user,
-                repo,
-                addon_xml=sub_addon_xml,
-                subdir=dir["name"],
-            )
-
-            repo_infos.append(
-                {
-                    "name": sub_def_name,
-                    "user": user,
-                    "repo_name": repo,
-                    "updated_at": repo_def["updated_at"],
-                    "icon": sub_icon,
-                    "extensions": sub_extensions,
-                    "subdirectory": dir["name"],
-                }
-            )
-        if not repo_infos:
-            return
+            repo_infos.append(get_repo_info(repo_def, dir["name"]))
     else:
-        tools.log("Reading addon.xml from {}/{}".format(user, repo))
+        tools.log("Reading {}/addon.xml from {}/{}".format(subdir, user, repo))
         addon = tools.parse_xml(text=addon_xml.encode("utf-8"))
 
         def_name = addon.get("name")
         def_id = addon.get("id")
 
-        icon = get_icon(user, repo, plugin_id=def_id, addon_xml=addon_xml)
-        extensions = get_extensions(user, repo, addon_xml=addon_xml)
+        icon = get_icon(
+            user, repo, plugin_id=def_id, addon_xml=addon_xml, subdir=subdir
+        )
+        extensions = get_extensions(user, repo, addon_xml=addon_xml, subdir=subdir)
 
         repo_infos.append(
             {

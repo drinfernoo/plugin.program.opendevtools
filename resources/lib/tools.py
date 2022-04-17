@@ -139,6 +139,7 @@ def parse_xml(file=None, text=None):
         text = read_from_file(file)
 
     text = text.strip()
+    root = None
     try:
         root = ElementTree.fromstring(text)
     except ElementTree.ParseError as e:

@@ -140,6 +140,9 @@ def _install_deps(addon):
     xml_path = os.path.join(_addons, addon, "addon.xml")
     tools.log("Finding dependencies in {}".format(xml_path))
     root = tools.parse_xml(file=xml_path)
+    if root is None:
+        return
+
     requires = root.find("requires")
     if not requires:
         return

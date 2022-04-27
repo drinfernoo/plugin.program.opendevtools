@@ -340,6 +340,8 @@ def update_addon(repo, commit=None, label=None):
                 ),
             )
 
+        tools.execute_builtin("UpdateLocalAddons()")
+
         if not exists:
             tools.reload_profile()
         elif is_current_skin:

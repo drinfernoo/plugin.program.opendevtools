@@ -192,13 +192,11 @@ def _get_addons_db():
 
 def _set_enabled(addon, enabled, exists=True):
     enabled_params = {
-        "jsonrpc": "2.0",
         "method": "Addons.GetAddonDetails",
         "params": {"addonid": addon, "properties": ["enabled"]},
     }
 
     params = {
-        "jsonrpc": "2.0",
         "method": "Addons.SetAddonEnabled",
         "params": {"addonid": addon, "enabled": enabled},
     }
@@ -237,11 +235,7 @@ def _set_enabled(addon, enabled, exists=True):
 
 
 def _exists(addon):
-    params = {
-        "jsonrpc": "2.0",
-        "method": "Addons.GetAddons",
-        "id": 1,
-    }
+    params = {"method": "Addons.GetAddons"}
 
     addons = tools.execute_jsonrpc(params)
     exists = False

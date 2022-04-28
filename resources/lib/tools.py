@@ -266,7 +266,7 @@ def execute_builtin(bi):
 
 
 def execute_jsonrpc(params):
-    params.update({"id": 1})
+    params.update({"id": 1, "jsonrpc": "2.0"})
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
@@ -274,7 +274,6 @@ def execute_jsonrpc(params):
 
 def get_current_skin():
     params = {
-        "jsonrpc": "2.0",
         "method": "GUI.GetProperties",
         "params": {"properties": ["skin"]},
     }

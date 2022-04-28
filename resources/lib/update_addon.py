@@ -246,6 +246,27 @@ def _exists(addon):
     return exists
 
 
+def _reload_addon():
+    tools.execute_builtin("UpdateLocalAddons()")
+    get_lang_params = {
+        "method": "Settings.GetSettingValue",
+        "params": {"setting": "locale.language"},
+    }
+    set_lang_params = {
+        "method": "Settings.SetSettingValue",
+        "params": {"setting": "locale.language", "value": ""},
+    }
+
+    current_language = (
+        tools.execute_jsonrpc(get_lang_params).get("result", {}).get("value", "")
+    )
+
+    for lang in ["resource.language.foo_bar", current_language]:
+        set_lang_params["params"]["value"] = lang
+        tools.execute_jsonrpc(set_lang_params)
+        tools.sleep(1000)
+
+
 def _get_commit_info(user, repo, sha):
     return [API.get_commit(user, repo, sha)]
 
@@ -334,7 +355,7 @@ def update_addon(repo, commit=None, label=None):
                 ),
             )
 
-        tools.execute_builtin("UpdateLocalAddons()")
+        _reload_addon()
 
         if not exists:
             tools.reload_profile()

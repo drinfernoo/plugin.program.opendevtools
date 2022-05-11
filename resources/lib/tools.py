@@ -259,12 +259,13 @@ def copytree(src, dst, symlinks=False, ignore=None):
         if os.path.isdir(s):
             hashes.update(copytree(s, d, symlinks, ignore))
         else:
-            hashes[s] = (
+            hashes[d] = (
                 get_md5_hash(s),
                 get_md5_hash(d) if os.path.exists(d) else None,
             )
-            remove_file(d)
-            shutil.copy2(s, d)
+            if hashes[d][0] != hashes[d][1]:
+                remove_file(d)
+                shutil.copy2(s, d)
     return hashes
 
 

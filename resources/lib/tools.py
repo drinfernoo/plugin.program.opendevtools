@@ -9,6 +9,7 @@ import collections
 from contextlib import contextmanager
 from dateutil import parser
 from dateutil import tz
+import hashlib
 import json
 import os
 import shutil
@@ -99,10 +100,13 @@ def clear_temp():
         log("Failed to cleanup temporary storage: {}".format(e))
 
 
-def read_from_file(file_path):
+def read_from_file(file_path, bytes=False):
     try:
         f = xbmcvfs.File(file_path, "r")
-        content = f.read()
+        if bytes:
+            content = f.readBytes()
+        else:
+            content = f.read()
         if sys.version_info > (3, 0, 0):
             return content
         else:
@@ -248,13 +252,20 @@ def create_folder(path):
 
 def copytree(src, dst, symlinks=False, ignore=None):
     create_folder(dst)
+    hashes = {}
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
         if os.path.isdir(s):
-            copytree(s, d, symlinks, ignore)
+            hashes.update(copytree(s, d, symlinks, ignore))
         else:
+            hashes[s] = (
+                get_md5_hash(s),
+                get_md5_hash(d) if os.path.exists(d) else None,
+            )
+            remove_file(d)
             shutil.copy2(s, d)
+    return hashes
 
 
 def get_condition(condition):
@@ -325,3 +336,8 @@ def build_menu(items):
         li.setArt({"thumb": os.path.join(_media_path, action[3])})
         action_items.append(li)
     return (items, action_items)
+
+
+def get_md5_hash(file):
+    md5 = hashlib.md5(read_from_file(file, bytes=True))
+    return md5.hexdigest()

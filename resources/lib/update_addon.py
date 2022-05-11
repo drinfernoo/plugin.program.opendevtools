@@ -66,9 +66,10 @@ def _extract_addon(zip_location, repo):
             except Exception as e:
                 tools.log("Could not extract {}: {}".format(f, e))
     install_path = os.path.join(_addons, repo["plugin_id"])
-    tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
+    hashes = tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
     tools.remove_folder(os.path.join(_temp, base_directory))
     tools.remove_file(zip_location)
+    return hashes
 
 
 def _update_addon_version(addon, gitsha):
@@ -246,8 +247,18 @@ def _exists(addon):
     return exists
 
 
-def _reload_addon():
+def _reload_addon(hashes):
     tools.execute_builtin("UpdateLocalAddons()")
+    
+    lang_files_changed = False
+    for file in [i for i in hashes if i.endswith(".po")]:
+        if hashes[file][0] != hashes[file][1]:
+            lang_files_changed = True
+            break
+            
+    if not lang_files_changed:
+        return
+    
     get_lang_params = {
         "method": "Settings.GetSettingValue",
         "params": {"setting": "locale.language"},
@@ -312,8 +323,7 @@ def update_addon(repo, commit=None, label=None):
         if is_service:
             _set_enabled(plugin_id, False, exists)
 
-        tools.remove_folder(os.path.join(_addons, plugin_id))
-        _extract_addon(location, repo)
+        hashes = _extract_addon(location, repo)
 
         progress.update(
             50,
@@ -355,7 +365,7 @@ def update_addon(repo, commit=None, label=None):
                 ),
             )
 
-        _reload_addon()
+        _reload_addon(hashes)
 
         if not exists:
             tools.reload_profile()

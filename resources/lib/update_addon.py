@@ -76,10 +76,12 @@ def _extract_addon(zip_location, repo):
 
 def _cleanup_addon(hashes, repo):
     install_path = os.path.join(_addons, repo["plugin_id"])
-    for root, _, files in os.walk(install_path):
-        for file in files:
-            if os.path.join(root, file) not in hashes:
-                tools.remove_file(os.path.join(root, file))
+    existing_files = {
+        os.path.join(dp, f) for dp, dn, fn in os.walk(install_path) for f in fn
+    }
+    leftovers = existing_files.difference(set(hashes.keys()))
+    for file in leftovers:
+        tools.remove_file(file)
 
 
 def _update_addon_version(addon, gitsha):

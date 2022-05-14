@@ -101,16 +101,15 @@ def clear_temp():
 
 
 def read_from_file(file_path, bytes=False):
+    content = None
     try:
         f = xbmcvfs.File(file_path, "r")
         if bytes:
             content = f.readBytes()
         else:
             content = f.read()
-        if sys.version_info > (3, 0, 0):
-            return content
-        else:
-            return content.decode("utf-8-sig")
+            if sys.version_info < (3, 0, 0):
+                content = content.decode("utf-8-sig")
     except IOError:
         return None
     finally:
@@ -118,6 +117,7 @@ def read_from_file(file_path, bytes=False):
             f.close()
         except:
             pass
+    return content
 
 
 def write_to_file(file_path, content, bytes=False):

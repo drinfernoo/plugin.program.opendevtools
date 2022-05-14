@@ -256,7 +256,7 @@ def _add_repo(user, repo, name, plugin_id, timestamp=None, update=False, path=No
     del dialog
 
 
-def _update_repo(repo, **kwargs):
+def update_repo(repo, **kwargs):
     key = "{}-{}".format(repo["user"], repo["plugin_id"])
     repo_def = get_repos(key)
     repo_def.update(**kwargs)
@@ -504,7 +504,7 @@ def exclude_filter(repo):
     )
 
     if update:
-        _update_repo(repo, exclude_items=excluded_items)
+        update_repo(repo, exclude_items=excluded_items)
         delete = dialog.yesno(
             settings.get_localized_string(30095), settings.get_localized_string(30099)
         )

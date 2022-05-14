@@ -413,7 +413,7 @@ def commit_menu(repo, branch):
 
     if selection > -1:
         del dialog
-        update_addon(
+        update_addon.update_addon(
             repo, sorted_commits[selection], sorted_commits[selection]["sha"][:7]
         )
     else:

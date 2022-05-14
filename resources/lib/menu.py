@@ -5,7 +5,7 @@ import xbmcgui
 
 from resources.lib import logging
 from resources.lib import oauth
-from resources.lib import repository
+from resources.lib import update_addon
 from resources.lib import settings
 from resources.lib import tools
 from resources.lib.github_api import GithubAPI
@@ -21,7 +21,7 @@ def main_menu():
     if auth:
         actions = tools.build_menu(
             [
-                (30074, 30075, repository.repo_menu, "github.png"),
+                (30074, 30075, update_addon.repo_menu, "github.png"),
                 (
                     30069,
                     30070,

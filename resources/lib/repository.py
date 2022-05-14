@@ -10,11 +10,9 @@ import time
 
 from resources.lib import color
 from resources.lib.github_api import GithubAPI
-from resources.lib import raise_issue
 from resources.lib import settings
 from resources.lib.thread_pool import ThreadPool
 from resources.lib import tools
-from resources.lib import update_addon
 
 API = GithubAPI()
 
@@ -34,7 +32,6 @@ _compact = settings.get_setting_boolean("general.compact")
 _collaborator = settings.get_setting_boolean("github.collaborator_repos")
 _organization = settings.get_setting_boolean("github.organization_repos")
 _show_bundled_repos = settings.get_setting_boolean("general.show_bundled_repos")
-_sort_repos = settings.get_setting_int("general.sort_repos")
 
 _extensions = {
     "xbmc.gui.skin": "skin",  # https://github.com/xbmc/xbmc/blob/master/addons/xbmc.gui/skin.xsd
@@ -432,57 +429,7 @@ def get_extensions(user, repo, addon_xml=None):
     return extensions
 
 
-def repo_menu():
-    dialog = xbmcgui.Dialog()
-    repos = get_repos()
-
-    repo_items = []
-    with tools.busy_dialog():
-        add = xbmcgui.ListItem(
-            settings.get_localized_string(30002),
-            label2=settings.get_localized_string(30056),
-        )
-        add.setArt({"thumb": os.path.join(_media_path, "plus.png")})
-        repo_items.append(add)
-
-        repo_defs = sorted(
-            repos.values(),
-            key=lambda b: b.get("timestamp", 0) if _sort_repos else b.get("name"),
-            reverse=True,
-        )
-        for repo in repo_defs:
-            user = repo["user"]
-            repo_name = repo["repo_name"]
-            name = repo["name"]
-            plugin_id = repo["plugin_id"]
-
-            li = xbmcgui.ListItem(
-                name,
-                label2="{} - ".format(repo_name)
-                + settings.get_localized_string(30049).format(user),
-            )
-
-            if not _compact:
-                li.setArt({"thumb": get_icon(user, repo_name, plugin_id)})
-
-            repo_items.append(li)
-
-    selection = dialog.select(
-        settings.get_localized_string(30011), repo_items, useDetails=not _compact
-    )
-    if selection == -1:
-        dialog.notification(_addon_name, settings.get_localized_string(30023))
-        del dialog
-        return None
-    else:
-        del dialog
-        if selection == 0:
-            add_repository()
-        else:
-            manage_menu(repo_defs[selection - 1])
-
-
-def _exclude_filter(repo):
+def exclude_filter(repo):
     excludes = repo.get("exclude_items")
     addon_path = os.path.join(_addons, repo["plugin_id"])
 
@@ -573,34 +520,3 @@ def _exclude_filter(repo):
         dialog.notification(_addon_name, settings.get_localized_string(30101))
         del dialog
         return
-
-
-def manage_menu(repo):
-    actions = tools.build_menu(
-        [
-            (30000, 30054, update_addon.update_menu, "update.png", {"repo": repo}),
-            (
-                30001,
-                30055,
-                raise_issue.raise_issue,
-                "issue.png",
-                {"selection": repo},
-            ),
-            (30095, 30096, _exclude_filter, "xor.png", {"repo": repo}),
-            (30003, 30057, remove_repository, "minus.png", {"repo": repo}),
-        ]
-    )
-
-    _update_repo(repo, timestamp=time.time())
-
-    dialog = xbmcgui.Dialog()
-    selection = dialog.select(
-        settings.get_localized_string(30004), actions[1], useDetails=not _compact
-    )
-    del dialog
-
-    if selection > -1:
-        if len(actions[0][selection]) == 4:
-            actions[0][selection][2]()
-        elif len(actions[0][selection]) == 5:
-            actions[0][selection][2](**actions[0][selection][4])

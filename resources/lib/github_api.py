@@ -191,9 +191,3 @@ class GithubAPI(Session):
             )
 
             return result.json()
-
-    def revoke(self):
-        return self.post(
-            "applications/{}/grant".format(self.client_id),
-            data={"access_token": self.access_token},
-        ).ok

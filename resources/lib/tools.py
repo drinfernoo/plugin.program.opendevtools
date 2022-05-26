@@ -9,6 +9,7 @@ import collections
 from contextlib import contextmanager
 from dateutil import parser
 from dateutil import tz
+import hashlib
 import json
 import os
 import shutil
@@ -99,14 +100,16 @@ def clear_temp():
         log("Failed to cleanup temporary storage: {}".format(e))
 
 
-def read_from_file(file_path):
+def read_from_file(file_path, bytes=False):
+    content = None
     try:
         f = xbmcvfs.File(file_path, "r")
-        content = f.read()
-        if sys.version_info > (3, 0, 0):
-            return content
+        if bytes:
+            content = f.readBytes()
         else:
-            return content.decode("utf-8-sig")
+            content = f.read()
+            if sys.version_info < (3, 0, 0):
+                content = content.decode("utf-8-sig")
     except IOError:
         return None
     finally:
@@ -114,6 +117,7 @@ def read_from_file(file_path):
             f.close()
         except:
             pass
+    return content
 
 
 def write_to_file(file_path, content, bytes=False):
@@ -139,6 +143,7 @@ def parse_xml(file=None, text=None):
         text = read_from_file(file)
 
     text = text.strip()
+    root = None
     try:
         root = ElementTree.fromstring(text)
     except ElementTree.ParseError as e:
@@ -247,13 +252,21 @@ def create_folder(path):
 
 def copytree(src, dst, symlinks=False, ignore=None):
     create_folder(dst)
+    hashes = {}
     for item in os.listdir(src):
         s = os.path.join(src, item)
         d = os.path.join(dst, item)
         if os.path.isdir(s):
-            copytree(s, d, symlinks, ignore)
+            hashes.update(copytree(s, d, symlinks, ignore))
         else:
-            shutil.copy2(s, d)
+            hashes[d] = (
+                get_md5_hash(s),
+                get_md5_hash(d) if os.path.exists(d) else None,
+            )
+            if hashes[d][0] != hashes[d][1]:
+                remove_file(d)
+                shutil.copy2(s, d)
+    return hashes
 
 
 def get_condition(condition):
@@ -265,7 +278,7 @@ def execute_builtin(bi):
 
 
 def execute_jsonrpc(params):
-    params.update({"id": 1})
+    params.update({"id": 1, "jsonrpc": "2.0"})
     call = json.dumps(params)
     response = xbmc.executeJSONRPC(call)
     return json.loads(response)
@@ -273,7 +286,6 @@ def execute_jsonrpc(params):
 
 def get_current_skin():
     params = {
-        "jsonrpc": "2.0",
         "method": "GUI.GetProperties",
         "params": {"properties": ["skin"]},
     }
@@ -311,17 +323,6 @@ def copy2clip(txt):
     return False
 
 
-def build_menu(items):
-    action_items = []
-    for action in items:
-        li = xbmcgui.ListItem(
-            settings.get_localized_string(action[0])
-            if type(action[0]) == int
-            else action[0],
-            label2=settings.get_localized_string(action[1])
-            if type(action[1]) == int
-            else action[1],
-        )
-        li.setArt({"thumb": os.path.join(_media_path, action[3])})
-        action_items.append(li)
-    return (items, action_items)
+def get_md5_hash(file):
+    md5 = hashlib.md5(read_from_file(file, bytes=True))
+    return md5.hexdigest()

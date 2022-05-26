@@ -16,28 +16,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /resources/lib/repository.py:579 /resources/lib/update_addon.py:260
+#: /resources/lib/repository.py:651 /resources/lib/update_addon.py:278
 msgctxt "#30000"
 msgid "Update Addon"
 msgstr "Add-On aktualisieren"
 
-#: /resources/lib/repository.py:581
+#: /resources/lib/repository.py:653
 msgctxt "#30001"
 msgid "Open Issue"
 msgstr "Open Issue / Offene Fragen"
 
-#: /resources/lib/repository.py:441
+#: /resources/lib/repository.py:512
 msgctxt "#30002"
 msgid "Add Repository"
 msgstr "Repository hinzufügen"
 
-#: /resources/lib/repository.py:588
+#: /resources/lib/repository.py:660
 msgctxt "#30003"
 msgid "Remove Repository"
 msgstr "Repository entfernen"
 
-#: /resources/lib/menu.py:49 /resources/lib/repository.py:596
-#: /resources/lib/update_addon.py:412
+#: /resources/lib/menu.py:49 /resources/lib/repository.py:668
+#: /resources/lib/update_addon.py:442
 msgctxt "#30004"
 msgid "Select an Action"
 msgstr "Wählen eine Akrion"
@@ -72,7 +72,7 @@ msgctxt "#30010"
 msgid "An issue title is required to submit an issue."
 msgstr "Zum Einreichen einer Ausgabe ist ein Ausgabetitel erforderlich."
 
-#: /resources/lib/repository.py:181 /resources/lib/repository.py:469
+#: /resources/lib/repository.py:197 /resources/lib/repository.py:541
 msgctxt "#30011"
 msgid "Select a Repository"
 msgstr "Wählen Sie ein Repository"
@@ -82,65 +82,69 @@ msgctxt "#30012"
 msgid "Issue Opened via {}"
 msgstr "Ausgabe geöffnet über {}"
 
-#: /resources/lib/update_addon.py:544
+#: /resources/lib/update_addon.py:574
 msgctxt "#30013"
 msgid "by {} on {}"
 msgstr "by {} on {}"
 
-#: /resources/lib/update_addon.py:461 /resources/lib/update_addon.py:584
+#: /resources/lib/update_addon.py:491 /resources/lib/update_addon.py:614
 msgctxt "#30014"
 msgid "Select a Commit"
 msgstr "Wählen Sie ein Commit"
 
-#: /resources/lib/update_addon.py:266 /resources/lib/update_addon.py:593
+#: /resources/lib/update_addon.py:284 /resources/lib/update_addon.py:623
 msgctxt "#30015"
 msgid "Update Cancelled."
 msgstr "Aktualisierung abgebrochen."
 
-#: /resources/lib/repository.py:152 /resources/lib/repository.py:159
-#: /resources/lib/update_addon.py:495
+#: /resources/lib/repository.py:113 /resources/lib/repository.py:120
+#: /resources/lib/update_addon.py:525
 msgctxt "#30016"
 msgid "Updated on {}"
 msgstr "Aktualisiert am {}"
 
-#: /resources/lib/update_addon.py:508
+#: /resources/lib/update_addon.py:538
 msgctxt "#30017"
 msgid "Select a Branch"
 msgstr "Wählen Sie eine Filiale"
 
-#: /resources/lib/update_addon.py:261
+#: /resources/lib/update_addon.py:279
 msgctxt "#30018"
 msgid "This will attempt to update {} from the {} branch, are you sure?"
 msgstr ""
 "Dadurch wird versucht, {} aus dem {}-Zweig zu aktualisieren. Sind Sie "
 "sicher?"
 
-#: /resources/lib/update_addon.py:273
+#: /resources/lib/update_addon.py:291
 msgctxt "#30019"
 msgid "Downloading {}..."
 msgstr "Pobieranie {}..."
 
-#: /resources/lib/update_addon.py:282
+#: /resources/lib/update_addon.py:317
 msgctxt "#30020"
 msgid "Extracting {}..."
 msgstr "Drogenauszug {}..."
 
-#: /resources/lib/update_addon.py:326
+#: /resources/lib/update_addon.py:354
 msgctxt "#30021"
 msgid "Install Finished"
 msgstr "Installieren Beendet"
 
-#: /resources/lib/repository.py:110
+#: /resources/lib/repository.py:141
 msgctxt "#30022"
-msgid "Enter GitHub Username or Organization Name"
-msgstr "Geben Sie den GitHub-Benutzernamen oder den Organisationsnamen ein"
+msgid ""
+"Enter GitHub Username, Organization Name, or Repository Name "
+"(owner/repository)"
+msgstr ""
+"Geben Sie den GitHub-Benutzernamen, den Organisationsnamen oder den Namen "
+"des Projektarchivs ein (Eigentümer/Projektarchiv)"
 
-#: /resources/lib/repository.py:112 /resources/lib/repository.py:472
+#: /resources/lib/repository.py:143 /resources/lib/repository.py:544
 msgctxt "#30023"
 msgid "Cancelled"
 msgstr "Storniert"
 
-#: /resources/lib/repository.py:278
+#: /resources/lib/repository.py:305
 msgctxt "#30024"
 msgid ""
 "This repository either does not exist, or you do not have access to it. "
@@ -150,12 +154,12 @@ msgstr ""
 "darauf. Bitte überprüfen Sie den Eigentümer und Namen des Repositorys und "
 "dass Sie Zugriff haben."
 
-#: /resources/lib/repository.py:256
+#: /resources/lib/repository.py:283
 msgctxt "#30025"
 msgid "Repository Added"
 msgstr "Repository hinzugefügt"
 
-#: /resources/lib/repository.py:305
+#: /resources/lib/repository.py:332
 msgctxt "#30026"
 msgid ""
 "Removing this repository will remove the following repositories: {}. Are you"
@@ -164,17 +168,17 @@ msgstr ""
 "Durch das Entfernen dieses Repositorys werden die folgenden Repositorys "
 "entfernt: {}. Möchten Sie sie wirklich entfernen?"
 
-#: /resources/lib/repository.py:311
+#: /resources/lib/repository.py:338
 msgctxt "#30027"
 msgid "Are you sure you want to remove {}?"
 msgstr "Sind Sie sicher, dass Sie entfernen möchten {}?"
 
-#: /resources/lib/repository.py:317
+#: /resources/lib/repository.py:344
 msgctxt "#30028"
 msgid "{} Repository Removed"
 msgstr "{} Repository entfernt"
 
-#: /resources/lib/repository.py:317
+#: /resources/lib/repository.py:344
 msgctxt "#30029"
 msgid "{} Repositories Removed"
 msgstr "{} Repositorys entfernt"
@@ -280,7 +284,7 @@ msgctxt "#30048"
 msgid "Github Client ID"
 msgstr "Github-Client-ID"
 
-#: /resources/lib/repository.py:151 /resources/lib/repository.py:460
+#: /resources/lib/repository.py:112 /resources/lib/repository.py:532
 msgctxt "#30049"
 msgid "by {}"
 msgstr "° {}"
@@ -300,63 +304,63 @@ msgctxt "#30052"
 msgid "Always installs latest version available"
 msgstr "Installiert immer die neueste verfügbare Version"
 
-#: /resources/lib/repository.py:287
+#: /resources/lib/repository.py:314
 msgctxt "#30053"
 msgid "Would you like to update this add-on now?"
 msgstr "Möchten Sie dieses Add-on jetzt aktualisieren?"
 
-#: /resources/lib/repository.py:579
+#: /resources/lib/repository.py:651
 msgctxt "#30054"
 msgid "Update an addon from one of your added repositories"
 msgstr ""
 "Aktualisieren Sie ein Add-On aus einem Ihrer hinzugefügten Repositorys"
 
-#: /resources/lib/repository.py:582
+#: /resources/lib/repository.py:654
 msgctxt "#30055"
 msgid "Open an issue for one of your added repositories"
 msgstr "Öffnen Sie ein Problem für eines Ihrer hinzugefügten Repositorys"
 
-#: /resources/lib/repository.py:442
+#: /resources/lib/repository.py:513
 msgctxt "#30056"
 msgid "Add a repository from GitHub"
 msgstr "Repository von GitHub hinzufügen"
 
-#: /resources/lib/repository.py:588
+#: /resources/lib/repository.py:660
 msgctxt "#30057"
 msgid "Remove an added repository"
 msgstr "Entfernen Sie ein hinzugefügtes Repository"
 
-#: /resources/lib/repository.py:176
+#: /resources/lib/repository.py:188
 msgctxt "#30058"
 msgid "No repositories found that contain a valid Kodi addon."
 msgstr "Keine Repositorys gefunden, die ein gültiges Kodi-Add-On enthalten."
 
-#: /resources/lib/repository.py:204
+#: /resources/lib/repository.py:228
 msgctxt "#30059"
 msgid "Do you want to add {} repository?"
 msgstr "Möchten Sie {} Repository hinzufügen?"
 
-#: /resources/settings.xml:46
+#: /resources/settings.xml:47
 msgctxt "#30060"
 msgid "Show repos with current user as collaborator"
 msgstr "Repos mit aktuellem Benutzer als Mitbearbeiter anzeigen"
 
-#: /resources/settings.xml:47
+#: /resources/settings.xml:48
 msgctxt "#30061"
 msgid "Show organization repos for current user"
 msgstr "Organisations-Repositorys für aktuellen Benutzer anzeigen"
 
-#: /resources/lib/update_addon.py:301
+#: /resources/lib/update_addon.py:327
 msgctxt "#30062"
 msgid "Updating addon.xml for {}..."
 msgstr "Aktualisieren von addon.xml für {}..."
 
-#: /resources/lib/update_addon.py:317
+#: /resources/lib/update_addon.py:345
 msgctxt "#30063"
 msgid "Installing dependencies for {}..."
 msgstr "Abhängigkeiten installieren for {}..."
 
-#: /resources/lib/update_addon.py:332
+#: /resources/lib/update_addon.py:360
 msgctxt "#30064"
 msgid ""
 "The following dependencies could not be installed: {}\n"
@@ -365,21 +369,21 @@ msgstr ""
 "Die folgenden Abhängigkeiten konnten nicht installiert werden: {}\n"
 " Dies kann zu Problemen mit der ordnungsgemäßen Funktion von {} führen."
 
-#: /resources/lib/repository.py:134
+#: /resources/lib/repository.py:168
 msgctxt "#30065"
 msgid "The user or organization you entered could not be found."
 msgstr ""
 "Der von Ihnen eingegebene Benutzer oder die eingegebene Organisation konnte "
 "nicht gefunden werden."
 
-#: /resources/lib/repository.py:140
+#: /resources/lib/repository.py:174
 msgctxt "#30066"
 msgid "No repositories could be found for the entered user or organization."
 msgstr ""
 "Für den eingegebenen Benutzer oder die eingegebene Organisation konnten "
 "keine Repositorys gefunden werden."
 
-#: /resources/lib/update_addon.py:326
+#: /resources/lib/update_addon.py:354
 msgctxt "#30067"
 msgid "Reloading profile..."
 msgstr "Profil wird neu geladen..."
@@ -409,7 +413,7 @@ msgctxt "#30072"
 msgid "This URL has also been copied to your clipboard."
 msgstr "Diese URL wurde auch in Ihre Zwischenablage kopiert."
 
-#: /resources/settings.xml:48
+#: /resources/settings.xml:46
 msgctxt "#30073"
 msgid "Show bundled repositories"
 msgstr "Gebündelte Repositorys anzeigen"
@@ -444,7 +448,7 @@ msgctxt "#30079"
 msgid "Scan the QR code or visit the following URL:"
 msgstr "Scannen Sie den QR-Code oder besuchen Sie die folgende URL:"
 
-#: /resources/settings.xml:52
+#: /resources/settings.xml:53
 msgctxt "#30080"
 msgid "Show Commit Stats"
 msgstr "Commit-Statistiken anzeigen"
@@ -454,17 +458,17 @@ msgctxt "#30081"
 msgid "Repositories"
 msgstr "Repositories"
 
-#: /resources/settings.xml:50 /resources/lib/update_addon.py:395
+#: /resources/settings.xml:51 /resources/lib/update_addon.py:423
 msgctxt "#30082"
 msgid "Commits"
 msgstr "提交"
 
-#: /resources/settings.xml:53
+#: /resources/settings.xml:54
 msgctxt "#30083"
 msgid "Commits to Retrieve"
 msgstr "Verpflichtet sich zum Abrufen"
 
-#: /resources/lib/update_addon.py:379
+#: /resources/lib/update_addon.py:407
 msgctxt "#30084"
 msgid "Tags"
 msgstr "Tags"
@@ -474,27 +478,27 @@ msgctxt "#30085"
 msgid "Repository Installs"
 msgstr "Repository-Installationen"
 
-#: /resources/lib/update_addon.py:385
+#: /resources/lib/update_addon.py:413
 msgctxt "#30086"
 msgid "Branches"
 msgstr "Niederlassungen"
 
-#: /resources/lib/update_addon.py:386
+#: /resources/lib/update_addon.py:414
 msgctxt "#30087"
 msgid "Browse commits on any branch"
 msgstr "Durchsuchen Sie Commits in jedem Branch"
 
-#: /resources/lib/update_addon.py:361
+#: /resources/lib/update_addon.py:389
 msgctxt "#30088"
 msgid "Latest Commit"
 msgstr "Letztes Commit"
 
-#: /resources/lib/update_addon.py:362
+#: /resources/lib/update_addon.py:390
 msgctxt "#30089"
 msgid "Update from latest commit on {}"
 msgstr "Update vom letzten Commit am {}"
 
-#: /resources/lib/update_addon.py:396
+#: /resources/lib/update_addon.py:424
 msgctxt "#30090"
 msgid "Browse commits on {} branch"
 msgstr "Durchsuchen Sie Commits im {}-Zweig"
@@ -514,49 +518,49 @@ msgctxt "#30093"
 msgid "Most Recently Used"
 msgstr "Zuletzt verwendet"
 
-#: /resources/lib/update_addon.py:379
+#: /resources/lib/update_addon.py:407
 msgctxt "#30094"
 msgid "Select a Tag"
 msgstr "Wähle ein Schlagwort"
 
-#: /resources/lib/repository.py:490 /resources/lib/repository.py:550
-#: /resources/lib/repository.py:560 /resources/lib/repository.py:587
+#: /resources/lib/repository.py:562 /resources/lib/repository.py:622
+#: /resources/lib/repository.py:632 /resources/lib/repository.py:659
 msgctxt "#30095"
 msgid "Manage Exclusions"
 msgstr "Ausschlüsse verwalten"
 
-#: /resources/lib/repository.py:587
+#: /resources/lib/repository.py:659
 msgctxt "#30096"
 msgid "Choose files and/or folders to exclude during installs and updates"
 msgstr ""
 "Wählen Sie Dateien und/oder Ordner aus, die während Installationen und "
 "Updates ausgeschlossen werden sollen"
 
-#: /resources/lib/repository.py:491
+#: /resources/lib/repository.py:563
 msgctxt "#30097"
 msgid "Install the add-on first before attempting to manage exclusions."
 msgstr ""
 "Installieren Sie zuerst das Add-on, bevor Sie versuchen, Ausschlüsse zu "
 "verwalten."
 
-#: /resources/lib/repository.py:551
+#: /resources/lib/repository.py:623
 msgctxt "#30098"
 msgid "Add {} exclusions for {}?"
 msgstr "{} Ausschlüsse für {} hinzufügen?"
 
-#: /resources/lib/repository.py:560
+#: /resources/lib/repository.py:632
 msgctxt "#30099"
 msgid "Delete the excluded files and/or folders now, if they exist?"
 msgstr ""
 "Die ausgeschlossenen Dateien und/oder Ordner jetzt löschen, falls vorhanden?"
 
-#: /resources/lib/repository.py:532
+#: /resources/lib/repository.py:604
 msgctxt "#30100"
 msgid "Select files/folders to exclude"
 msgstr "Wählen Sie die auszuschließenden Dateien/Ordner aus"
 
-#: /resources/lib/repository.py:539 /resources/lib/repository.py:545
-#: /resources/lib/repository.py:571
+#: /resources/lib/repository.py:611 /resources/lib/repository.py:617
+#: /resources/lib/repository.py:643
 msgctxt "#30101"
 msgid "No exclusions changed."
 msgstr "Keine Ausschlüsse geändert."
@@ -565,3 +569,8 @@ msgstr "Keine Ausschlüsse geändert."
 msgctxt "#30102"
 msgid "Add Web-PDB to Add-ons on Install"
 msgstr "Fügen Sie Web-PDB bei der Installation zu den Add-Ons hinzu"
+
+#: /resources/settings.xml:49
+msgctxt "#30103"
+msgid "Search for Repositories in Subdirectories"
+msgstr "Suche nach Repositories in Unterverzeichnissen"

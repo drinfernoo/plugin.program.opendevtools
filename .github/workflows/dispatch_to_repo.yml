@@ -15,7 +15,7 @@ jobs:
       - name: Push to repo
         uses: peter-evans/repository-dispatch@v1
         with:
-          token: ${{ secrets.TOKEN }}
+          token: ${{ secrets.GITHUB_TOKEN }}
           repository: ${{ matrix.repo }}
           event-type: update
           client-payload: '{"ref": "${{ github.ref }}", "sha": "${{ github.sha }}", "module": "drinfernoo/plugin.program.opendevtools", "branch": "master", "tag": "${{ github.ref_name }}"}'

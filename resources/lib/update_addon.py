@@ -66,6 +66,8 @@ def _extract_addon(zip_location, repo):
             except Exception as e:
                 tools.log("Could not extract {}: {}".format(f, e))
     install_path = os.path.join(_addons, repo["plugin_id"])
+    if repo["plugin_id"] in os.listdir(os.path.join(_temp, base_directory)):
+        base_directory += repo["plugin_id"]
     tools.copytree(os.path.join(_temp, base_directory), install_path, ignore=True)
     tools.remove_folder(os.path.join(_temp, base_directory))
     tools.remove_file(zip_location)

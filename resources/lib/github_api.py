@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
-import collections
 from requests import Session
 
 try:
+    from collections.abc import Sequence
     from urllib.parse import urljoin
 except ImportError:
+    from collections import Sequence
     from urlparse import urljoin
 
 from resources.lib import settings
@@ -52,7 +53,7 @@ class GithubAPI(Session):
     def get_pages_json(self, endpoint, pages=1, limit=30, **params):
         for page in self.get_pages(endpoint, pages, limit, **params):
             page = page.json()
-            if isinstance(page, (list, set, collections.Sequence)):
+            if isinstance(page, (list, set, Sequence)):
                 for item in page:
                     yield item
             else:
@@ -76,7 +77,7 @@ class GithubAPI(Session):
     def get_all_pages_json(self, endpoint, **params):
         for page in self.get_all_pages(endpoint, **params):
             page = page.json()
-            if isinstance(page, (list, set, collections.Sequence)):
+            if isinstance(page, (list, set, Sequence)):
                 for item in page:
                     yield item
             else:

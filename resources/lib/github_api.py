@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import, division, unicode_literals
 
-import collections
 from requests import Session
 
 try:
+    from collections.abc import Sequence
     from urllib.parse import urljoin
 except ImportError:
+    from collections import Sequence
     from urlparse import urljoin
 
 from resources.lib import settings
@@ -52,7 +53,7 @@ class GithubAPI(Session):
     def get_pages_json(self, endpoint, pages=1, limit=30, **params):
         for page in self.get_pages(endpoint, pages, limit, **params):
             page = page.json()
-            if isinstance(page, (list, set, collections.Sequence)):
+            if isinstance(page, (list, set, Sequence)):
                 for item in page:
                     yield item
             else:
@@ -76,7 +77,7 @@ class GithubAPI(Session):
     def get_all_pages_json(self, endpoint, **params):
         for page in self.get_all_pages(endpoint, **params):
             page = page.json()
-            if isinstance(page, (list, set, collections.Sequence)):
+            if isinstance(page, (list, set, Sequence)):
                 for item in page:
                     yield item
             else:
@@ -84,6 +85,9 @@ class GithubAPI(Session):
 
     def get_json(self, endpoint, **params):
         return self.get(endpoint, **params).json()
+
+    def get_repo(self, user, repo):
+        return self.get_json("repos/{}/{}".format(user, repo))
 
     def get_default_branch(self, user, repo):
         return self.get_json("repos/{}/{}".format(user, repo)).get("default_branch")
@@ -108,8 +112,29 @@ class GithubAPI(Session):
     def get_commit_zip(self, user, repo, commit_sha):
         return self.get("{}/{}/archive/{}.zip".format(user, repo, commit_sha)).content
 
-    def get_file(self, user, repo, path, text=False):
-        if text:
+    def get_tree(self, user, repo, commit_sha="HEAD", recursive=False):
+        if recursive == True:
+            recursive = 'true'
+        elif recursive == False:
+            recursive = 'false'
+
+        return self.get_json(
+            "repos/{}/{}/git/trees/{}".format(user, repo, commit_sha),
+            recursive=recursive,
+        )
+
+    def get_file(self, url):
+        headers = self.headers.copy()
+        headers.update({"Accept": "application/vnd.github.v3.raw"})
+        response = super(GithubAPI, self).get(
+            url,
+            headers=headers,
+        )
+        if response.ok:
+            return response.content
+
+    def get_contents(self, user, repo, path="", raw=False):
+        if raw:
             headers = self.headers.copy()
             headers.update({"Accept": "application/vnd.github.v3.raw"})
             response = super(GithubAPI, self).get(
@@ -167,11 +192,3 @@ class GithubAPI(Session):
             )
 
             return result.json()
-
-        return False
-
-    def revoke(self):
-        return self.post(
-            "applications/{}/grant".format(self.client_id),
-            data={"access_token": self.access_token},
-        ).ok

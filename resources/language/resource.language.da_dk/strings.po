@@ -16,28 +16,28 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: /resources/lib/repository.py:579 /resources/lib/update_addon.py:260
+#: /resources/lib/repository.py:651 /resources/lib/update_addon.py:278
 msgctxt "#30000"
 msgid "Update Addon"
 msgstr "Opdater tilføjelse"
 
-#: /resources/lib/repository.py:581
+#: /resources/lib/repository.py:653
 msgctxt "#30001"
 msgid "Open Issue"
 msgstr "Åbent nummer"
 
-#: /resources/lib/repository.py:441
+#: /resources/lib/repository.py:512
 msgctxt "#30002"
 msgid "Add Repository"
 msgstr "Tilføj lager"
 
-#: /resources/lib/repository.py:588
+#: /resources/lib/repository.py:660
 msgctxt "#30003"
 msgid "Remove Repository"
 msgstr "Fjern repository"
 
-#: /resources/lib/menu.py:49 /resources/lib/repository.py:596
-#: /resources/lib/update_addon.py:412
+#: /resources/lib/menu.py:49 /resources/lib/repository.py:668
+#: /resources/lib/update_addon.py:442
 msgctxt "#30004"
 msgid "Select an Action"
 msgstr "Vælg en handling"
@@ -72,7 +72,7 @@ msgctxt "#30010"
 msgid "An issue title is required to submit an issue."
 msgstr "Der kræves en nummertitel for at indsende et nummer."
 
-#: /resources/lib/repository.py:181 /resources/lib/repository.py:469
+#: /resources/lib/repository.py:197 /resources/lib/repository.py:541
 msgctxt "#30011"
 msgid "Select a Repository"
 msgstr "Vælg et lager"
@@ -82,63 +82,67 @@ msgctxt "#30012"
 msgid "Issue Opened via {}"
 msgstr "Udgave åbnet via {}"
 
-#: /resources/lib/update_addon.py:544
+#: /resources/lib/update_addon.py:574
 msgctxt "#30013"
 msgid "by {} on {}"
 msgstr "af {} den {}"
 
-#: /resources/lib/update_addon.py:461 /resources/lib/update_addon.py:584
+#: /resources/lib/update_addon.py:491 /resources/lib/update_addon.py:614
 msgctxt "#30014"
 msgid "Select a Commit"
 msgstr "Vælg en forpligtelse"
 
-#: /resources/lib/update_addon.py:266 /resources/lib/update_addon.py:593
+#: /resources/lib/update_addon.py:284 /resources/lib/update_addon.py:623
 msgctxt "#30015"
 msgid "Update Cancelled."
 msgstr "Opdatering annulleret."
 
-#: /resources/lib/repository.py:152 /resources/lib/repository.py:159
-#: /resources/lib/update_addon.py:495
+#: /resources/lib/repository.py:113 /resources/lib/repository.py:120
+#: /resources/lib/update_addon.py:525
 msgctxt "#30016"
 msgid "Updated on {}"
 msgstr "Opdateret den {}"
 
-#: /resources/lib/update_addon.py:508
+#: /resources/lib/update_addon.py:538
 msgctxt "#30017"
 msgid "Select a Branch"
 msgstr "Vælg en filial"
 
-#: /resources/lib/update_addon.py:261
+#: /resources/lib/update_addon.py:279
 msgctxt "#30018"
 msgid "This will attempt to update {} from the {} branch, are you sure?"
 msgstr "Dette vil forsøge at opdatere {} fra {}-grenen. Er du sikker?"
 
-#: /resources/lib/update_addon.py:273
+#: /resources/lib/update_addon.py:291
 msgctxt "#30019"
 msgid "Downloading {}..."
 msgstr "Downloade {}..."
 
-#: /resources/lib/update_addon.py:282
+#: /resources/lib/update_addon.py:317
 msgctxt "#30020"
 msgid "Extracting {}..."
 msgstr "Udtrækker {}..."
 
-#: /resources/lib/update_addon.py:326
+#: /resources/lib/update_addon.py:354
 msgctxt "#30021"
 msgid "Install Finished"
 msgstr "Installation afsluttet"
 
-#: /resources/lib/repository.py:110
+#: /resources/lib/repository.py:141
 msgctxt "#30022"
-msgid "Enter GitHub Username or Organization Name"
-msgstr "Indtast GitHub brugernavn eller organisationsnavn"
+msgid ""
+"Enter GitHub Username, Organization Name, or Repository Name "
+"(owner/repository)"
+msgstr ""
+"Indtast GitHub-brugernavn, organisationsnavn eller navn på lager "
+"(ejer/depot)"
 
-#: /resources/lib/repository.py:112 /resources/lib/repository.py:472
+#: /resources/lib/repository.py:143 /resources/lib/repository.py:544
 msgctxt "#30023"
 msgid "Cancelled"
 msgstr "Aflyst"
 
-#: /resources/lib/repository.py:278
+#: /resources/lib/repository.py:305
 msgctxt "#30024"
 msgid ""
 "This repository either does not exist, or you do not have access to it. "
@@ -147,12 +151,12 @@ msgstr ""
 "Dette lager findes enten ikke, eller også har du ikke adgang til det. "
 "Bekræft venligst lagerets ejer og navn, og at du har adgang."
 
-#: /resources/lib/repository.py:256
+#: /resources/lib/repository.py:283
 msgctxt "#30025"
 msgid "Repository Added"
 msgstr "Repository tilføjet"
 
-#: /resources/lib/repository.py:305
+#: /resources/lib/repository.py:332
 msgctxt "#30026"
 msgid ""
 "Removing this repository will remove the following repositories: {}. Are you"
@@ -161,17 +165,17 @@ msgstr ""
 "Fjernelse af dette lager vil fjerne følgende lagre: {}. Er du sikker på, at "
 "du vil fjerne dem?"
 
-#: /resources/lib/repository.py:311
+#: /resources/lib/repository.py:338
 msgctxt "#30027"
 msgid "Are you sure you want to remove {}?"
 msgstr "Er du sikker på at du vil fjerne {}?"
 
-#: /resources/lib/repository.py:317
+#: /resources/lib/repository.py:344
 msgctxt "#30028"
 msgid "{} Repository Removed"
 msgstr "{} Depot blev fjernet"
 
-#: /resources/lib/repository.py:317
+#: /resources/lib/repository.py:344
 msgctxt "#30029"
 msgid "{} Repositories Removed"
 msgstr "{} Lagre fjernet"
@@ -275,7 +279,7 @@ msgctxt "#30048"
 msgid "Github Client ID"
 msgstr "Github klient-id"
 
-#: /resources/lib/repository.py:151 /resources/lib/repository.py:460
+#: /resources/lib/repository.py:112 /resources/lib/repository.py:532
 msgctxt "#30049"
 msgid "by {}"
 msgstr "- {}"
@@ -295,63 +299,63 @@ msgctxt "#30052"
 msgid "Always installs latest version available"
 msgstr "Installerer altid den nyeste version"
 
-#: /resources/lib/repository.py:287
+#: /resources/lib/repository.py:314
 msgctxt "#30053"
 msgid "Would you like to update this add-on now?"
 msgstr "Vil du opdatere denne tilføjelse nu?"
 
-#: /resources/lib/repository.py:579
+#: /resources/lib/repository.py:651
 msgctxt "#30054"
 msgid "Update an addon from one of your added repositories"
 msgstr "Opdater en tilføjelse fra et af dine tilføjede lagre"
 
-#: /resources/lib/repository.py:582
+#: /resources/lib/repository.py:654
 msgctxt "#30055"
 msgid "Open an issue for one of your added repositories"
 msgstr "Åbn et problem for et af dine tilføjede lagre"
 
-#: /resources/lib/repository.py:442
+#: /resources/lib/repository.py:513
 msgctxt "#30056"
 msgid "Add a repository from GitHub"
 msgstr "Tilføj et lager fra GitHub"
 
-#: /resources/lib/repository.py:588
+#: /resources/lib/repository.py:660
 msgctxt "#30057"
 msgid "Remove an added repository"
 msgstr "Fjern et tilføjet lager"
 
-#: /resources/lib/repository.py:176
+#: /resources/lib/repository.py:188
 msgctxt "#30058"
 msgid "No repositories found that contain a valid Kodi addon."
 msgstr ""
 "Der blev ikke fundet nogen lagre, der indeholder en gyldig Kodi-tilføjelse."
 
-#: /resources/lib/repository.py:204
+#: /resources/lib/repository.py:228
 msgctxt "#30059"
 msgid "Do you want to add {} repository?"
 msgstr "Vil du tilføje {} repository?"
 
-#: /resources/settings.xml:46
+#: /resources/settings.xml:47
 msgctxt "#30060"
 msgid "Show repos with current user as collaborator"
 msgstr "Vis repos med nuværende bruger som samarbejdspartner"
 
-#: /resources/settings.xml:47
+#: /resources/settings.xml:48
 msgctxt "#30061"
 msgid "Show organization repos for current user"
 msgstr "Vis organisationsrepos for nuværende bruger"
 
-#: /resources/lib/update_addon.py:301
+#: /resources/lib/update_addon.py:327
 msgctxt "#30062"
 msgid "Updating addon.xml for {}..."
 msgstr "Opdaterer addon.xml for {}..."
 
-#: /resources/lib/update_addon.py:317
+#: /resources/lib/update_addon.py:345
 msgctxt "#30063"
 msgid "Installing dependencies for {}..."
 msgstr "Installation af afhængigheder for {}..."
 
-#: /resources/lib/update_addon.py:332
+#: /resources/lib/update_addon.py:360
 msgctxt "#30064"
 msgid ""
 "The following dependencies could not be installed: {}\n"
@@ -360,19 +364,19 @@ msgstr ""
 "Følgende afhængigheder kunne ikke installeres: {}\n"
 " Dette kan forårsage problemer med at {} fungerer korrekt."
 
-#: /resources/lib/repository.py:134
+#: /resources/lib/repository.py:168
 msgctxt "#30065"
 msgid "The user or organization you entered could not be found."
 msgstr "Den bruger eller organisation, du indtastede, kunne ikke findes."
 
-#: /resources/lib/repository.py:140
+#: /resources/lib/repository.py:174
 msgctxt "#30066"
 msgid "No repositories could be found for the entered user or organization."
 msgstr ""
 "Der blev ikke fundet nogen lagre for den indtastede bruger eller "
 "organisation."
 
-#: /resources/lib/update_addon.py:326
+#: /resources/lib/update_addon.py:354
 msgctxt "#30067"
 msgid "Reloading profile..."
 msgstr "Genindlæser profil..."
@@ -402,7 +406,7 @@ msgctxt "#30072"
 msgid "This URL has also been copied to your clipboard."
 msgstr "Denne URL er også blevet kopieret til din udklipsholder."
 
-#: /resources/settings.xml:48
+#: /resources/settings.xml:46
 msgctxt "#30073"
 msgid "Show bundled repositories"
 msgstr "Vis bundtede lagre"
@@ -437,7 +441,7 @@ msgctxt "#30079"
 msgid "Scan the QR code or visit the following URL:"
 msgstr "Scan QR-koden eller besøg følgende URL:"
 
-#: /resources/settings.xml:52
+#: /resources/settings.xml:53
 msgctxt "#30080"
 msgid "Show Commit Stats"
 msgstr "Vis Commit Stats"
@@ -447,17 +451,17 @@ msgctxt "#30081"
 msgid "Repositories"
 msgstr "Arkiver"
 
-#: /resources/settings.xml:50 /resources/lib/update_addon.py:395
+#: /resources/settings.xml:51 /resources/lib/update_addon.py:423
 msgctxt "#30082"
 msgid "Commits"
 msgstr "Commits"
 
-#: /resources/settings.xml:53
+#: /resources/settings.xml:54
 msgctxt "#30083"
 msgid "Commits to Retrieve"
 msgstr "Forpligter sig til at hente"
 
-#: /resources/lib/update_addon.py:379
+#: /resources/lib/update_addon.py:407
 msgctxt "#30084"
 msgid "Tags"
 msgstr "Tags"
@@ -467,27 +471,27 @@ msgctxt "#30085"
 msgid "Repository Installs"
 msgstr "Depotinstallationer"
 
-#: /resources/lib/update_addon.py:385
+#: /resources/lib/update_addon.py:413
 msgctxt "#30086"
 msgid "Branches"
 msgstr "Hoteller"
 
-#: /resources/lib/update_addon.py:386
+#: /resources/lib/update_addon.py:414
 msgctxt "#30087"
 msgid "Browse commits on any branch"
 msgstr "Gennemse commits på enhver filial"
 
-#: /resources/lib/update_addon.py:361
+#: /resources/lib/update_addon.py:389
 msgctxt "#30088"
 msgid "Latest Commit"
 msgstr "Seneste forpligtelse"
 
-#: /resources/lib/update_addon.py:362
+#: /resources/lib/update_addon.py:390
 msgctxt "#30089"
 msgid "Update from latest commit on {}"
 msgstr "Opdatering fra seneste commit på {}"
 
-#: /resources/lib/update_addon.py:396
+#: /resources/lib/update_addon.py:424
 msgctxt "#30090"
 msgid "Browse commits on {} branch"
 msgstr "Gennemse commits på {} filial"
@@ -507,47 +511,47 @@ msgctxt "#30093"
 msgid "Most Recently Used"
 msgstr "Senest brugt"
 
-#: /resources/lib/update_addon.py:379
+#: /resources/lib/update_addon.py:407
 msgctxt "#30094"
 msgid "Select a Tag"
 msgstr "Vælg et TAG"
 
-#: /resources/lib/repository.py:490 /resources/lib/repository.py:550
-#: /resources/lib/repository.py:560 /resources/lib/repository.py:587
+#: /resources/lib/repository.py:562 /resources/lib/repository.py:622
+#: /resources/lib/repository.py:632 /resources/lib/repository.py:659
 msgctxt "#30095"
 msgid "Manage Exclusions"
 msgstr "Administrer ekskluderinger"
 
-#: /resources/lib/repository.py:587
+#: /resources/lib/repository.py:659
 msgctxt "#30096"
 msgid "Choose files and/or folders to exclude during installs and updates"
 msgstr ""
 "Vælg filer og/eller mapper, der skal udelukkes under installationer og "
 "opdateringer"
 
-#: /resources/lib/repository.py:491
+#: /resources/lib/repository.py:563
 msgctxt "#30097"
 msgid "Install the add-on first before attempting to manage exclusions."
 msgstr ""
 "Installer tilføjelsen først, før du forsøger at administrere ekskluderinger."
 
-#: /resources/lib/repository.py:551
+#: /resources/lib/repository.py:623
 msgctxt "#30098"
 msgid "Add {} exclusions for {}?"
 msgstr "Vil du tilføje {} ekskluderinger for {}?"
 
-#: /resources/lib/repository.py:560
+#: /resources/lib/repository.py:632
 msgctxt "#30099"
 msgid "Delete the excluded files and/or folders now, if they exist?"
 msgstr "Slet de ekskluderede filer og/eller mapper nu, hvis de findes?"
 
-#: /resources/lib/repository.py:532
+#: /resources/lib/repository.py:604
 msgctxt "#30100"
 msgid "Select files/folders to exclude"
 msgstr "Vælg filer/mapper, der skal ekskluderes"
 
-#: /resources/lib/repository.py:539 /resources/lib/repository.py:545
-#: /resources/lib/repository.py:571
+#: /resources/lib/repository.py:611 /resources/lib/repository.py:617
+#: /resources/lib/repository.py:643
 msgctxt "#30101"
 msgid "No exclusions changed."
 msgstr "Ingen udelukkelser ændret."
@@ -556,3 +560,8 @@ msgstr "Ingen udelukkelser ændret."
 msgctxt "#30102"
 msgid "Add Web-PDB to Add-ons on Install"
 msgstr "Tilføj Web-PDB til tilføjelser ved installation"
+
+#: /resources/settings.xml:49
+msgctxt "#30103"
+msgid "Search for Repositories in Subdirectories"
+msgstr "Søg efter datalagre i underbiblioteker"

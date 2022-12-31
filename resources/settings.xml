@@ -44,9 +44,10 @@
 		<setting label="$ADDON[plugin.program.opendevtools 30081]" type="lsep"/>
 		
 		<setting id="general.sort_repos" type="enum" label="$ADDON[plugin.program.opendevtools 30091]" lvalues="30092|30093" default="1"/>
+		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30073]" default="true"/>
 		<setting id="github.collaborator_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30060]" default="false"/>
 		<setting id="github.organization_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30061]" default="false"/>
-		<setting id="general.show_bundled_repos" type="bool" label="$ADDON[plugin.program.opendevtools 30073]" default="true"/>
+		<setting id="github.search_subdirs" type="bool" label="$ADDON[plugin.program.opendevtools 30103]" default="false"/>
 		
 		<setting label="$ADDON[plugin.program.opendevtools 30082]" type="lsep"/>
 

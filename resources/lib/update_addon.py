@@ -356,11 +356,10 @@ def update_addon(repo, commit=None, label=None):
             )
 
             tools.remove_folder(os.path.join(_addons, plugin_id))
-            _extract_addon(location, repo)
 
-        hashes = _extract_addon(location, repo)
-        _cleanup_addon(hashes, repo)
-        
+            hashes = _extract_addon(location, repo)
+            _cleanup_addon(hashes, repo)
+
     progress.update(
         50,
         settings.get_localized_string(30062).format(
